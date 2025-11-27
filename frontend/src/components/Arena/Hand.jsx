@@ -3,7 +3,7 @@ import { cardProperties } from "../../assets/cardProperties";
 
 // cardProperties will be requested from the db
 
-const Hand = ({ hand, selectedCard, onCardClick }) => {
+const Hand = ({ hand, selectedCard, onCardClick, socketId }) => {
   return (
     <div>
       <ul className={classes.hand}>
@@ -11,9 +11,9 @@ const Hand = ({ hand, selectedCard, onCardClick }) => {
           <li
             key={i}
             className={`${classes.card} ${
-              selectedCard === card && classes.selected
+              selectedCard?.name === card && selectedCard?.owner === socketId && classes.selected
             }`}
-            onClick={() => onCardClick({name: card, hand: true})}
+            onClick={() => onCardClick({name: card, hand: true, owner: socketId})}
           >
             <p>{card}</p>
             <div className={classes.stats}>

@@ -29,6 +29,7 @@ const Arena = () => {
     findOpponent,
     playCard,
     makeAttack,
+    passTurn
   } = useSocket();
   // const location = useLocation();
   // const {initialHand, initialPts} = location.state || {};
@@ -39,13 +40,21 @@ const Arena = () => {
     // genius!
     // if (selectedCard) {
 
-    // add: if you have card picked on your hand and click other card on a board: it updates
-    // add: if you have card picked on your board and click other card on a board that belongs to you: it updates
+    // add: if you have card picked on your hand and click other card on a board: it updates DONE
+    // add: if you have card picked on your board and click other card on a board that belongs to you: it updates DONE
     // add: clicking on opponent's card to see additional info
-    // add: unselecting a card if clicked 2nd time or an invalid operation occured or clicked outside of the board
-    console.log("check", selectedCard?.hand, selectedCard)
+    // add: unselecting a card if clicked 2nd time or an invalid operation occured or clicked outside of the board DONE/2 (not about clicking outside the board)
     if (selectedCard?.hand) {
-      // add other criteria along the way
+      // w hand są tylko twoje karty - no need to check if it's yours
+      if (tile.cards.length > 0) {
+        setSelectedCard({
+          ...tile.cards[0],
+          hand: false,
+          row: rowIndex,
+          col: colIndex,
+        }); // adjust when adding multiple cards per tile (possible to select opponent's one)
+        return;
+      }
       if (tile.owner !== socketId) {
         // adjust for special cards in the future
         console.log("the tile is not yours!");
@@ -58,48 +67,98 @@ const Arena = () => {
       }
       setSelectedCard(null);
     } else if (selectedCard?.hand === false) {
-        console.log("here")
       // selected card on board
       // maybe extract it and base your decisions on it (?) having implemented correct order of "card vulnerability" + both players never have a card on the same tile assumptions
-      const clickedCard = tile.cards.find((card) => card.owner !== socketId);
-      if (clickedCard) {
+
+      // opponent's card
+      const opponentCard = tile.cards.find((card) => card.owner !== socketId);
+      // selected card may be opponent's card!
+      if (opponentCard && selectedCard.owner === socketId) {
         makeAttack(
           {
             sourceRow: selectedCard.row,
             sourceCol: selectedCard.col,
-            sourceName: selectedCard.name
+            sourceName: selectedCard.name,
           },
           {
             targetRow: rowIndex,
             targetCol: colIndex,
-            targetName: clickedCard.name,
+            targetName: opponentCard.name,
           }
         );
         setSelectedCard(null);
+        return; // assumption: both players never have a card on the same tile
+      }
+      // const thisCard = tile.cards.find(card => card.name === selectedCard.name && card.owner === socketId);
+      const thisCard = tile.cards.find(
+        (card) =>
+          card.name === selectedCard.name && card.owner === selectedCard.owner
+      ); // opponent's card friendly
+      if (thisCard) {
+        setSelectedCard(null);
+        return;
+      }
+      if (tile.cards.length > 0) {
+        setSelectedCard({
+          ...tile.cards[0],
+          hand: false,
+          row: rowIndex,
+          col: colIndex,
+        }); // adjust when adding multiple cards per tile (possible to select opponent's one)
       }
     } else {
       // no card selected yet, click on a board
-      const clickedCard = tile.cards.find((card) => card.owner === socketId); //  && card.hasAttack - maybe not (?) - upgrading or for info
-      if (clickedCard) {
+      // const clickedCard = tile.cards.find((card) => card.owner === socketId); //  && card.hasAttack - maybe not (?) - upgrading or for info
+      if (tile.cards.length > 0) {
+        const clickedCard = tile.cards[0]; // adjust when adding multiple cards per tile (possible to select opponent's one)
         console.log({ ...clickedCard, hand: false });
-        setSelectedCard({ ...clickedCard, hand: false, row: rowIndex, col: colIndex });
+        setSelectedCard({
+          ...clickedCard,
+          hand: false,
+          row: rowIndex,
+          col: colIndex,
+        });
       }
     }
   };
+
+  const handlePass = () => {
+    passTurn();
+  };
+
   return (
     <div>
       <div>
-        <p>Turn 0</p>
+        <p>Turn {gameState?.turnNumber}</p>
         <p>
           {gameState?.whoseMove === socketId ? "Your move" : "Opponent's move"}
         </p>
         <p>You currently have {gameState?.players[socketId].pts}pts</p>
+        <button
+          disabled={gameState?.players[socketId].passed}
+          onClick={handlePass}
+        >
+          Pass turn
+        </button>
+        <p>
+          Opponent{" "}
+          {gameState?.players[
+            Object.keys(gameState?.players).find((id) => id !== socketId)
+          ].passed
+            ? "passed turn"
+            : "still plays"}
+        </p>
       </div>
-      <Board board={gameState?.board} onTileClick={handleTileClick} />
+      <Board
+        board={gameState?.board}
+        onTileClick={handleTileClick}
+        selectedCard={selectedCard}
+      />
       <Hand
         hand={gameState?.players[socketId].hand}
         selectedCard={selectedCard}
         onCardClick={setSelectedCard}
+        socketId={socketId}
       />
     </div>
   );
