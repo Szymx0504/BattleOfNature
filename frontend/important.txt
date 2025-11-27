@@ -1,0 +1,31 @@
+Make no player play multiple games at the same time
+(maybe swap or add to socket.id with userId if authentication is added)
+
+dont be able to play with yourself
+
+add authentication to all the moves etc
+
+potwierdzenie czy na pewno chcesz sie cofnac zeby wyjsc z gry
+
+
+entering arena impossible without a game
+
+
+
+Dodaj też że na board zamiast samego namea też wszystkie stats się dodaje
+
+
+moze tez zwracaj updaty akcji zeby to ladnie pokazac jak bedzie cos bardziej zlozonego
+(+mozliwosc podejrzenia planszy z zeszlego ruchu - latwiejsze do wychwycenia bledow + useful)
+
+tak, update bedzie zwracac newState + listOfChanges i bedzie to odtwarzane krok po kroku
+
+maybe change "update" io string to "actionUpdate" and "turnUpdate"? but for now it's enough
+
+
+
+VALIDATE USER'S INPUT FOR PLAYCARD AND MAKEATTACK ON THE BACKEND. REALLY IMPORTANT
+
+# prevent user from doing anything if it's not their turn (placing cards)
+
+transforming cols's index<->geometry -> make it into a function

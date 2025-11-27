@@ -1,0 +1,42 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  /* width: 100%;
+  max-width: 400px; */
+  margin: 0 auto;
+}
+
+.row {
+  display: flex;
+  gap: 5px;
+}
+
+/* Row 0 and 3: 3 tiles centered */
+.row:nth-child(1),
+.row:nth-child(4) {
+  justify-content: center;
+  width: 100%;
+}
+
+/* Row 1 and 2: 5 tiles centered */
+.row:nth-child(2),
+.row:nth-child(3) {
+  justify-content: center;
+  width: 100%;
+}
+
+
+.tile {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 12px;
+  padding: 5px;
+  background: #f9f9f9;
+}

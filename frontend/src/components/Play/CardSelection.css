@@ -1,0 +1,11 @@
+.card:hover{
+    cursor: pointer;
+}
+
+.card-selected {
+    opacity: 0.5;
+}
+
+.card-available {
+    opacity: 1; /*just not to be empty for now*/
+}
