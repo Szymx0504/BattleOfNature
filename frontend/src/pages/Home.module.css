@@ -1,0 +1,73 @@
+/* --- COLOR PALETTE ---
+    #212E27: Dark Pine/Forest Green (Background Start)
+    #1D594B: Deep Teal/River Water (Background End)
+    #EAECE3: Off-White/Stone (Welcome Text)
+    #5A9266: Moss Green (Button Base)
+    #327357: Darker Moss/Shade (Button Hover)
+    #69A9BB: Cool Blue/Water Accent (Text)
+*/
+
+/* --- CONTAINER STYLES --- */
+
+.homeContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    
+    /* Subtle background gradient for a nature feel (Deep green to river teal) */
+    background: linear-gradient(135deg, #212E27 0%, #1D594B 100%);
+    
+    color: #EAECE3; /* Soft off-white text */
+    font-family: 'Georgia', serif; /* Use a slightly more organic font */
+}
+
+.welcomeText {
+    font-size: 2.2rem; 
+    margin-bottom: 50px;
+    letter-spacing: 1.5px;
+    font-weight: 500;
+    /* Optional: add a subtle text shadow for depth */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); 
+}
+
+/* --- LINK STYLES --- */
+
+.linkContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 18px; 
+    width: 250px; 
+}
+
+.navLink {
+    text-decoration: none;
+    color: #EAECE3; /* Text color is off-white */
+    
+    /* Button color is a soothing Moss Green */
+    background-color: #5A9266; 
+    padding: 12px 25px;
+    border: 2px solid #69A9BB; /* Border in cool water blue for contrast */
+    border-radius: 10px; /* Slightly rounded for an organic feel */
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Deep shadow */
+}
+
+.navLink:hover {
+    background-color: #327357; /* Deeper shade of green on hover */
+    color: #fff; /* White text on hover for pop */
+    transform: translateY(-3px); /* Lifts the button */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+}
+
+.navLink:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    background-color: #69A9BB; /* Taps down into the water blue accent */
+}

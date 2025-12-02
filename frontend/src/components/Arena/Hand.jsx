@@ -11,9 +11,17 @@ const Hand = ({ hand, selectedCard, onCardClick, socketId }) => {
           <li
             key={i}
             className={`${classes.card} ${
-              selectedCard?.name === card && selectedCard?.owner === socketId && classes.selected
+              selectedCard?.name === card &&
+              selectedCard?.owner === socketId &&
+              classes.selected
             }`}
-            onClick={() => onCardClick({name: card, hand: true, owner: socketId})}
+            onClick={() =>
+              onCardClick(
+                selectedCard?.hand && selectedCard?.name === card
+                  ? null
+                  : { name: card, hand: true, owner: socketId }
+              )
+            }
           >
             <p>{card}</p>
             <div className={classes.stats}>
@@ -24,7 +32,7 @@ const Hand = ({ hand, selectedCard, onCardClick, socketId }) => {
               </p>
               <p>{cardProperties[card].pts}pts</p>
               <p>
-                {cardProperties[card].dmg
+                {cardProperties[card].dmg !== undefined
                   ? cardProperties[card].dmg + "dmg"
                   : cardProperties[card].hp + "hp"}
               </p>

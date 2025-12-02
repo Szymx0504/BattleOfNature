@@ -1,6 +1,6 @@
 import { cardProperties } from "../../assets/cardProperties";
 
-import "./CardSelection.css";
+import classes from "./CardSelection.module.css";
 
 const CardSelection = ({ deckInfo, setDeckInfo }) => {
   const selectCard = (cardName, cardRarity) => {
@@ -26,18 +26,30 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
         cards: prev.cards.filter((card) => card !== cardName),
         [cardRarity]: prev[cardRarity] - 1,
       }));
-    //   htmlCard.style.opacity = 1;
+      //   htmlCard.style.opacity = 1;
     }
   };
 
   return (
-    <div>
-      <div>
-        <p>Legendaries: {deckInfo.legendary}</p>
-        <p>Rarity: {deckInfo.rare}</p>
-        <p>Commons: {deckInfo.common}</p>
+    <div className={classes.cardSelectionWrapper}>
+      <div className={classes.deckSummary}>
+        <h2 className={classes.summaryTitle}>Current Deck</h2>
+        <div className={classes.rarityStats}>
+          <p>
+            Legendaries:{" "}
+            <span className={classes.legendaryCount}>{deckInfo.legendary}</span>
+          </p>
+          <p>
+            Rarity: <span className={classes.rareCount}>{deckInfo.rare}</span>
+          </p>
+          <p>
+            Commons:{" "}
+            <span className={classes.commonCount}>{deckInfo.common}</span>
+          </p>
+        </div>
       </div>
-      <ul>
+      <h2 className={classes.collectionTitle}>Available Cards</h2>
+      <ul className={classes.cardList}>
         {Object.entries(cardProperties).map(([cardName, cardDetails], i) => (
           <li
             key={i}
@@ -45,9 +57,28 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
             onClick={() => {
               selectCard(cardName, cardDetails.rarity);
             }}
-            className={`card ${deckInfo.cards.includes(cardName) ? "card-selected" : "card-available"}`}
+            className={`${classes.card} ${
+              deckInfo.cards.includes(cardName) ? classes.cardSelected : ""
+            }`}
           >
-            {cardName} - {cardDetails.rarity} rarity
+            <p>{cardName}</p>
+            <img
+              src={"/src/assets/cards/" + cardName.replace(" ", "_") + ".png"}
+            />
+            <div className={classes.stats}>
+              <span className={cardDetails.hp ? classes.hp : classes.dmg}>
+                {/* {cardDetails.hp || cardDetails.dmg} */}
+                {cardDetails.hp
+                  ? cardDetails.hp + "hp"
+                  : cardDetails.dmg + "dmg"}
+              </span>
+              <span className={classes.cost}>{cardDetails.pts}pts</span>
+              <span className={cardDetails.dmg !== undefined ? classes.dmg : classes.hp}>
+                {cardDetails.dmg !== undefined
+                  ? cardDetails.dmg + "dmg"
+                  : cardDetails.hp + "hp"}
+              </span>
+            </div>
           </li>
         ))}
       </ul>

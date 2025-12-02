@@ -26,15 +26,17 @@ maybe change "update" io string to "actionUpdate" and "turnUpdate"? but for now 
 
 VALIDATE USER'S INPUT FOR PLAYCARD AND MAKEATTACK ON THE BACKEND. REALLY IMPORTANT
 
-# prevent user from doing anything if it's not their turn (placing cards)
+# prevent user from doing anything if it's not their turn (placing cards) DONE
 
 transforming cols's index<->geometry -> make it into a function
 
-usuwaj zagrana karte z cycle + upewnij sie ze ona w nim jest
+usuwaj zagrana karte z hand + upewnij sie ze ona w nim jest DONE
 
 przed atakami itp sprawdzaj czy selectedCard jest twoja bo moze tez byc opponent's!!!
 
-mozliwe ze w returnowaniu nowego gameState na backendzie nie musisz robic przepakowywania bo to wszystko to jedno wielkie object reference
 
-fix some problems with passing + finish adding new turn
-enable unselecting a card from hand by clicking it the second time
+fix some problems with passing DONE
+finish adding new turn DONE
+enable unselecting a card from hand by clicking it the second time DONE
+
+zakaż wystawiania spelli jako playCard

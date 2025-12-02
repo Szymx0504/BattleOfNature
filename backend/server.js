@@ -10,6 +10,10 @@ const {
   generateBoard,
   updateWhoseMove,
   adjustBoard,
+  adjustCords,
+  getColGeometrically,
+  cardTypes,
+  adjustVector,
 } = require("./temporary.js");
 
 const app = express();
@@ -181,28 +185,16 @@ io.on("connection", (socket) => {
 
     // the board will always be stored "down"-firstPfromGameId
     // transform coords accordingly current user's perspective:
-    let row = tile?.row;
-    let col = tile?.col;
-    const rotate = !gameId.startsWith(playerConnectionId);
-    if (rotate) {
-      if (row == 0 || row == 3) {
-        col = 2 - col;
-      } else {
-        col = 4 - col;
-      }
-      row = 3 - row;
+    if (tile?.row == undefined || tile?.col == undefined) {
+      socket.emit("error", "Invalid input - undefined tile");
+      return;
     }
-    const colGeo = row == 0 || row == 3 ? col + 1 : col;
+    const rotate = !gameId.startsWith(playerConnectionId);
+    const { row, col } = adjustCords(tile.row, tile.col, rotate);
+    const colGeo = getColGeometrically(row, col);
     // if(tile.row < 0 || tile.row > 3|| tile.col < 0 || tile.col > 2 || Math.abs(1.5 - tile.row) + Math.abs(1 - tile.col) > 2) // think about it when ground will be added
     // cols <1, 3> - already accounted for the ground presence!
-    if (
-      row === undefined ||
-      col === undefined ||
-      row < 0 ||
-      row > 3 ||
-      colGeo < 1 ||
-      colGeo > 3
-    ) {
+    if (row < 0 || row > 3 || colGeo < 1 || colGeo > 3) {
       socket.emit("error", "No such tile exists");
       return;
     }
@@ -220,6 +212,8 @@ io.on("connection", (socket) => {
       socket.emit("error", "Not enough points to play this card");
       return;
     }
+
+    const changesVector = [];
 
     // game.board[row][col].cards.push({name: card, hasAttack: false});
     // everything except for rarity
@@ -242,37 +236,56 @@ io.on("connection", (socket) => {
     if (!game.players[enemyId].passed) {
       game.whoseMove = enemyId;
     }
+    changesVector.push({
+      action: "place",
+      row,
+      col,
+      owner: playerConnectionId,
+      name: card,
+    });
+    // there will be different actions: "place", "death" etc etc of things that may happen in a "chain reaction"
+    // then the frontend will simulate it and compare it with the final game state sent
+    // maybe even in the future it will only receive changesVector and not the whole game's state (not for now)
+    // IMPORTANT: you need to adjust all changesVector's coords for a player "at the top"!! do it while emitting a socket
 
-    io.to(enemyId).emit("update", {
-      ...game,
-      players: {
-        [enemyId]: {
-          hand: game.players[enemyId].hand,
-          pts: game.players[enemyId].pts,
-          passed: game.players[enemyId].passed,
+    io.to(enemyId).emit(
+      "update",
+      {
+        ...game,
+        players: {
+          [enemyId]: {
+            hand: game.players[enemyId].hand,
+            pts: game.players[enemyId].pts,
+            passed: game.players[enemyId].passed,
+          },
+          [playerConnectionId]: {
+            pts: game.players[playerConnectionId].pts,
+            passed: game.players[playerConnectionId].passed,
+          },
         },
-        [playerConnectionId]: {
-          pts: game.players[playerConnectionId].pts,
-          passed: game.players[playerConnectionId].passed,
-        },
+        board: adjustBoard(game.board, !rotate),
       },
-      board: adjustBoard(game.board, !rotate),
-    });
-    socket.emit("update", {
-      ...game,
-      players: {
-        [playerConnectionId]: {
-          hand: game.players[playerConnectionId].hand,
-          pts: game.players[playerConnectionId].pts,
-          passed: game.players[playerConnectionId].passed,
+      adjustVector(changesVector, !rotate)
+    );
+    socket.emit(
+      "update",
+      {
+        ...game,
+        players: {
+          [playerConnectionId]: {
+            hand: game.players[playerConnectionId].hand,
+            pts: game.players[playerConnectionId].pts,
+            passed: game.players[playerConnectionId].passed,
+          },
+          [enemyId]: {
+            pts: game.players[enemyId].pts,
+            passed: game.players[enemyId].passed,
+          },
         },
-        [enemyId]: {
-          pts: game.players[enemyId].pts,
-          passed: game.players[enemyId].passed,
-        },
+        board: adjustBoard(game.board, rotate),
       },
-      board: adjustBoard(game.board, rotate),
-    });
+      adjustVector(changesVector, rotate)
+    );
   });
 
   socket.on("makeAttack", (sourceCardInfo, targetCardInfo) => {
@@ -289,28 +302,36 @@ io.on("connection", (socket) => {
       return;
     }
 
-    let { sourceRow, sourceCol, sourceName } = sourceCardInfo;
-    let { targetRow, targetCol, targetName } = targetCardInfo;
+    if (
+      sourceCardInfo?.row === undefined ||
+      sourceCardInfo?.col === undefined ||
+      targetCardInfo?.row === undefined ||
+      targetCardInfo?.col === undefined
+    ) {
+      socket.emit("error", "Coords must not be undefined");
+      return;
+    }
+    if (
+      !cardTypes.includes(sourceCardInfo?.name) ||
+      !cardTypes.includes(targetCardInfo?.name)
+    ) {
+      socket.emit("error", "A given card does not exist");
+      return;
+    }
     // // you need to translate coords if the attacker is the player at the top!
     const rotate = !gameId.startsWith(playerConnectionId);
-    if (rotate) {
-      if (sourceRow == 0 || sourceRow == 3) {
-        sourceCol = 2 - sourceCol;
-      } else {
-        sourceCol = 4 - sourceCol;
-      }
-      sourceRow = 3 - sourceRow;
-      if (targetRow == 0 || targetRow == 3) {
-        targetCol = 2 - targetCol;
-      } else {
-        targetCol = 4 - targetCol;
-      }
-      targetRow = 3 - targetRow;
-    }
-    const sourceColGeo =
-      sourceRow == 0 || sourceRow == 3 ? sourceCol + 1 : sourceCol;
-    const targetColGeo =
-      targetRow == 0 || targetRow == 3 ? targetCol + 1 : targetCol;
+    const { row: sourceRow, col: sourceCol } = adjustCords(
+      sourceCardInfo.row,
+      sourceCardInfo.col,
+      rotate
+    );
+    const { row: targetRow, col: targetCol } = adjustCords(
+      targetCardInfo.row,
+      targetCardInfo.col,
+      rotate
+    );
+    const sourceColGeo = getColGeometrically(sourceRow, sourceCol);
+    const targetColGeo = getColGeometrically(targetRow, targetCol);
 
     if (
       sourceRow < 0 ||
@@ -331,10 +352,11 @@ io.on("connection", (socket) => {
     );
     // ensure these are really player's and opponent's cards
     const sourceCard = game.board[sourceRow][sourceCol].cards.find(
-      (card) => card.name === sourceName && card.owner === playerConnectionId
+      (card) =>
+        card.name === sourceCardInfo.name && card.owner === playerConnectionId
     );
     const targetCard = game.board[targetRow][targetCol].cards.find(
-      (card) => card.name === targetName && card.owner === enemyId
+      (card) => card.name === targetCardInfo.name && card.owner === enemyId
     );
 
     if (!sourceCard || !targetCard) {
@@ -354,8 +376,19 @@ io.on("connection", (socket) => {
       return;
     }
 
+    const changesVector = [];
+
     // simple attack for now
     targetCard.hp -= sourceCard.dmg; // will update, reference
+    if (targetCard.hp <= 0) {
+      changesVector.push({
+        action: "death",
+        row: targetRow,
+        col: targetCol,
+        owner: enemyId,
+        name: targetCardInfo.name,
+      });
+    }
     // add dying functionality later on
     sourceCard.hasAttack = false;
     // check if passed - separate func for that
@@ -365,36 +398,44 @@ io.on("connection", (socket) => {
       game.whoseMove = enemyId;
     }
 
-    io.to(enemyId).emit("update", {
-      ...game,
-      players: {
-        [enemyId]: {
-          hand: game.players[enemyId].hand,
-          pts: game.players[enemyId].pts,
-          passed: game.players[enemyId].passed,
+    io.to(enemyId).emit(
+      "update",
+      {
+        ...game,
+        players: {
+          [enemyId]: {
+            hand: game.players[enemyId].hand,
+            pts: game.players[enemyId].pts,
+            passed: game.players[enemyId].passed,
+          },
+          [playerConnectionId]: {
+            pts: game.players[playerConnectionId].pts,
+            passed: game.players[playerConnectionId].passed,
+          },
         },
-        [playerConnectionId]: {
-          pts: game.players[playerConnectionId].pts,
-          passed: game.players[playerConnectionId].passed,
-        },
+        board: adjustBoard(game.board, !rotate),
       },
-      board: adjustBoard(game.board, !rotate),
-    });
-    socket.emit("update", {
-      ...game,
-      players: {
-        [playerConnectionId]: {
-          hand: game.players[playerConnectionId].hand,
-          pts: game.players[playerConnectionId].pts,
-          passed: game.players[playerConnectionId].passed,
+      adjustVector(changesVector, !rotate)
+    );
+    socket.emit(
+      "update",
+      {
+        ...game,
+        players: {
+          [playerConnectionId]: {
+            hand: game.players[playerConnectionId].hand,
+            pts: game.players[playerConnectionId].pts,
+            passed: game.players[playerConnectionId].passed,
+          },
+          [enemyId]: {
+            pts: game.players[enemyId].pts,
+            passed: game.players[enemyId].passed,
+          },
         },
-        [enemyId]: {
-          pts: game.players[enemyId].pts,
-          passed: game.players[enemyId].passed,
-        },
+        board: adjustBoard(game.board, rotate),
       },
-      board: adjustBoard(game.board, rotate),
-    });
+      adjustVector(changesVector, rotate)
+    );
   });
 
   socket.on("passTurn", () => {
@@ -407,7 +448,7 @@ io.on("connection", (socket) => {
     }
     const game = activeGames.get(gameId);
     if (game.whoseMove !== playerConnectionId) {
-      console.log("here")
+      console.log("here");
       socket.emit("error", "Not your turn");
       return;
     }
@@ -426,11 +467,15 @@ io.on("connection", (socket) => {
     );
     if (game.players[enemyId].passed) {
       // new turn
+      const changesVector = [];
       // decide who's starting !whoStartedTurn
       if (game.turnNumber !== 0) {
         // after first turn, the same person begins
-        game.whoStartedTurn = !game.whoStartedTurn;
+        game.whoStartedTurn = Object.keys(game.players).find(
+          (id) => id !== game.whoStartedTurn
+        );
       }
+      game.whoseMove = game.whoStartedTurn;
       game.turnNumber++;
       if (game.turnNumber <= 12) {
         game.players[playerConnectionId].pts = 10;
@@ -439,6 +484,8 @@ io.on("connection", (socket) => {
         game.players[playerConnectionId].pts = 15;
         game.players[enemyId].pts = 15;
       }
+      game.players[playerConnectionId].passed = false;
+      game.players[enemyId].passed = false;
       for (let i = 0; i < game.board.length; i++) {
         for (let j = 0; j < game.board[i].length; j++) {
           for (const card of game.board[i][j].cards) {
@@ -446,37 +493,62 @@ io.on("connection", (socket) => {
           }
         }
       }
+      while (
+        game.players[playerConnectionId].hand.length < 5 &&
+        game.players[playerConnectionId].cycle.length > 0
+      ) {
+        game.players[playerConnectionId].hand.push(
+          game.players[playerConnectionId].cycle[0]
+        );
+        game.players[playerConnectionId].cycle.shift();
+      }
+      while (
+        game.players[enemyId].hand.length < 5 &&
+        game.players[enemyId].cycle.length > 0
+      ) {
+        game.players[enemyId].hand.push(game.players[enemyId].cycle[0]);
+        game.players[enemyId].cycle.shift();
+      }
       // all effects resets etc etc as new cards get added
-      io.to(enemyId).emit("update", {
-        ...game,
-        players: {
-          [enemyId]: {
-            hand: game.players[enemyId].hand,
-            pts: game.players[enemyId].pts,
-            passed: game.players[enemyId].passed,
+      const rotate = !gameId.startsWith(playerConnectionId);
+      io.to(enemyId).emit(
+        "update",
+        {
+          ...game,
+          players: {
+            [enemyId]: {
+              hand: game.players[enemyId].hand,
+              pts: game.players[enemyId].pts,
+              passed: game.players[enemyId].passed,
+            },
+            [playerConnectionId]: {
+              pts: game.players[playerConnectionId].pts,
+              passed: game.players[playerConnectionId].passed,
+            },
           },
-          [playerConnectionId]: {
-            pts: game.players[playerConnectionId].pts,
-            passed: game.players[playerConnectionId].passed,
-          },
+          board: adjustBoard(game.board, !rotate),
         },
-        board: adjustBoard(game.board, !rotate),
-      });
-      socket.emit("update", {
-        ...game,
-        players: {
-          [playerConnectionId]: {
-            hand: game.players[playerConnectionId].hand,
-            pts: game.players[playerConnectionId].pts,
-            passed: game.players[playerConnectionId].passed,
+        adjustVector(changesVector, !rotate)
+      );
+      socket.emit(
+        "update",
+        {
+          ...game,
+          players: {
+            [playerConnectionId]: {
+              hand: game.players[playerConnectionId].hand,
+              pts: game.players[playerConnectionId].pts,
+              passed: game.players[playerConnectionId].passed,
+            },
+            [enemyId]: {
+              pts: game.players[enemyId].pts,
+              passed: game.players[enemyId].passed,
+            },
           },
-          [enemyId]: {
-            pts: game.players[enemyId].pts,
-            passed: game.players[enemyId].passed,
-          },
+          board: adjustBoard(game.board, rotate),
         },
-        board: adjustBoard(game.board, rotate),
-      });
+        adjustVector(changesVector, rotate)
+      );
     } else {
       game.whoseMove = enemyId;
       // continue this turn... (only passed changes)
@@ -487,8 +559,8 @@ io.on("connection", (socket) => {
         whoseMove: game.whoseMove,
       });
       socket.emit("passedTurn", {
-        playerConnectionId: game.players[playerConnectionId].passed,
-        enemyId: game.players[enemyId].passed,
+        [playerConnectionId]: game.players[playerConnectionId].passed,
+        [enemyId]: game.players[enemyId].passed,
         whoseMove: game.whoseMove,
       });
     }

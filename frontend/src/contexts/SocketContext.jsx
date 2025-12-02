@@ -48,21 +48,26 @@ export const SocketProvider = ({ children }) => {
       setGameId(gid);
     };
 
-    const handleUpdate = (gameData) => {
-      console.log("move made");
+    const handleUpdate = (gameData, changesVector) => {
+      console.log(socket.id, changesVector);
       setGameState(gameData);
     };
 
     const handlePassed = (newData) => {
-      const enemyId = Object.keys(gameState?.players).find(
-        (id) => id !== socket.id
-      );
-      setGameState((prev) => ({
-        ...prev,
-        [socket.id]: { ...prev[socket.id], passed: newData[socket.id] },
-        [enemyId]: {...prev[enemyId], passed: newData[enemyId]},
-        whoseMove: newData.whoseMove
-      }));
+      setGameState((prev) => {
+        const enemyId = Object.keys(prev.players).find(id => id !== socket.id);
+        return {
+          ...prev,
+          players: {
+            [socket.id]: {
+              ...prev.players[socket.id],
+              passed: newData[socket.id],
+            },
+            [enemyId]: { ...prev.players[enemyId], passed: newData[enemyId] },
+          },
+          whoseMove: newData.whoseMove,
+        };
+      });
     };
 
     socket.on("connect", handleConnect);
@@ -71,7 +76,7 @@ export const SocketProvider = ({ children }) => {
     socket.on("opponentLeft", handleOpponentLeft);
     socket.on("opponentFound", handleOpponentFound);
     socket.on("update", handleUpdate);
-    socket.on("passedTurn", handlePassed)
+    socket.on("passedTurn", handlePassed);
 
     return () => {
       socket.off("connect", handleConnect);

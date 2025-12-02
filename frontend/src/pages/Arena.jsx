@@ -29,7 +29,7 @@ const Arena = () => {
     findOpponent,
     playCard,
     makeAttack,
-    passTurn
+    passTurn,
   } = useSocket();
   // const location = useLocation();
   // const {initialHand, initialPts} = location.state || {};
@@ -62,6 +62,8 @@ const Arena = () => {
         gameState?.players[socketId].pts < cardProperties[selectedCard.name].pts
       ) {
         console.log("not enough points!!!");
+      } else if (gameState?.whoseMove !== socketId) {
+        console.log("not your turn!");
       } else {
         playCard(selectedCard.name, { row: rowIndex, col: colIndex });
       }
@@ -74,18 +76,23 @@ const Arena = () => {
       const opponentCard = tile.cards.find((card) => card.owner !== socketId);
       // selected card may be opponent's card!
       if (opponentCard && selectedCard.owner === socketId) {
-        makeAttack(
-          {
-            sourceRow: selectedCard.row,
-            sourceCol: selectedCard.col,
-            sourceName: selectedCard.name,
-          },
-          {
-            targetRow: rowIndex,
-            targetCol: colIndex,
-            targetName: opponentCard.name,
-          }
-        );
+        if (gameState?.whoseMove !== socketId) {
+          console.log("not your turn!");
+        } else {
+          makeAttack(
+            {
+              row: selectedCard.row,
+              col: selectedCard.col,
+              name: selectedCard.name,
+            },
+            {
+              row: rowIndex,
+              col: colIndex,
+              name: opponentCard.name,
+            }
+          );
+        }
+
         setSelectedCard(null);
         return; // assumption: both players never have a card on the same tile
       }
@@ -123,6 +130,10 @@ const Arena = () => {
   };
 
   const handlePass = () => {
+    if(gameState?.whoseMove !== socketId){
+      console.log("not your turn!");
+      return; // you could add it do disabled in <button>, idk
+    }
     passTurn();
   };
 

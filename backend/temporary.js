@@ -38,6 +38,36 @@ function adjustBoard(board, rotate) {
   return board;
 }
 
+function adjustCords(row, col, rotate){
+  if(rotate){
+    if (row == 0 || row == 3) {
+        col = 2 - col;
+      } else {
+        col = 4 - col;
+      }
+      row = 3 - row;
+  }
+  return {row, col};
+}
+
+function getColGeometrically(row, col){
+  return row == 0 || row == 3 ? col + 1 : col;
+}
+
+function adjustVector(vector, rotate){
+  const newVector = vector.map(action => ({...action}));
+  if(rotate){
+    for(action of newVector){
+      const {row: newRow, col: newCol} = adjustCords(action.row, action.col, rotate);
+      action.row = newRow;
+      action.col = newCol;
+    }
+  }
+  return newVector;
+}
+
+const cardTypes = ["tree", "spell", "bush", "building"];
+
 const cardProperties = {
   "frost tree": {
     name: "frost tree",
@@ -442,10 +472,14 @@ const cardProperties = {
 
 module.exports = {
   cardProperties,
+  cardTypes,
   shuffleArray,
   ifCurrentlyOwned,
   generateGameId,
   generateBoard,
   updateWhoseMove,
-  adjustBoard
+  adjustBoard,
+  adjustCords,
+  getColGeometrically,
+  adjustVector
 };
