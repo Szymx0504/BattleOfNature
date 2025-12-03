@@ -7,6 +7,8 @@ import Board from "../components/Arena/Board";
 import Hand from "../components/Arena/Hand";
 
 import { cardProperties } from "../assets/cardProperties";
+import classes from "./Arena.module.css";
+import PtsBar from "../components/Arena/PtsBar";
 
 const board = [
   [{}, { mainTree: true }, {}],
@@ -130,7 +132,7 @@ const Arena = () => {
   };
 
   const handlePass = () => {
-    if(gameState?.whoseMove !== socketId){
+    if (gameState?.whoseMove !== socketId) {
       console.log("not your turn!");
       return; // you could add it do disabled in <button>, idk
     }
@@ -138,14 +140,15 @@ const Arena = () => {
   };
 
   return (
-    <div>
-      <div>
+    <div className={classes.gameWrapper}>
+      <div className={classes.info}>
         <p>Turn {gameState?.turnNumber}</p>
         <p>
           {gameState?.whoseMove === socketId ? "Your move" : "Opponent's move"}
         </p>
         <p>You currently have {gameState?.players[socketId].pts}pts</p>
         <button
+          className={classes.passBtn}
           disabled={gameState?.players[socketId].passed}
           onClick={handlePass}
         >
@@ -165,12 +168,15 @@ const Arena = () => {
         onTileClick={handleTileClick}
         selectedCard={selectedCard}
       />
-      <Hand
-        hand={gameState?.players[socketId].hand}
-        selectedCard={selectedCard}
-        onCardClick={setSelectedCard}
-        socketId={socketId}
-      />
+      <div className={classes.table}>
+        <Hand
+          hand={gameState?.players[socketId].hand}
+          selectedCard={selectedCard}
+          onCardClick={setSelectedCard}
+          socketId={socketId}
+        />
+        <PtsBar curPts={gameState?.players[socketId].pts} />
+      </div>
     </div>
   );
 };

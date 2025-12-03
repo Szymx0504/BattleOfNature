@@ -1,3 +1,4 @@
+import Card from "../elements/Card";
 import { cardProperties } from "../../assets/cardProperties";
 
 import classes from "./CardSelection.module.css";
@@ -48,40 +49,23 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
           </p>
         </div>
       </div>
-      <h2 className={classes.collectionTitle}>Available Cards</h2>
-      <ul className={classes.cardList}>
-        {Object.entries(cardProperties).map(([cardName, cardDetails], i) => (
-          <li
-            key={i}
-            // id={`CardSelection__${cardName}`}
-            onClick={() => {
-              selectCard(cardName, cardDetails.rarity);
-            }}
-            className={`${classes.card} ${
-              deckInfo.cards.includes(cardName) ? classes.cardSelected : ""
-            }`}
-          >
-            <p>{cardName}</p>
-            <img
-              src={"/src/assets/cards/" + cardName.replace(" ", "_") + ".png"}
+      <div className={classes.collectionWrapper}>
+        <h2 className={classes.collectionTitle}>Available Cards</h2>
+        <ul className={classes.cardList}>
+          {Object.entries(cardProperties).map(([cardName, cardDetails], i) => (
+            <Card
+              i={i}
+              classKeys={["card", deckInfo.cards.includes(cardName) && "cardSelected", cardDetails.rarity]}
+              cardName={cardName}
+              cardDetails={cardDetails}
+              deckInfo={deckInfo}
+              handleClick={() => {
+                selectCard(cardName, cardDetails.rarity);
+              }}
             />
-            <div className={classes.stats}>
-              <span className={cardDetails.hp ? classes.hp : classes.dmg}>
-                {/* {cardDetails.hp || cardDetails.dmg} */}
-                {cardDetails.hp
-                  ? cardDetails.hp + "hp"
-                  : cardDetails.dmg + "dmg"}
-              </span>
-              <span className={classes.cost}>{cardDetails.pts}pts</span>
-              <span className={cardDetails.dmg !== undefined ? classes.dmg : classes.hp}>
-                {cardDetails.dmg !== undefined
-                  ? cardDetails.dmg + "dmg"
-                  : cardDetails.hp + "hp"}
-              </span>
-            </div>
-          </li>
-        ))}
-      </ul>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

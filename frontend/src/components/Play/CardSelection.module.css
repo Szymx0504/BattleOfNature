@@ -2,7 +2,7 @@
 
 .cardSelectionWrapper {
     width: 90%;
-    max-width: 1000px; /* Ensures it doesn't get too wide on large screens */
+    max-width: 1000px;
     
     /* Subtle, semi-transparent background matching the theme */
     background-color: rgba(40, 50, 45, 0.8); 
@@ -11,17 +11,22 @@
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     margin-bottom: 30px;
     
-    /* Layout: Summary (left) and Card List (right) side-by-side */
-    display: grid;
-    grid-template-columns: 1fr 3fr; 
-    gap: 20px;
+    /* FIX: SWITCH TO FLEXBOX COLUMN LAYOUT to stack sections vertically */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+    
+    /* REMOVED: grid-template-columns: 1fr 4fr; */
 }
 
 /* Deck Summary Section */
 .deckSummary {
-    padding-right: 20px;
-    /* Divider using the Water Blue accent color */
-    border-right: 1px solid rgba(105, 169, 187, 0.3); 
+    padding-right: 0; 
+    border-right: none; /* REMOVE THE SIDE DIVIDER */
+    
+    /* Add a horizontal divider and bottom padding for separation */
+    border-bottom: 1px solid rgba(105, 169, 187, 0.3);
+    padding-bottom: 20px; 
 }
 
 .summaryTitle {
@@ -55,6 +60,13 @@
     color: #92CDDC; /* Light Cyan/Water Blue */
 }
 
+.collectionWrapper {
+    display: flex;
+    flex-direction: column; /* Stacks the title and list vertically */
+    /* Add a small gap between the title (h2) and the card list (ul) */
+    gap: 10px; 
+}
+
 /* Available Cards Section */
 .collectionTitle {
     color: #69A9BB; /* Water blue title */
@@ -67,115 +79,13 @@
     /* Layout: Grid for many cards */
     display: grid;
     /* Responsive grid: columns that are at least 120px wide */
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); 
+    gap: 36px;
     list-style: none; /* Removes bullet points from <ul> */
     padding: 0;
     margin: 0;
-}
 
-/* --- BASE CARD CONTAINER --- */
-.card {
-    background-color: rgba(90, 146, 102, 0.2);
-    border: 1px solid #5A9266;
-    color: #EAECE3;
-    padding: 10px; 
-    border-radius: 8px;
-    
-    display: flex; 
-    flex-direction: column;
-    align-items: center; 
-    
-    /* Increased height for the whole card to accommodate the taller image */
-    height: 300px; 
-    width: 100%;
-    
-    transition: all 0.2s ease;
-    cursor: pointer;
-    list-style: none; 
-}
-
-/* --- CARD NAME/TITLE --- */
-.card p {
-    font-size: 1.1rem; 
-    font-weight: bold;
-    text-align: center;
-    margin: 0 0 8px 0; 
-    color: #69A9BB; 
-    white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 90%; 
-}
-
-/* --- CARD IMAGE FIX --- */
-.card img {
-    width: 100%; 
-    
-    /* SIGNIFICANTLY Increased Max-Height (220px) to ensure the top is not cut off */
-    max-height: 220px; 
-    
-    object-fit: cover; 
-    border-radius: 4px;
-    border: 1px solid #99A1AF; 
-    margin-bottom: 4px; 
-}
-
-/* --- STATS BAR --- */
-.stats {
-    display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    width: 100%;
-    margin-top: auto;
-}
-
-.stats span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30%; /* Gives each stat roughly equal width */
-    padding: 3px 0;
-    font-size: 0.85rem;
-    font-weight: bold;
-    border-radius: 4px;
-    color: #EAECE3; /* Light text for stats */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-/* --- INDIVIDUAL STAT COLORS --- */
-
-/* HP (Health): Green background */
-.hp {
-    background-color: #5A9266; /* Moss Green */
-}
-
-/* DMG (Damage): Red background */
-.dmg {
-    background-color: #A33A3A; /* Deep Brick Red */
-}
-
-/* COST (Points/Mana): Pink background */
-.cost {
-    background-color: #A86494; /* Dusty Rose/Deep Pink */
-}
-/* --- FINAL DARKENED SELECTED CARD STYLES --- */
-
-.cardSelected {
-    /* Background Change: Deeper, richer Moss Green (Was #7CBB8D) */
-    background-color: #588765; 
-    
-    color: #EAECE3; /* Switching back to light text for better contrast against dark background */
-    
-    /* Frame Change: Darker Silver/Stone (Was #C4C7D0) */
-    border: 3px solid #99A1AF; 
-    
-    /* Pronounced glow using the Water Blue accent remains */
-    box-shadow: 0 0 15px rgba(105, 169, 187, 0.8), /* Soft blue glow */
-                0 0 5px rgba(153, 161, 175, 0.5); 
-                
-    /* Slight lift */
-    transform: scale(1.05); 
-    
-    transition: all 0.2s ease-in-out;
+    padding-left: 18px;  /* Half the gap */
+    padding-right: 36px; /* Half the gap */
+    margin: 0 -10px;
 }

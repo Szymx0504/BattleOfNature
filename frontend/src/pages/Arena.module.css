@@ -1,0 +1,52 @@
+/* Assumed Wrapper: Use the main parent of the game view */
+.gameWrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    #212e27 0%,
+    #1d594b 100%
+  ); /* Dark Forest Background */
+  color: #eaece3;
+  font-family: Arial, sans-serif;
+  padding: 10px; /* Small buffer around the whole screen */
+}
+
+.info {
+  display: flex;
+  justify-content: space-between; /* Pushes content to the edges */
+  align-items: center;
+  padding: 10px 20px;
+  background-color: rgba(30, 40, 35, 0.9); /* Dark, slightly transparent bar */
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.info p {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #92cddc; /* Light Water Blue for important text */
+}
+
+.passBtn {
+  background-color: #a33a3a; /* Deep Brick Red for high-importance action */
+  color: #eaece3;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.passBtn {
+    background-color: #C14A4A;
+}
+
+.table {
+    display: flex;
+    flex-direction: column; 
+    gap: 10px;
+    padding: 10px 0;
+}

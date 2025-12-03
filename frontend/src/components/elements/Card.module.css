@@ -1,0 +1,182 @@
+/* =========================================================================
+   BASE CARD STYLES & LAYOUT
+   ========================================================================= */
+
+.card {
+    background-color: rgba(90, 146, 102, 0.2);
+    border: 1px solid #5A9266;
+    color: #EAECE3;
+    
+    /* Reduced top padding to make the content appear higher */
+    padding: 5px 10px 10px 10px; 
+    margin: 0;
+    
+    border-radius: 8px;
+    
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    
+    /* Base height for scaling calculation */
+    height: 300px; 
+    width: 100%;
+    
+    transition: all 0.2s ease;
+    cursor: pointer;
+    list-style: none; 
+    
+    transform-origin: center center;
+}
+
+.card p {
+    /* FIX: Font size uses EM units for proportional scaling */
+    font-size: 1.3em; 
+    font-weight: bold;
+    text-align: center;
+    
+    margin: 0 0 8px 0; 
+    
+    color: #EAECE3; 
+    
+    /* Subtle Background Styles */
+    background-color: rgba(30, 40, 35, 0.5); 
+    
+    /* FIX: Changed from PX to EM (7px 12px) for proportional scaling */
+    padding: 0.4375em 0.75em; 
+    
+    border-radius: 8px; 
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2); 
+    
+    width: fit-content;
+    min-width: 50%;
+    
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- CARD IMAGE FIX --- */
+.card img {
+    width: 100%; 
+    
+    /* FIX: Changed max-height from PX to EM (220px) for proportional scaling */
+    max-height: 13.75em; 
+    
+    object-fit: cover; 
+    border-radius: 4px;
+    border: 1px solid #99A1AF; 
+    margin-bottom: 4px; 
+}
+
+/* --- STATS BAR --- */
+.stats {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+    width: 100%;
+    margin-top: auto;
+}
+
+.stats span {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30%; 
+    /* FIX: Changed from PX/REM to EM for proportional scaling */
+    padding: 0.1875em 0;
+    font-size: 0.85em; 
+    font-weight: bold;
+    border-radius: 4px;
+    color: #EAECE3; 
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* --- INDIVIDUAL STAT COLORS --- */
+.hp {
+    background-color: #5A9266;
+}
+
+.dmg {
+    background-color: #A33A3A;
+}
+
+.cost {
+    background-color: #A86494;
+}
+
+/* =========================================================================
+   CARD SELECTION STATE (CardSelected)
+   ========================================================================= */
+
+.cardSelected {
+    background-color: #588765; 
+    color: #EAECE3; 
+    border: 3px solid #99A1AF; 
+    
+    box-shadow: 0 0 15px rgba(105, 169, 187, 0.8),
+                0 0 5px rgba(153, 161, 175, 0.5); 
+    
+    transform: scale(1.05); 
+    transition: all 0.2s ease-in-out;
+}
+
+/* =========================================================================
+   RARITY BACKGROUNDS (CSS Modules: Composes Base)
+   ========================================================================= */
+
+.baseBackground {
+    background-size: auto 100%; 
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+    background-color: transparent; 
+}
+
+.common {
+    composes: baseBackground; 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("src/assets/backgrounds/common_background.png");
+    border: 1px solid #92CDDC; 
+}
+
+.rare {
+    composes: baseBackground;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("src/assets/backgrounds/rare_background.png");
+    border: 1px solid #FFD700; 
+}
+
+.legendary {
+    composes: baseBackground;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("src/assets/backgrounds/legendary_background.png");
+    border: 1px solid #8A2BE2; 
+}
+
+/* FIX: Target the card when it is on the board */
+.card.board {
+    /* Set the base font size for inheritance */
+    font-size: 60%; 
+    
+    /* Apply the visual transformation */
+    transform: scale(0.6); 
+    
+    /* FIX: Absolute positioning to perfectly fit the tile dimensions */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; 
+    
+    /* REMOVE manually calculated height and margin */
+    /* height: 180px;  <--- REMOVE */
+    /* margin: -60px 0; <--- REMOVE */
+}
+
+/* FIX: Target the card when it is in the hand */
+.card.hand {
+    /* Retain manually calculated height and margin for hand flow */
+    /* ... only if you want the hand to flow normally. */
+    /* If hand flow is good, leave this class as we last fixed it: */
+    font-size: 80%;
+    transform: scale(0.8); 
+    height: 264px; 
+    margin: -33px 0;
+}

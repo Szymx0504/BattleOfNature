@@ -1,42 +1,45 @@
+import Card from "../elements/Card";
+
 import classes from "./Board.module.css";
 
 const Board = ({ board, onTileClick, selectedCard }) => {
   return (
-    <div>
-      <div className={classes.board}>
-        {/* look if those key= are useful */}
-        {board.map((row, i) => (
-          <div key={i} className={classes.row}>
-            {row.map((tile, j) => (
-              <div
-                key={j}
-                className={classes.tile}
-                onClick={() => onTileClick(tile, i, j)}
-              >
-                {tile.mainTree && "Main Tree"}
-                {tile.inactive && "inactive"}
+    <div className={classes.board}>
+      {/* look if those key= are useful */}
+      {board.map((row, i) => (
+        <div key={i} className={classes.row}>
+          {row.map((tile, j) => (
+            <div
+              key={j}
+              className={classes.tile}
+              onClick={() => onTileClick(tile, i, j)}
+            >
+              <div className={classes.tileContent}>
+                {/* {tile.mainTree && "Main Tree"}
+                {tile.inactive && "inactive"} */}
                 {/* INCLUDE POSSIBILITY OF MANY CARDS */}
                 {tile.cards.length ? (
-                  <div
-                    className={`${classes.card} ${
-                      selectedCard?.name === tile.cards[0].name && selectedCard?.owner === tile.cards[0].owner &&
-                      classes.selected
-                    }`}
-                  >
-                    <p>{tile.cards[0].name}</p>
-                    <p>{tile.cards[0].hp}hp</p>
-                    {/* <p>{tile.cards[0].pts}pts</p>
-                    <p>{tile.cards[0].dmg}dmg</p> */}
-                    <p>{tile.cards[0].hasAttack ? "yes" : "no"} attack</p>
-                  </div>
+                  <Card
+                    i="0"
+                    classKeys={[
+                      "card",
+                      selectedCard?.name === tile.cards[0].name &&
+                        selectedCard?.owner === tile.cards[0].owner &&
+                        "cardSelected",
+                      tile.cards[0]?.rarity,
+                      "board",
+                    ]}
+                    cardName={tile.cards[0].name}
+                    cardDetails={tile.cards[0]}
+                  />
                 ) : (
                   ""
                 )}
               </div>
-            ))}
-          </div>
-        ))}
-      </div>
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 };

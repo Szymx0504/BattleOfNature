@@ -1,0 +1,28 @@
+.ptsBarWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 0;
+  background-color: rgba(30, 40, 35, 0.85); /* Dark background */
+  border-radius: 8px;
+}
+
+.ptsBarContent {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Spacing between points and text */
+}
+
+.SquareRepresentingAPoint {
+  width: 20px;
+  height: 20px;
+  background-color: #69a9bb; /* Water Blue accent color */
+  border-radius: 4px;
+  border: 1px solid #eaece3;
+}
+
+.ptsBarWrapper p {
+  font-size: 0.9rem;
+  color: #eaece3;
+  margin: 0;
+}

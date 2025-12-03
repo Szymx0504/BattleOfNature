@@ -217,8 +217,13 @@ io.on("connection", (socket) => {
 
     // game.board[row][col].cards.push({name: card, hasAttack: false});
     // everything except for rarity
+    // game.board[row][col].cards.push({
+    //   ...(({ rarity, ...rest }) => rest)(cardProperties[card]),
+    //   hasAttack: true,
+    //   owner: playerConnectionId,
+    // });
     game.board[row][col].cards.push({
-      ...(({ rarity, ...rest }) => rest)(cardProperties[card]),
+      ...cardProperties[card],
       hasAttack: true,
       owner: playerConnectionId,
     });

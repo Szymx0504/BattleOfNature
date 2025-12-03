@@ -40,3 +40,9 @@ finish adding new turn DONE
 enable unselecting a card from hand by clicking it the second time DONE
 
 zakaż wystawiania spelli jako playCard
+
+add notifications about the errors with toastify
+
+in card selection:
+first for computers -> cardInfo on hover
+then on phone -> on click -> info or pick (like in Clash Royale)
