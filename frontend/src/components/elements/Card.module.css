@@ -18,7 +18,7 @@
     align-items: center; 
     
     /* Base height for scaling calculation */
-    height: 300px; 
+    height: auto; /* Changed from fixed 330px */
     width: 100%;
     
     transition: all 0.2s ease;
@@ -59,22 +59,34 @@
 .card img {
     width: 100%; 
     
-    /* FIX: Changed max-height from PX to EM (220px) for proportional scaling */
-    max-height: 13.75em; 
+    /* FIX 1: REMOVE max-height: 15em; or 13.75em to allow Flexbox control */
+    max-height: 15em;
+
+    /* FIX 2: Set the image to grow and take up maximum space */
+    /* flex-grow: 1;  */
     
-    object-fit: cover; 
+    /* FIX 3: Ensure image scaling is correct within its new space */
+    /* object-fit: cover */
+    object-fit: contain; 
+    
     border-radius: 4px;
     border: 1px solid #99A1AF; 
-    margin-bottom: 4px; 
+    
+    /* REDUCED margin-bottom to shrink gap */
+    margin-bottom: 2px;
 }
 
-/* --- STATS BAR --- */
 .stats {
     display: flex;
     justify-content: space-between; 
     align-items: center;
     width: 100%;
-    margin-top: auto;
+    
+    /* FIX 4: Prevent the stats bar from growing or taking up any extra space */
+    flex-shrink: 0; 
+    flex-grow: 0; 
+    
+    margin-top: auto; /* Ensures it stays at the bottom */
 }
 
 .stats span {
@@ -89,6 +101,7 @@
     border-radius: 4px;
     color: #EAECE3; 
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    
 }
 
 /* --- INDIVIDUAL STAT COLORS --- */
@@ -150,33 +163,34 @@
     border: 1px solid #8A2BE2; 
 }
 
-/* FIX: Target the card when it is on the board */
 .card.board {
-    /* Set the base font size for inheritance */
-    font-size: 60%; 
+    /* ... centering logic ... */
+    transform: scale(0.85); 
+    font-size: 70%;
     
-    /* Apply the visual transformation */
-    transform: scale(0.6); 
+    /* Aggressive reset */
+    margin: 0;
+    padding: 0;
+    border: none;
+    line-height: 1; /* Ensure line height is clean on the element itself */
+    vertical-align: top;
     
-    /* FIX: Absolute positioning to perfectly fit the tile dimensions */
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
     height: 100%; 
-    
-    /* REMOVE manually calculated height and margin */
-    /* height: 180px;  <--- REMOVE */
-    /* margin: -60px 0; <--- REMOVE */
 }
 
-/* FIX: Target the card when it is in the hand */
+/* --- HAND SCALING CONTEXT --- */
+
+/* --- HAND SCALING CONTEXT --- */
 .card.hand {
-    /* Retain manually calculated height and margin for hand flow */
-    /* ... only if you want the hand to flow normally. */
-    /* If hand flow is good, leave this class as we last fixed it: */
-    font-size: 80%;
-    transform: scale(0.8); 
-    height: 264px; 
-    margin: -33px 0;
+    /* Set the base font size for inheritance */
+    font-size: 70%; 
+
+    /* Apply visual transformation */
+    transform: scale(0.7); 
+    
+    /* FIX: REMOVE fixed layout dimensions and margins */
+    height: auto; 
+    width: auto; 
+    margin: 0; 
 }

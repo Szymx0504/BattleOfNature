@@ -1,20 +1,19 @@
 .board {
-  flex-grow: 1; /* Makes the board take up all remaining vertical space */
-  background-color: rgba(
-    90,
-    146,
-    102,
-    0.25
-  ); /* Semi-transparent moss green background */
-  border-radius: 15px;
-  margin: 10px 0;
-  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5); /* Inner shadow for depth */
-  border: 1px solid #5a9266;
+    /* Ensures the board takes up as much vertical space as possible */
+    flex-grow: 1; 
+    background-color: rgba(90, 146, 102, 0.25); 
+    border-radius: 15px;
+    /* Increase vertical margin for more separation from info/hand bars */
+    margin: 20px 0; 
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5); 
+    border: 1px solid #5a9266;
 }
 
 .row {
-  display: flex;
-  gap: 5px;
+    display: flex;
+    gap: 5px;
+    /* FIX: Add vertical gap between rows */
+    margin-bottom: 15px; 
 }
 
 /* Row 0 and 3: 3 tiles centered */
@@ -31,59 +30,38 @@
   width: 100%;
 }
 
-/* .tile {
-  width: 60px;
-  height: 60px;
-  border: 1px solid #ccc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 12px;
-  padding: 5px;
-  background: #f9f9f9;
-} */
-
 .tile {
-  /* Remove fixed height to enable the aspect ratio hack */
-  width: 60px;
-  /* height: 60px; <--- REMOVED */
-
-  /* FIX 1: Use padding-bottom to set the aspect ratio (Height = 150% of Width) */
-  /* This gives the tile a 2:3 aspect ratio (60px wide, 90px tall) */
-  padding-bottom: 90px;
-  /* The total height will be 60px (content/padding) + 90px (aspect ratio padding) = 150px total height */
-
-  /* FIX 2: Ensure the content is positioned correctly within the new dimensions */
-  position: relative;
-
-  /* FIX 3: Move content styling to a new inner element (tile-content)
-     The padding property below MUST be removed, as padding-bottom is now setting the height. */
-  /* padding: 5px; <--- REMOVED/MOVED */
-
-  border: 1px solid #5a9266; /* Using your theme color for the border */
-  background: rgba(
-    90,
-    146,
-    102,
-    0.5
-  ); /* Semi-transparent moss green background */
-  border-radius: 4px; /* Softened edges */
+    /* FIX: Increased base width from 60px to 100px */
+    width: 100px;
+    
+    /* FIX: Recalculate padding-bottom (150% of 100px = 150px) */
+    padding-bottom: 150px;
+    
+    position: relative;
+    
+    border: 1px solid #5a9266; 
+    background: rgba(90, 146, 102, 0.5); 
+    border-radius: 4px; 
 }
 
 .tileContent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  
+    /* REMOVED: position: absolute; top: 0; left: 0; width: 100%; height: 100%; */
+    
+    /* FIX: Revert to normal flow, using Flex to center the *absolute* card */
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    
+    /* Ensure it fills the relative space of the tile */
+    position: absolute; /* Keep absolute position to fill the tile space */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; 
 
-  /* Re-apply the content alignment and padding here */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-size: 12px;
-  padding: 5px;
+    padding: 0; 
+    margin: 0;
+    line-height: 0; 
+    
+    /* REMOVED: text-align: center; font-size: 12px; padding: 5px; */
 }

@@ -146,7 +146,7 @@ const Arena = () => {
         <p>
           {gameState?.whoseMove === socketId ? "Your move" : "Opponent's move"}
         </p>
-        <p>You currently have {gameState?.players[socketId].pts}pts</p>
+        {/* <p>You currently have {gameState?.players[socketId].pts}pts</p> */}
         <button
           className={classes.passBtn}
           disabled={gameState?.players[socketId].passed}
