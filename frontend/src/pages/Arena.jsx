@@ -9,18 +9,19 @@ import Hand from "../components/Arena/Hand";
 import { cardProperties } from "../assets/cardProperties";
 import classes from "./Arena.module.css";
 import PtsBar from "../components/Arena/PtsBar";
+import ActionsLog from "../components/Arena/ActionsLog";
 
-const board = [
-  [{}, { mainTree: true }, {}],
-  [{ inactive: true }, {}, {}, {}, { inactive: true }],
-  [{ inactive: true }, {}, {}, {}, { inactive: true }],
-  [{}, { mainTree: true }, {}],
-];
-for (let i = 0; i < 4; i++) {
-  for (let j = 0; j < board[i].length; j++) {
-    board[i][j].cards = [];
-  }
-}
+// const board = [
+//   [{}, { mainTree: true }, {}],
+//   [{ inactive: true }, {}, {}, {}, { inactive: true }],
+//   [{ inactive: true }, {}, {}, {}, { inactive: true }],
+//   [{}, { mainTree: true }, {}],
+// ];
+// for (let i = 0; i < 4; i++) {
+//   for (let j = 0; j < board[i].length; j++) {
+//     board[i][j].cards = [];
+//   }
+// }
 
 const Arena = () => {
   const gid = useParams().gid;
@@ -32,6 +33,7 @@ const Arena = () => {
     playCard,
     makeAttack,
     passTurn,
+    changesVector,
   } = useSocket();
   // const location = useLocation();
   // const {initialHand, initialPts} = location.state || {};
@@ -163,11 +165,16 @@ const Arena = () => {
             : "still plays"}
         </p>
       </div>
-      <Board
-        board={gameState?.board}
-        onTileClick={handleTileClick}
-        selectedCard={selectedCard}
-      />
+      <div className={classes.boardArea}>
+        <Board
+          board={gameState?.board}
+          onTileClick={handleTileClick}
+          selectedCard={selectedCard}
+          socketId={socketId}
+          params={gameState?.params}
+        />
+        <ActionsLog changesVector={changesVector} socketId={socketId} />
+      </div>
       <div className={classes.table}>
         <Hand
           hand={gameState?.players[socketId].hand}

@@ -20,7 +20,7 @@ const PtsBar = ({ curPts }) => {
         
         {/* The accompanying text */}
         <p>
-            {curPts} times out of 10
+            {curPts}/10 elixir
         </p>
 
     </div>

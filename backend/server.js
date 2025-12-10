@@ -317,8 +317,8 @@ io.on("connection", (socket) => {
       return;
     }
     if (
-      !cardTypes.includes(sourceCardInfo?.name) ||
-      !cardTypes.includes(targetCardInfo?.name)
+      !Object.keys(cardProperties).includes(sourceCardInfo?.name) ||
+      !Object.keys(cardProperties).includes(targetCardInfo?.name)
     ) {
       socket.emit("error", "A given card does not exist");
       return;
@@ -386,14 +386,19 @@ io.on("connection", (socket) => {
     // simple attack for now
     targetCard.hp -= sourceCard.dmg; // will update, reference
     if (targetCard.hp <= 0) {
-      changesVector.push({
-        action: "death",
-        row: targetRow,
-        col: targetCol,
-        owner: enemyId,
-        name: targetCardInfo.name,
-      });
+      game.board[targetRow][targetCol].cards.splice(
+        game.board[targetRow][targetCol].cards.indexOf(targetCard),
+        1
+      );
     }
+    changesVector.push({
+      action: targetCard.hp <= 0 ? "death" : "damageTaken",
+      row: targetRow,
+      col: targetCol,
+      owner: enemyId,
+      name: targetCardInfo.name,
+    });
+
     // add dying functionality later on
     sourceCard.hasAttack = false;
     // check if passed - separate func for that
@@ -472,7 +477,7 @@ io.on("connection", (socket) => {
     );
     if (game.players[enemyId].passed) {
       // new turn
-      const changesVector = [];
+      const changesVector = [{action: "newTurn",}];
       // decide who's starting !whoStartedTurn
       if (game.turnNumber !== 0) {
         // after first turn, the same person begins
@@ -557,17 +562,26 @@ io.on("connection", (socket) => {
     } else {
       game.whoseMove = enemyId;
       // continue this turn... (only passed changes)
+      const changesVector = [{ action: "passed", by: playerConnectionId }];
       // if more complicated mechanics in the future, just emit a general "emit" with the whole board (except for hidden data like cycles, opponent's hand)
-      io.to(enemyId).emit("passedTurn", {
-        [playerConnectionId]: game.players[playerConnectionId].passed,
-        [enemyId]: game.players[enemyId].passed,
-        whoseMove: game.whoseMove,
-      });
-      socket.emit("passedTurn", {
-        [playerConnectionId]: game.players[playerConnectionId].passed,
-        [enemyId]: game.players[enemyId].passed,
-        whoseMove: game.whoseMove,
-      });
+      io.to(enemyId).emit(
+        "passedTurn",
+        {
+          [playerConnectionId]: game.players[playerConnectionId].passed,
+          [enemyId]: game.players[enemyId].passed,
+          whoseMove: game.whoseMove,
+        },
+        changesVector
+      );
+      socket.emit(
+        "passedTurn",
+        {
+          [playerConnectionId]: game.players[playerConnectionId].passed,
+          [enemyId]: game.players[enemyId].passed,
+          whoseMove: game.whoseMove,
+        },
+        changesVector
+      );
     }
   });
 

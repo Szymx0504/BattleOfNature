@@ -9,6 +9,7 @@ export const SocketProvider = ({ children }) => {
   const [gameState, setGameState] = useState(null);
   const [gameId, setGameId] = useState(null);
   const [socketId, setSocketId] = useState(null);
+  const [changesVector, setChangesVector] = useState(null);
 
   useEffect(() => {
     const socket = socketService.connect();
@@ -48,12 +49,12 @@ export const SocketProvider = ({ children }) => {
       setGameId(gid);
     };
 
-    const handleUpdate = (gameData, changesVector) => {
-      console.log(socket.id, changesVector);
+    const handleUpdate = (gameData, changes) => {
       setGameState(gameData);
+      setChangesVector(changes);
     };
 
-    const handlePassed = (newData) => {
+    const handlePassed = (newData, changes) => {
       setGameState((prev) => {
         const enemyId = Object.keys(prev.players).find(id => id !== socket.id);
         return {
@@ -68,6 +69,7 @@ export const SocketProvider = ({ children }) => {
           whoseMove: newData.whoseMove,
         };
       });
+      setChangesVector(changes);
     };
 
     socket.on("connect", handleConnect);
@@ -131,6 +133,7 @@ export const SocketProvider = ({ children }) => {
     gameState,
     gameId,
     socketId,
+    changesVector,
     findOpponent,
     playCard,
     makeAttack,
