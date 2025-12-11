@@ -194,3 +194,9 @@
     width: auto; 
     margin: 0; 
 }
+
+.card.opponent {
+    box-shadow: 
+        /* X-offset, Y-offset, Blur, Spread, Color */
+        0 0 15px 3px #C14A4A;
+}

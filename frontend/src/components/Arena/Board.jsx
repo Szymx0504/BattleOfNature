@@ -47,6 +47,7 @@ const Board = ({ board, onTileClick, selectedCard, socketId, params }) => {
                             "cardSelected",
                           tile.cards[0]?.rarity,
                           "board",
+                          tile.cards[0].owner !== socketId && "opponent"
                         ]}
                         cardName={tile.cards[0].name}
                         cardDetails={tile.cards[0]}

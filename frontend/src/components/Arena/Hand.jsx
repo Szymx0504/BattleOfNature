@@ -17,7 +17,7 @@ const Hand = ({ hand, selectedCard, onCardClick, socketId }) => {
               onCardClick(
                 selectedCard?.hand && selectedCard?.name === card
                   ? null
-                  : { name: card, hand: true, owner: socketId }
+                  : { name: card, hand: true, owner: socketId, type: cardProperties[card].type }
               )
             }
           />

@@ -185,6 +185,8 @@ io.on("connection", (socket) => {
 
     // the board will always be stored "down"-firstPfromGameId
     // transform coords accordingly current user's perspective:
+
+    // modify it in the future to accept different kinds of cards, for now - only a specific-tile cards allowed
     if (tile?.row == undefined || tile?.col == undefined) {
       socket.emit("error", "Invalid input - undefined tile");
       return;
@@ -198,22 +200,102 @@ io.on("connection", (socket) => {
       socket.emit("error", "No such tile exists");
       return;
     }
-    if (game.board[row][col].owner !== playerConnectionId) {
-      // adjust for special cards in the future
-      socket.emit("error", "The tile does not belong to you");
-      return;
-    }
-    if (game.board[row][col].cards.length > 0) {
-      // also adjust this
-      socket.emit("error", "Tile already occupied");
-      return;
-    }
     if (game.players[playerConnectionId].pts < cardProperties[card].pts) {
       socket.emit("error", "Not enough points to play this card");
       return;
     }
-
     const changesVector = [];
+    const enemyId = Object.keys(game.players).find(
+      (id) => id !== playerConnectionId
+    );
+
+    if (cardProperties[card].type !== "spell") {
+      if (game.board[row][col].owner !== playerConnectionId) {
+        // adjust for special cards in the future
+        socket.emit("error", "The tile does not belong to you");
+        return;
+      }
+      if (game.board[row][col].cards.length > 0) {
+        // also adjust this
+        socket.emit("error", "Tile already occupied");
+        return;
+      }
+
+      changesVector.push({
+        action: "place",
+        row,
+        col,
+        owner: playerConnectionId,
+        name: card,
+      });
+
+      game.board[row][col].cards.push({
+        ...cardProperties[card],
+        hasAttack: true,
+        owner: playerConnectionId,
+      });
+    } else {
+      if (
+        !game.board[row][col].cards.find((card) => card.owner === enemyId) ||
+        (card === "medicinal herbs" && // "good" cards
+          !game.board[row][col].cards.find(
+            (card) => card.owner === playerConnectionId
+          ))
+      ) {
+        // account for multiple cards on 1 tile in the future
+        socket.emit("error", "No valid target");
+        return;
+      }
+
+      changesVector.push({
+        action: "played",
+        row,
+        col,
+        owner: playerConnectionId,
+        name: card,
+      });
+
+      // account for multiple cards per tile
+      const targetCard = game.board[row][col].cards[0];
+      // rozwaz potem wybieranie kolejnosci dodawania do cycle/narzuc jakas idk
+      game.players[playerConnectionId].cycle.push(targetCard.name);
+
+
+      // IMPORTANT do funcs dealDamage and heal that will take care of consequences - like dying, healing up to +1 etc
+      if (card !== "medicinal herbs") {
+        targetCard.hp -= cardProperties[card].dmg;
+        if (targetCard.hp <= 0) {
+          // account for multiple cards per tile
+          game.board[row][col].cards.splice(0, 1);
+          game.players[enemyId].cycle.push(targetCard.name);
+        }
+        changesVector.push({
+          action: targetCard.hp <= 0 ? "death" : "damageTaken",
+          row,
+          col,
+          owner: enemyId,
+          name: targetCard.name,
+          ...(targetCard.hp > 0 ? { value: cardProperties[card].dmg } : {}),
+          by: card
+        });
+      } else {
+        const newHp = min(
+          cardProperties[targetCard.name].hp + 1,
+          targetCard.hp + cardProperties[card].hp
+        );
+        const healValue = newHp - targetCard.hp;
+        targetCard.hp = newHp;
+        changesVector.push({
+          action: "heal",
+          row,
+          col,
+          owner: playerConnectionId,
+          name: targetCard.name,
+          value: healValue,
+          by: card
+        });
+      }
+    }
 
     // game.board[row][col].cards.push({name: card, hasAttack: false});
     // everything except for rarity
@@ -222,32 +304,17 @@ io.on("connection", (socket) => {
     //   hasAttack: true,
     //   owner: playerConnectionId,
     // });
-    game.board[row][col].cards.push({
-      ...cardProperties[card],
-      hasAttack: true,
-      owner: playerConnectionId,
-    });
     // filtering not in-place
     game.players[playerConnectionId].hand = game.players[
       playerConnectionId
     ].hand.filter((cardName) => cardName !== card);
     game.players[playerConnectionId].pts -= cardProperties[card].pts;
-    const enemyId = Object.keys(game.players).find(
-      (id) => id !== playerConnectionId
-    );
     // check if passed - separate func for that
     // also return whoStartedTurn at the begigning of the game
     // game.whoseMove = enemyId;
     if (!game.players[enemyId].passed) {
       game.whoseMove = enemyId;
     }
-    changesVector.push({
-      action: "place",
-      row,
-      col,
-      owner: playerConnectionId,
-      name: card,
-    });
     // there will be different actions: "place", "death" etc etc of things that may happen in a "chain reaction"
     // then the frontend will simulate it and compare it with the final game state sent
     // maybe even in the future it will only receive changesVector and not the whole game's state (not for now)
@@ -390,6 +457,7 @@ io.on("connection", (socket) => {
         game.board[targetRow][targetCol].cards.indexOf(targetCard),
         1
       );
+      game.players[enemyId].cycle.push(targetCard.name);
     }
     changesVector.push({
       action: targetCard.hp <= 0 ? "death" : "damageTaken",
@@ -397,6 +465,8 @@ io.on("connection", (socket) => {
       col: targetCol,
       owner: enemyId,
       name: targetCardInfo.name,
+      ...(targetCard.hp > 0 ? { value: sourceCard.dmg } : {}),
+      by: sourceCard.name
     });
 
     // add dying functionality later on
@@ -477,7 +547,7 @@ io.on("connection", (socket) => {
     );
     if (game.players[enemyId].passed) {
       // new turn
-      const changesVector = [{action: "newTurn",}];
+      const changesVector = [{ action: "newTurn" }];
       // decide who's starting !whoStartedTurn
       if (game.turnNumber !== 0) {
         // after first turn, the same person begins

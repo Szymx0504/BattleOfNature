@@ -1,6 +1,6 @@
 import classes from "./ActionsLog.module.css";
 
-const goodIfYours = ["heal"];
+const goodIfYours = ["heal", "played"];
 const badIfYours = ["death", "damageTaken"];
 const neutral = ["place", "passed", "newTurn"];
 
@@ -39,7 +39,7 @@ const ActionsLog = ({ changesVector, socketId }) => {
                       " " +
                       change.name +
                       ": " +
-                      change.action +
+                      change.action + (change.value ? " (" + change.value + ")" : "") + (change.by ? " by " + change.by : "") +
                       " at row " +
                       change.row +
                       ", column " +

@@ -47,5 +47,8 @@ in card selection:
 first for computers -> cardInfo on hover
 then on phone -> on click -> info or pick (like in Clash Royale)
 
-- make opponent's cards distinguishable from yours - moze inne obwodki czy cos (?) (albo czerwone box-shadow takie mocne zeby bylo wyraziscie widac)
-- also add toastify.toast in place of all console.logs
+
+-DONE make opponent's cards distinguishable from yours - moze inne obwodki czy cos (?) (albo czerwone box-shadow takie mocne zeby bylo wyraziscie widac)
+
+-show which cards have attacks left
+-prohibit passing a turn if an attack left

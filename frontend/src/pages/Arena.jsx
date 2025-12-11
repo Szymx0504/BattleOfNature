@@ -50,7 +50,7 @@ const Arena = () => {
     // add: unselecting a card if clicked 2nd time or an invalid operation occured or clicked outside of the board DONE/2 (not about clicking outside the board)
     if (selectedCard?.hand) {
       // w hand są tylko twoje karty - no need to check if it's yours
-      if (tile.cards.length > 0) {
+      if (tile.cards.length > 0 !== (selectedCard?.type === "spell")) {
         setSelectedCard({
           ...tile.cards[0],
           hand: false,
@@ -59,8 +59,9 @@ const Arena = () => {
         }); // adjust when adding multiple cards per tile (possible to select opponent's one)
         return;
       }
-      if (tile.owner !== socketId) {
+      if (tile.owner !== socketId && selectedCard?.type !== "spell") {
         // adjust for special cards in the future
+        console.log(selectedCard)
         console.log("the tile is not yours!");
       } else if (
         gameState?.players[socketId].pts < cardProperties[selectedCard.name].pts
@@ -75,6 +76,8 @@ const Arena = () => {
     } else if (selectedCard?.hand === false) {
       // selected card on board
       // maybe extract it and base your decisions on it (?) having implemented correct order of "card vulnerability" + both players never have a card on the same tile assumptions
+
+      // spells cannot be on board so no check needed (?) think about it
 
       // opponent's card
       const opponentCard = tile.cards.find((card) => card.owner !== socketId);
