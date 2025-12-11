@@ -14,7 +14,9 @@ const {
   getColGeometrically,
   cardTypes,
   adjustVector,
-} = require("./temporary.js");
+  dealDamage,
+  healObject,
+} = require("./utilities.js");
 
 const app = express();
 const server = http.createServer(app);
@@ -231,12 +233,13 @@ io.on("connection", (socket) => {
 
       game.board[row][col].cards.push({
         ...cardProperties[card],
-        hasAttack: true,
+        hasAttack: false,
         owner: playerConnectionId,
       });
     } else {
       if (
-        !game.board[row][col].cards.find((card) => card.owner === enemyId) ||
+        (card !== "medicinal herbs" &&
+          !game.board[row][col].cards.find((card) => card.owner === enemyId)) ||
         (card === "medicinal herbs" && // "good" cards
           !game.board[row][col].cards.find(
             (card) => card.owner === playerConnectionId
@@ -260,11 +263,10 @@ io.on("connection", (socket) => {
       // rozwaz potem wybieranie kolejnosci dodawania do cycle/narzuc jakas idk
       game.players[playerConnectionId].cycle.push(targetCard.name);
 
-
       // IMPORTANT do funcs dealDamage and heal that will take care of consequences - like dying, healing up to +1 etc
       if (card !== "medicinal herbs") {
-        targetCard.hp -= cardProperties[card].dmg;
-        if (targetCard.hp <= 0) {
+        // targetCard.hp -= cardProperties[card].dmg;
+        if (dealDamage(targetCard, cardProperties[card].dmg)) {
           // account for multiple cards per tile
           game.board[row][col].cards.splice(0, 1);
           game.players[enemyId].cycle.push(targetCard.name);
@@ -276,23 +278,23 @@ io.on("connection", (socket) => {
           owner: enemyId,
           name: targetCard.name,
           ...(targetCard.hp > 0 ? { value: cardProperties[card].dmg } : {}),
-          by: card
+          by: card,
         });
       } else {
-        const newHp = min(
-          cardProperties[targetCard.name].hp + 1,
-          targetCard.hp + cardProperties[card].hp
-        );
-        const healValue = newHp - targetCard.hp;
-        targetCard.hp = newHp;
+        // const newHp = min(
+        //   cardProperties[targetCard.name].hp + 1,
+        //   targetCard.hp + cardProperties[card].hp
+        // );
+        // const healValue = newHp - targetCard.hp;
+        // targetCard.hp = newHp;
         changesVector.push({
           action: "heal",
           row,
           col,
           owner: playerConnectionId,
           name: targetCard.name,
-          value: healValue,
-          by: card
+          value: healObject(targetCard, cardProperties[card].hp),
+          by: card,
         });
       }
     }
@@ -451,8 +453,8 @@ io.on("connection", (socket) => {
     const changesVector = [];
 
     // simple attack for now
-    targetCard.hp -= sourceCard.dmg; // will update, reference
-    if (targetCard.hp <= 0) {
+    // targetCard.hp -= sourceCard.dmg; // will update, reference
+    if (dealDamage(targetCard, sourceCard.dmg)) {
       game.board[targetRow][targetCol].cards.splice(
         game.board[targetRow][targetCol].cards.indexOf(targetCard),
         1
@@ -466,7 +468,7 @@ io.on("connection", (socket) => {
       owner: enemyId,
       name: targetCardInfo.name,
       ...(targetCard.hp > 0 ? { value: sourceCard.dmg } : {}),
-      by: sourceCard.name
+      by: sourceCard.name,
     });
 
     // add dying functionality later on
@@ -532,10 +534,22 @@ io.on("connection", (socket) => {
       socket.emit("error", "Not your turn");
       return;
     }
-
     if (game.players[playerConnectionId].passed) {
       socket.emit("error", "You have already passed this turn!");
       return;
+    }
+    for (const row of game.board) {
+      for (const tile of row) {
+        for (const cardObj of tile.cards) {
+          if (cardObj.hasAttack && cardObj.owner === playerConnectionId) {
+            socket.emit(
+              "error",
+              "Some of your cards still have an attack to be performed!"
+            );
+            return;
+          }
+        }
+      }
     }
 
     game.players[playerConnectionId].passed = true;

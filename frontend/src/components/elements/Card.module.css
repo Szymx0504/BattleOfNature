@@ -3,118 +3,117 @@
    ========================================================================= */
 
 .card {
-    background-color: rgba(90, 146, 102, 0.2);
-    border: 1px solid #5A9266;
-    color: #EAECE3;
-    
-    /* Reduced top padding to make the content appear higher */
-    padding: 5px 10px 10px 10px; 
-    margin: 0;
-    
-    border-radius: 8px;
-    
-    display: flex; 
-    flex-direction: column;
-    align-items: center; 
-    
-    /* Base height for scaling calculation */
-    height: auto; /* Changed from fixed 330px */
-    width: 100%;
-    
-    transition: all 0.2s ease;
-    cursor: pointer;
-    list-style: none; 
-    
-    transform-origin: center center;
+  background-color: rgba(90, 146, 102, 0.2);
+  border: 1px solid #5a9266;
+  color: #eaece3;
+
+  /* Reduced top padding to make the content appear higher */
+  padding: 5px 10px 10px 10px;
+  margin: 0;
+
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  /* Base height for scaling calculation */
+  height: auto; /* Changed from fixed 330px */
+  width: 100%;
+
+  transition: all 0.2s ease;
+  cursor: pointer;
+  list-style: none;
+
+  transform-origin: center center;
 }
 
 .card p {
-    /* FIX: Font size uses EM units for proportional scaling */
-    font-size: 1.3em; 
-    font-weight: bold;
-    text-align: center;
-    
-    margin: 0 0 8px 0; 
-    
-    color: #EAECE3; 
-    
-    /* Subtle Background Styles */
-    background-color: rgba(30, 40, 35, 0.5); 
-    
-    /* FIX: Changed from PX to EM (7px 12px) for proportional scaling */
-    padding: 0.4375em 0.75em; 
-    
-    border-radius: 8px; 
-    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2); 
-    
-    width: fit-content;
-    min-width: 50%;
-    
-    white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis;
+  /* FIX: Font size uses EM units for proportional scaling */
+  font-size: 1.3em;
+  font-weight: bold;
+  text-align: center;
+
+  margin: 0 0 8px 0;
+
+  color: #eaece3;
+
+  /* Subtle Background Styles */
+  background-color: rgba(30, 40, 35, 0.5);
+
+  /* FIX: Changed from PX to EM (7px 12px) for proportional scaling */
+  padding: 0.4375em 0.75em;
+
+  border-radius: 8px;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+
+  width: fit-content;
+  min-width: 50%;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* --- CARD IMAGE FIX --- */
 .card img {
-    width: 100%; 
-    
-    /* FIX 1: REMOVE max-height: 15em; or 13.75em to allow Flexbox control */
-    max-height: 15em;
+  width: 100%;
 
-    /* FIX 2: Set the image to grow and take up maximum space */
-    /* flex-grow: 1;  */
-    
-    /* FIX 3: Ensure image scaling is correct within its new space */
-    /* object-fit: cover */
-    object-fit: contain; 
-    
-    border-radius: 4px;
-    border: 1px solid #99A1AF; 
-    
-    /* REDUCED margin-bottom to shrink gap */
-    margin-bottom: 2px;
+  /* FIX 1: REMOVE max-height: 15em; or 13.75em to allow Flexbox control */
+  max-height: 15em;
+
+  /* FIX 2: Set the image to grow and take up maximum space */
+  /* flex-grow: 1;  */
+
+  /* FIX 3: Ensure image scaling is correct within its new space */
+  /* object-fit: cover */
+  object-fit: contain;
+
+  border-radius: 4px;
+  border: 1px solid #99a1af;
+
+  /* REDUCED margin-bottom to shrink gap */
+  margin-bottom: 2px;
 }
 
 .stats {
-    display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    width: 100%;
-    
-    /* FIX 4: Prevent the stats bar from growing or taking up any extra space */
-    flex-shrink: 0; 
-    flex-grow: 0; 
-    
-    margin-top: auto; /* Ensures it stays at the bottom */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+
+  /* FIX 4: Prevent the stats bar from growing or taking up any extra space */
+  flex-shrink: 0;
+  flex-grow: 0;
+
+  margin-top: auto; /* Ensures it stays at the bottom */
 }
 
 .stats span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 30%; 
-    /* FIX: Changed from PX/REM to EM for proportional scaling */
-    padding: 0.1875em 0;
-    font-size: 0.85em; 
-    font-weight: bold;
-    border-radius: 4px;
-    color: #EAECE3; 
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+  /* FIX: Changed from PX/REM to EM for proportional scaling */
+  padding: 0.1875em 0;
+  font-size: 0.85em;
+  font-weight: bold;
+  border-radius: 4px;
+  color: #eaece3;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* --- INDIVIDUAL STAT COLORS --- */
 .hp {
-    background-color: #5A9266;
+  background-color: #5a9266;
 }
 
 .dmg {
-    background-color: #A33A3A;
+  background-color: #a33a3a;
 }
 
 .cost {
-    background-color: #A86494;
+  background-color: #a86494;
 }
 
 /* =========================================================================
@@ -122,15 +121,15 @@
    ========================================================================= */
 
 .cardSelected {
-    background-color: #588765; 
-    color: #EAECE3; 
-    border: 3px solid #99A1AF; 
-    
-    box-shadow: 0 0 15px rgba(105, 169, 187, 0.8),
-                0 0 5px rgba(153, 161, 175, 0.5); 
-    
-    transform: scale(1.05); 
-    transition: all 0.2s ease-in-out;
+  background-color: #588765;
+  color: #eaece3;
+  border: 3px solid #99a1af;
+
+  box-shadow: 0 0 15px rgba(105, 169, 187, 0.8),
+    0 0 5px rgba(153, 161, 175, 0.5);
+
+  transform: scale(1.05);
+  transition: all 0.2s ease-in-out;
 }
 
 /* =========================================================================
@@ -138,65 +137,85 @@
    ========================================================================= */
 
 .baseBackground {
-    background-size: auto 100%; 
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
-    background-color: transparent; 
+  background-size: auto 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+  background-color: transparent;
 }
 
 .common {
-    composes: baseBackground; 
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("src/assets/backgrounds/common_background.png");
-    border: 1px solid #92CDDC; 
+  composes: baseBackground;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url("src/assets/backgrounds/common_background.png");
+  border: 1px solid #92cddc;
 }
 
 .rare {
-    composes: baseBackground;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("src/assets/backgrounds/rare_background.png");
-    border: 1px solid #FFD700; 
+  composes: baseBackground;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url("src/assets/backgrounds/rare_background.png");
+  border: 1px solid #ffd700;
 }
 
 .legendary {
-    composes: baseBackground;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("src/assets/backgrounds/legendary_background.png");
-    border: 1px solid #8A2BE2; 
+  composes: baseBackground;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+    url("src/assets/backgrounds/legendary_background.png");
+  border: 1px solid #8a2be2;
 }
 
 .card.board {
-    /* ... centering logic ... */
-    transform: scale(0.85); 
-    font-size: 70%;
-    
-    /* Aggressive reset */
-    margin: 0;
-    padding: 0;
-    border: none;
-    line-height: 1; /* Ensure line height is clean on the element itself */
-    vertical-align: top;
-    
-    width: 100%;
-    height: 100%; 
+  /* ... centering logic ... */
+  transform: scale(0.85);
+  font-size: 70%;
+
+  /* Aggressive reset */
+  margin: 0;
+  padding: 0;
+  border: none;
+  line-height: 1; /* Ensure line height is clean on the element itself */
+  vertical-align: top;
+
+  width: 100%;
+  height: 100%;
 }
 
 /* --- HAND SCALING CONTEXT --- */
 
 /* --- HAND SCALING CONTEXT --- */
 .card.hand {
-    /* Set the base font size for inheritance */
-    font-size: 70%; 
+  /* Set the base font size for inheritance */
+  font-size: 70%;
 
-    /* Apply visual transformation */
-    transform: scale(0.7); 
-    
-    /* FIX: REMOVE fixed layout dimensions and margins */
-    height: auto; 
-    width: auto; 
-    margin: 0; 
+  /* Apply visual transformation */
+  transform: scale(0.7);
+
+  /* FIX: REMOVE fixed layout dimensions and margins */
+  height: auto;
+  width: auto;
+  margin: 0;
 }
 
 .card.opponent {
-    box-shadow: 
-        /* X-offset, Y-offset, Blur, Spread, Color */
-        0 0 15px 3px #C14A4A;
+  box-shadow: 
+        /* X-offset, Y-offset, Blur, Spread, Color */ 0 0 15px 3px
+    #c14a4a;
+}
+
+.card.hasAttack {
+  border: 1.5px solid #92cddc;
+  animation: attack-ready-pulse 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes attack-ready-pulse {
+  0% {
+    border-color: #92cddc;
+  } /* Light Blue/Cyan */
+  50% {
+    border-color: #f0ffff;
+  } /* Almost White */
+  100% {
+    border-color: #92cddc;
+  }
 }

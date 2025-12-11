@@ -141,6 +141,16 @@ const Arena = () => {
       console.log("not your turn!");
       return; // you could add it do disabled in <button>, idk
     }
+    for(const row of gameState?.board){
+      for(const tile of row){
+        for(const card of tile.cards){
+          if(card.hasAttack && card.owner === socketId){
+            console.log("some cards still have an attack to be performed");
+            return;
+          }
+        }
+      }
+    }
     passTurn();
   };
 

@@ -50,5 +50,10 @@ then on phone -> on click -> info or pick (like in Clash Royale)
 
 -DONE make opponent's cards distinguishable from yours - moze inne obwodki czy cos (?) (albo czerwone box-shadow takie mocne zeby bylo wyraziscie widac)
 
--show which cards have attacks left
--prohibit passing a turn if an attack left
+-DONE show which cards have attacks left
+-DONE prohibit passing a turn if an attack left
+
+a timer + all of time-y stuff
+dopracowanie poszczegolnych kart
+info na klikniecie (narazie tylko na kompy)
+jakies UI typu ile graczy online, info jak rywal disconnected (ale to rzeczy mniej wazne)
