@@ -11,17 +11,15 @@ import classes from "./Arena.module.css";
 import PtsBar from "../components/Arena/PtsBar";
 import ActionsLog from "../components/Arena/ActionsLog";
 
-// const board = [
-//   [{}, { mainTree: true }, {}],
-//   [{ inactive: true }, {}, {}, {}, { inactive: true }],
-//   [{ inactive: true }, {}, {}, {}, { inactive: true }],
-//   [{}, { mainTree: true }, {}],
-// ];
-// for (let i = 0; i < 4; i++) {
-//   for (let j = 0; j < board[i].length; j++) {
-//     board[i][j].cards = [];
-//   }
-// }
+function getColGeometrically(row, col) {
+  return row == 0 || row == 3 ? col + 1 : col;
+}
+
+function checkDistance(sourceRow, sourceCol, targetRow, targetCol, diagonally) {
+  const rowDist = Math.abs(sourceRow - targetRow);
+  const colDist = Math.abs(sourceCol - targetCol);
+  return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
+}
 
 const Arena = () => {
   const gid = useParams().gid;
@@ -50,7 +48,7 @@ const Arena = () => {
     // add: unselecting a card if clicked 2nd time or an invalid operation occured or clicked outside of the board DONE/2 (not about clicking outside the board)
     if (selectedCard?.hand) {
       // w hand są tylko twoje karty - no need to check if it's yours
-      if (tile.cards.length > 0 !== (selectedCard?.type === "spell")) {
+      if (tile.cards.length > 0 && selectedCard?.type !== "spell") {
         setSelectedCard({
           ...tile.cards[0],
           hand: false,
@@ -59,9 +57,35 @@ const Arena = () => {
         }); // adjust when adding multiple cards per tile (possible to select opponent's one)
         return;
       }
-      if (tile.owner !== socketId && selectedCard?.type !== "spell") {
+      if (
+        selectedCard?.type === "spell" &&
+        tile.cards.filter(
+          (card) =>
+            card.owner ===
+            (selectedCard?.name === "medicinal herbs"
+              ? socketId
+              : Object.keys(gameState?.players).find((id) => id !== socketId))
+        ).length === 0
+      ) {
+        setSelectedCard(null);
+        return;
+      }
+
+      // card specific checks
+      if(selectedCard?.name === "bark beetles" && !tile.cards.find(card => card.type === "tree")){
+        console.log("no tree to attack");
+        setSelectedCard(null);
+        return;
+      }
+      if(selectedCard?.name === "creepers" && (rowIndex !== 0 || colIndex !== 1)){
+        console.log("creepers must be placed on opponent's Main Tree");
+        setSelectedCard(null);
+        return;
+      }
+
+      if (tile.owner !== socketId && selectedCard?.type !== "spell" && selectedCard?.name !== "creepers") {
         // adjust for special cards in the future
-        console.log(selectedCard)
+        console.log(selectedCard);
         console.log("the tile is not yours!");
       } else if (
         gameState?.players[socketId].pts < cardProperties[selectedCard.name].pts
@@ -79,12 +103,25 @@ const Arena = () => {
 
       // spells cannot be on board so no check needed (?) think about it
 
+      // somehow to pick a main tree--
+
       // opponent's card
       const opponentCard = tile.cards.find((card) => card.owner !== socketId);
       // selected card may be opponent's card!
       if (opponentCard && selectedCard.owner === socketId) {
         if (gameState?.whoseMove !== socketId) {
           console.log("not your turn!");
+        } else if (
+          selectedCard.name === "chopper" &&
+          checkDistance(
+            selectedCard.row,
+            getColGeometrically(selectedCard.row, selectedCard.col),
+            rowIndex,
+            getColGeometrically(rowIndex, colIndex),
+            true
+          ) > 1
+        ) {
+          console.log("invalid range");
         } else {
           makeAttack(
             {
@@ -141,10 +178,10 @@ const Arena = () => {
       console.log("not your turn!");
       return; // you could add it do disabled in <button>, idk
     }
-    for(const row of gameState?.board){
-      for(const tile of row){
-        for(const card of tile.cards){
-          if(card.hasAttack && card.owner === socketId){
+    for (const row of gameState?.board) {
+      for (const tile of row) {
+        for (const card of tile.cards) {
+          if (card.hasAttack && card.owner === socketId) {
             console.log("some cards still have an attack to be performed");
             return;
           }

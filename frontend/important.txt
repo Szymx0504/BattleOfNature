@@ -57,3 +57,10 @@ a timer + all of time-y stuff
 dopracowanie poszczegolnych kart
 info na klikniecie (narazie tylko na kompy)
 jakies UI typu ile graczy online, info jak rywal disconnected (ale to rzeczy mniej wazne)
+atak na main tree
+tez ze jak wartosc ataku 0 bez zadnych dodatkowych abilitek to atak nie ma miejsca (wazne) + nie da sie miec minusowego ataku (ale to jak dodam trudniejsze karty)
+area spells (affecting the whole board)
+simple cards (like platan, baobab, jodla etc)
+add more logs like Linden doubled dmg or sth like that
+
+creepers nmg byc atakowane przez spelle

@@ -79,8 +79,8 @@ const cardProperties = {
     type: "bush",
     rarity: "rare",
   },
-  creeper: {
-    name: "creeper",
+  creepers: {
+    name: "creepers",
     hp: 6,
     pts: 3,
     dmg: 3,

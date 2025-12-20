@@ -73,8 +73,13 @@ function adjustVector(vector, rotate) {
   return newVector;
 }
 
+// by either object or spell
 function dealDamage(targetCard, value){
   targetCard.hp -= value;
+  if(targetCard.name === "linden"){
+    // info that linden doubled its attack (?)
+    targetCard.dmg *= 2;
+  }
   // returns if died
   return targetCard.hp <= 0;
 }
@@ -85,6 +90,13 @@ function healObject(targetCard, value){
   targetCard.hp = newHp;
   // returns by how much healed
   return healedBy;
+}
+
+// remember: geo columns!!!
+function checkDistance(sourceRow, sourceCol, targetRow, targetCol, diagonally){
+  const rowDist = Math.abs(sourceRow - targetRow);
+  const colDist = Math.abs(sourceCol - targetCol);
+  return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
 }
 
 const cardTypes = ["tree", "spell", "bush", "building"];
@@ -114,8 +126,8 @@ const cardProperties = {
     type: "bush",
     rarity: "rare",
   },
-  creeper: {
-    name: "creeper",
+  creepers: {
+    name: "creepers",
     hp: 6,
     pts: 3,
     dmg: 3,
@@ -225,5 +237,6 @@ module.exports = {
   getColGeometrically,
   adjustVector,
   dealDamage,
-  healObject
+  healObject,
+  checkDistance
 };

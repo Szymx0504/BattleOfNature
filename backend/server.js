@@ -16,6 +16,7 @@ const {
   adjustVector,
   dealDamage,
   healObject,
+  checkDistance,
 } = require("./utilities.js");
 
 const app = express();
@@ -212,13 +213,21 @@ io.on("connection", (socket) => {
     );
 
     if (cardProperties[card].type !== "spell") {
-      if (game.board[row][col].owner !== playerConnectionId) {
+      if (card === "creepers") {
+        if (colGeo !== 2 || (rotate && row !== 3) || (!rotate && row !== 0)) {
+          socket.emit(
+            "error",
+            "Creepers must be placed on opponent's Main Tree"
+          );
+          return;
+        }
+      } else if (game.board[row][col].owner !== playerConnectionId) {
         // adjust for special cards in the future
         socket.emit("error", "The tile does not belong to you");
         return;
       }
       if (game.board[row][col].cards.length > 0) {
-        // also adjust this
+        // also adjust this (for multiple cards per tile in the future)
         socket.emit("error", "Tile already occupied");
         return;
       }
@@ -237,6 +246,7 @@ io.on("connection", (socket) => {
         owner: playerConnectionId,
       });
     } else {
+      // spells, only targeted for now
       if (
         (card !== "medicinal herbs" &&
           !game.board[row][col].cards.find((card) => card.owner === enemyId)) ||
@@ -246,7 +256,15 @@ io.on("connection", (socket) => {
           ))
       ) {
         // account for multiple cards on 1 tile in the future
-        socket.emit("error", "No valid target");
+        socket.emit("error", "No available target");
+        return;
+      }
+      if (
+        card === "bark beetles" &&
+        !game.board[row][col].cards.find((card) => card.type === "tree")
+      ) {
+        // account for multiple cards on 1 tile in the future
+        socket.emit("error", "No tree to attack");
         return;
       }
 
@@ -362,7 +380,7 @@ io.on("connection", (socket) => {
     );
   });
 
-  socket.on("makeAttack", (sourceCardInfo, targetCardInfo) => {
+  socket.on("makeAttack", (sourceCardInfo, targetCardInfo, mainTree) => {
     const gameId = Array.from(activeGames.keys()).find((id) =>
       id.includes(socket.id)
     );
@@ -376,6 +394,14 @@ io.on("connection", (socket) => {
       return;
     }
 
+    if (mainTree) {
+      targetCardInfo = {
+        row: rotate ? 3 : 0,
+        col: 1,
+        name: "main tree",
+      };
+    }
+
     if (
       sourceCardInfo?.row === undefined ||
       sourceCardInfo?.col === undefined ||
@@ -387,7 +413,7 @@ io.on("connection", (socket) => {
     }
     if (
       !Object.keys(cardProperties).includes(sourceCardInfo?.name) ||
-      !Object.keys(cardProperties).includes(targetCardInfo?.name)
+      (!mainTree && !Object.keys(cardProperties).includes(targetCardInfo?.name))
     ) {
       socket.emit("error", "A given card does not exist");
       return;
@@ -429,9 +455,16 @@ io.on("connection", (socket) => {
       (card) =>
         card.name === sourceCardInfo.name && card.owner === playerConnectionId
     );
-    const targetCard = game.board[targetRow][targetCol].cards.find(
-      (card) => card.name === targetCardInfo.name && card.owner === enemyId
-    );
+    const targetCard = mainTree
+      ? {
+          owner: enemyId,
+          name: "main tree",
+          hp: game[enemyId].mainTree,
+          type: "tree",
+        }
+      : game.board[targetRow][targetCol].cards.find(
+          (card) => card.name === targetCardInfo.name && card.owner === enemyId
+        );
 
     if (!sourceCard || !targetCard) {
       socket.emit("error", "Invalid cards chosen");
@@ -450,16 +483,47 @@ io.on("connection", (socket) => {
       return;
     }
 
+    // dotyczace poszczegolnych kart (moze tez w funkcje wlozyc jak duzo sie tego zrobi)
+    // if(sourceCard.name === "chopper" && (Math.abs(sourceRow - targetRow)>1 || Math.abs(sourceColGeo - targetColGeo)>1)){
+    //   socket.emit("error", "Invalid range");
+    //   return;
+    // }
+    if (
+      sourceCard.name === "chopper" &&
+      checkDistance(sourceRow, sourceColGeo, targetRow, targetColGeo, true) > 1
+    ) {
+      socket.emit("error", "Invalid range");
+      return;
+    }
+
     const changesVector = [];
 
     // simple attack for now
     // targetCard.hp -= sourceCard.dmg; // will update, reference
-    if (dealDamage(targetCard, sourceCard.dmg)) {
-      game.board[targetRow][targetCol].cards.splice(
-        game.board[targetRow][targetCol].cards.indexOf(targetCard),
+    let dmgValue = sourceCard.dmg;
+    if (sourceCard.name === "poplar") {
+      dmgValue =
+        checkDistance(sourceRow, sourceColGeo, targetRow, targetColGeo, true) <=
         1
-      );
-      game.players[enemyId].cycle.push(targetCard.name);
+          ? sourceCard.dmg[0]
+          : sourceCard.dmg[1];
+    }
+    if (dealDamage(targetCard, dmgValue)) {
+      if (mainTree) {
+        game.players[enemyId].mainTree = targetCard.hp;
+        console.log("the game ended.");
+        // account for multiple cards per tile - drzewo i pnacza np, latwe bo inni ownerzy
+      } else {
+        game.board[targetRow][targetCol].cards.splice(
+          game.board[targetRow][targetCol].cards.indexOf(targetCard),
+          1
+        );
+        game.players[enemyId].cycle.push(targetCard.name);
+      }
+    }
+    if(mainTree){
+      // update it's hp status
+      game.players[enemyId].mainTree = targetCard.hp;
     }
     changesVector.push({
       action: targetCard.hp <= 0 ? "death" : "damageTaken",
@@ -517,6 +581,54 @@ io.on("connection", (socket) => {
         board: adjustBoard(game.board, rotate),
       },
       adjustVector(changesVector, rotate)
+    );
+  });
+
+  socket.on("attackMainTree", (sourceCardInfo) => {
+    const gameId = Array.from(activeGames.keys()).find((id) =>
+      id.includes(socket.id)
+    );
+    if (!gameId) {
+      socket.emit("error", "Game not found");
+      return;
+    }
+    const game = activeGames.get(gameId);
+    if (game.whoseMove !== playerConnectionId) {
+      socket.emit("error", "Not your turn");
+      return;
+    }
+    if (
+      sourceCardInfo?.row === undefined ||
+      sourceCardInfo?.col === undefined
+    ) {
+      socket.emit("error", "Coords must be defined");
+      return;
+    }
+    if (!Object.keys(cardProperties).includes(sourceCardInfo?.name)) {
+      socket.emit("error", "A given card does not exist");
+      return;
+    }
+
+    const rotate = !gameId.startsWith(playerConnectionId);
+    const { row: sourceRow, col: sourceCol } = adjustCords(
+      sourceCardInfo.row,
+      sourceCardInfo.col,
+      rotate
+    );
+
+    const sourceColGeo = getColGeometrically(sourceRow, sourceCol);
+    if (
+      sourceRow < 0 ||
+      sourceRow > 3 ||
+      sourceColGeo < 1 ||
+      sourceColGeo > 3
+    ) {
+      socket.emit("error", "Invalid coordinates");
+      return;
+    }
+
+    const enemyId = Object.keys(game.players).find(
+      (id) => id !== playerConnectionId
     );
   });
 

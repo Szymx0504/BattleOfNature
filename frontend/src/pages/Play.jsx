@@ -16,7 +16,7 @@ const Play = () => {
       "timberman", // hard coded for now to speed up testing
       "acacia",
       "chopper",
-      "creeper",
+      "creepers",
       "linden",
       "medicinal herbs",
       "apple tree",
