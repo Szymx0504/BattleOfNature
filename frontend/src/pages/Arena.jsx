@@ -21,6 +21,12 @@ function checkDistance(sourceRow, sourceCol, targetRow, targetCol, diagonally) {
   return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
 }
 
+function checkAnyEnemies(board, socketId) {
+  return board.some((row) =>
+    row.some((tile) => tile.cards.some((card) => card.owner !== socketId))
+  );
+}
+
 const Arena = () => {
   const gid = useParams().gid;
   const {
@@ -59,31 +65,61 @@ const Arena = () => {
       }
       if (
         selectedCard?.type === "spell" &&
-        tile.cards.filter(
+        (rowIndex !== 0 || colIndex !== 1) &&
+        !tile.cards.find(
           (card) =>
             card.owner ===
             (selectedCard?.name === "medicinal herbs"
               ? socketId
               : Object.keys(gameState?.players).find((id) => id !== socketId))
-        ).length === 0
+        )
       ) {
+        // assumption in if check: player cannot place anything on their main tree.
+        setSelectedCard(null);
+        return;
+      }
+      if(selectedCard?.type === "spell" && rowIndex === 0 && colIndex === 1 && checkAnyEnemies(gameState?.board, socketId)){
+        console.log("cannot attack main tree. Enemies on board");
         setSelectedCard(null);
         return;
       }
 
       // card specific checks
-      if(selectedCard?.name === "bark beetles" && !tile.cards.find(card => card.type === "tree")){
+      if (
+        selectedCard?.name === "bark beetles" &&
+        !tile.cards.find((card) => card.type === "tree") &&
+        (rowIndex !== 0 || colIndex !== 1)
+      ) {
         console.log("no tree to attack");
         setSelectedCard(null);
         return;
       }
-      if(selectedCard?.name === "creepers" && (rowIndex !== 0 || colIndex !== 1)){
+      if (
+        selectedCard?.name === "creepers" &&
+        (rowIndex !== 0 || colIndex !== 1)
+      ) {
         console.log("creepers must be placed on opponent's Main Tree");
         setSelectedCard(null);
         return;
       }
+      if (
+        selectedCard?.type === "spell" &&
+        tile.cards.find(
+          (card) => card.name === "creepers" && card.owner !== socketId
+        )
+      ) {
+        // possibly card.owner check here redundant, but doesn't hurt to leave it (maybe not to block YOUR creepers on the same tile with sth else (?))
+        // account for multiple cards per tile (?) idk it may already be fine
+        console.log("creepers are resistant to speels");
+        setSelectedCard(null);
+        return;
+      }
 
-      if (tile.owner !== socketId && selectedCard?.type !== "spell" && selectedCard?.name !== "creepers") {
+      if (
+        tile.owner !== socketId &&
+        selectedCard?.type !== "spell" &&
+        selectedCard?.name !== "creepers"
+      ) {
         // adjust for special cards in the future
         console.log(selectedCard);
         console.log("the tile is not yours!");
@@ -106,11 +142,22 @@ const Arena = () => {
       // somehow to pick a main tree--
 
       // opponent's card
-      const opponentCard = tile.cards.find((card) => card.owner !== socketId);
+      // IMPORTANT BELOW: account for different cards (maybe?? idk, OH with healing plants!) -> sprawdzaj i jak healujaca karta to ja zamiast "main tree"
+      const opponentCard =
+        rowIndex === 0 && colIndex === 1
+          ? { name: "main tree" }
+          : tile.cards.find((card) => card.owner !== socketId);
       // selected card may be opponent's card!
       if (opponentCard && selectedCard.owner === socketId) {
         if (gameState?.whoseMove !== socketId) {
           console.log("not your turn!");
+        } else if (
+          opponentCard.name === "main tree" &&
+          !["creepers"].includes(selectedCard.name) &&
+          checkAnyEnemies(gameState?.board, socketId)
+        ) {
+          // make exceptions for cards that can ignore this rule!
+          console.log("cannot attack main tree, other enemies on the board");
         } else if (
           selectedCard.name === "chopper" &&
           checkDistance(
@@ -221,7 +268,12 @@ const Arena = () => {
           onTileClick={handleTileClick}
           selectedCard={selectedCard}
           socketId={socketId}
-          params={gameState?.params}
+          mainTreeHp={gameState?.players[socketId].mainTree}
+          enemyMainTreeHp={
+            gameState?.players[
+              Object.keys(gameState?.players).find((id) => id !== socketId)
+            ].mainTree
+          }
         />
         <ActionsLog changesVector={changesVector} socketId={socketId} />
       </div>

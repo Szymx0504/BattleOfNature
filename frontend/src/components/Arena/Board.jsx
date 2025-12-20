@@ -2,7 +2,7 @@ import Card from "../elements/Card";
 
 import classes from "./Board.module.css";
 
-const Board = ({ board, onTileClick, selectedCard, socketId, params }) => {
+const Board = ({ board, onTileClick, selectedCard, socketId, mainTreeHp, enemyMainTreeHp }) => {
   return (
     <div className={classes.board}>
       {/* look if those key= are useful */}
@@ -21,7 +21,8 @@ const Board = ({ board, onTileClick, selectedCard, socketId, params }) => {
                       <div className={classes.mainTree}>
                         <img src="/src/assets/elements/main_tree.png" />
                         <p>
-                          {
+                          {i <= 1 ? enemyMainTreeHp : mainTreeHp}
+                          {/* {
                             params[
                               i <= 1
                                 ? socketId + "MainTreeHp"
@@ -31,7 +32,7 @@ const Board = ({ board, onTileClick, selectedCard, socketId, params }) => {
                                       !param.startsWith(socketId)
                                   )
                             ]
-                          }
+                          } */}
                           hp
                         </p>
                       </div>

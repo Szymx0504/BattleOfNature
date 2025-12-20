@@ -17,6 +17,7 @@ const {
   dealDamage,
   healObject,
   checkDistance,
+  checkAnyEnemies,
 } = require("./utilities.js");
 
 const app = express();
@@ -93,6 +94,7 @@ io.on("connection", (socket) => {
               cycle: deck.slice(-10),
               pts: 5,
               passed: false,
+              mainTree: 25,
             },
             [enemyId]: {
               deck: enemyDeck,
@@ -100,16 +102,17 @@ io.on("connection", (socket) => {
               cycle: enemyDeck.slice(-10),
               pts: 5,
               passed: false,
+              mainTree: 25,
             },
           },
           board: generateBoard(playerConnectionId, enemyId),
           whoseMove: starts ? playerConnectionId : enemyId,
           whoStartedTurn: starts ? playerConnectionId : enemyId,
           turnNumber: 0,
-          params: {
-            [playerConnectionId + "MainTreeHp"]: 25,
-            [enemyId + "MainTreeHp"]: 25,
-          },
+          // params: {
+          //   [playerConnectionId + "MainTreeHp"]: 25,
+          //   [enemyId + "MainTreeHp"]: 25,
+          // },
           spellDurations: {},
           diedThisMove: {
             [playerConnectionId]: [],
@@ -131,10 +134,12 @@ io.on("connection", (socket) => {
               hand: game.players[enemyId].hand,
               pts: game.players[enemyId].pts,
               passed: game.players[enemyId].passed,
+              mainTree: game.players[enemyId].mainTree,
             },
             [playerConnectionId]: {
               pts: game.players[playerConnectionId].pts,
               passed: game.players[playerConnectionId].passed,
+              mainTree: game.players[playerConnectionId].mainTree,
             },
           },
           board: adjustBoard(game.board, true),
@@ -146,10 +151,12 @@ io.on("connection", (socket) => {
               hand: game.players[playerConnectionId].hand,
               pts: game.players[playerConnectionId].pts,
               passed: game.players[playerConnectionId].passed,
+              mainTree: game.players[playerConnectionId].mainTree,
             },
             [enemyId]: {
               pts: game.players[enemyId].pts,
               passed: game.players[enemyId].passed,
+              mainTree: game.players[enemyId].mainTree,
             },
           },
           board: adjustBoard(game.board, false), // could be ommited but maybe we'll add sth there in the future
@@ -174,6 +181,10 @@ io.on("connection", (socket) => {
     const game = activeGames.get(gameId);
     if (game.whoseMove !== playerConnectionId) {
       socket.emit("error", "Not your turn");
+      return;
+    }
+    if (game.players[playerConnectionId].pts < cardProperties[card].pts) {
+      socket.emit("error", "Not enough points to play this card");
       return;
     }
     if (!game.players[playerConnectionId].hand.includes(card)) {
@@ -203,10 +214,7 @@ io.on("connection", (socket) => {
       socket.emit("error", "No such tile exists");
       return;
     }
-    if (game.players[playerConnectionId].pts < cardProperties[card].pts) {
-      socket.emit("error", "Not enough points to play this card");
-      return;
-    }
+
     const changesVector = [];
     const enemyId = Object.keys(game.players).find(
       (id) => id !== playerConnectionId
@@ -249,7 +257,8 @@ io.on("connection", (socket) => {
       // spells, only targeted for now
       if (
         (card !== "medicinal herbs" &&
-          !game.board[row][col].cards.find((card) => card.owner === enemyId)) ||
+          !game.board[row][col].cards.find((card) => card.owner === enemyId) &&
+          (row !== rotate ? 3 : 0, colGeo !== 2)) ||
         (card === "medicinal herbs" && // "good" cards
           !game.board[row][col].cards.find(
             (card) => card.owner === playerConnectionId
@@ -261,10 +270,33 @@ io.on("connection", (socket) => {
       }
       if (
         card === "bark beetles" &&
-        !game.board[row][col].cards.find((card) => card.type === "tree")
+        !game.board[row][col].cards.find((card) => card.type === "tree") &&
+        (row !== rotate ? 3 : 0, colGeo !== 2)
       ) {
-        // account for multiple cards on 1 tile in the future
+        // account for multiple cards per tile in the future
         socket.emit("error", "No tree to attack");
+        return;
+      }
+
+      // account for healing spells on something on enemy's main tree (medicinal herbs)
+      const mainTree = row === (rotate ? 3 : 0) && col === 1;
+      const targetCard = mainTree
+        ? {
+            name: "main tree",
+            hp: game.players[enemyId].mainTree,
+            owner: enemyId,
+            type: "tree",
+          }
+        : game.board[row][col].cards[0];
+      if (targetCard.name === "creepers") {
+        socket.emit("error", "Creepers are resistant to spells");
+        return;
+      }
+      if (
+        targetCard.name === "main tree" &&
+        checkAnyEnemies(game.board, enemyId)
+      ) {
+        socket.emit("error", "Cannot attack main tree. Enemies on board");
         return;
       }
 
@@ -277,7 +309,7 @@ io.on("connection", (socket) => {
       });
 
       // account for multiple cards per tile
-      const targetCard = game.board[row][col].cards[0];
+      // const targetCard = game.board[row][col].cards[0];
       // rozwaz potem wybieranie kolejnosci dodawania do cycle/narzuc jakas idk
       game.players[playerConnectionId].cycle.push(targetCard.name);
 
@@ -286,8 +318,18 @@ io.on("connection", (socket) => {
         // targetCard.hp -= cardProperties[card].dmg;
         if (dealDamage(targetCard, cardProperties[card].dmg)) {
           // account for multiple cards per tile
-          game.board[row][col].cards.splice(0, 1);
-          game.players[enemyId].cycle.push(targetCard.name);
+          if (mainTree) {
+            game.players[enemyId].mainTree = targetCard.hp;
+            console.log("the game ended.");
+          } else {
+            // account for multiple cards per tile
+            game.board[row][col].cards.splice(0, 1);
+            game.players[enemyId].cycle.push(targetCard.name);
+          }
+        }
+        // could be extracted outside of if (else has the same) but I'll keep it for now for clarity
+        if (mainTree) {
+          game.players[enemyId].mainTree = targetCard.hp;
         }
         changesVector.push({
           action: targetCard.hp <= 0 ? "death" : "damageTaken",
@@ -305,6 +347,9 @@ io.on("connection", (socket) => {
         // );
         // const healValue = newHp - targetCard.hp;
         // targetCard.hp = newHp;
+        if (mainTree) {
+          game.players[enemyId].mainTree = targetCard.hp;
+        }
         changesVector.push({
           action: "heal",
           row,
@@ -349,10 +394,12 @@ io.on("connection", (socket) => {
             hand: game.players[enemyId].hand,
             pts: game.players[enemyId].pts,
             passed: game.players[enemyId].passed,
+            mainTree: game.players[enemyId].mainTree,
           },
           [playerConnectionId]: {
             pts: game.players[playerConnectionId].pts,
             passed: game.players[playerConnectionId].passed,
+            mainTree: game.players[playerConnectionId].mainTree,
           },
         },
         board: adjustBoard(game.board, !rotate),
@@ -368,10 +415,12 @@ io.on("connection", (socket) => {
             hand: game.players[playerConnectionId].hand,
             pts: game.players[playerConnectionId].pts,
             passed: game.players[playerConnectionId].passed,
+            mainTree: game.players[playerConnectionId].mainTree,
           },
           [enemyId]: {
             pts: game.players[enemyId].pts,
             passed: game.players[enemyId].passed,
+            mainTree: game.players[enemyId].mainTree,
           },
         },
         board: adjustBoard(game.board, rotate),
@@ -380,7 +429,7 @@ io.on("connection", (socket) => {
     );
   });
 
-  socket.on("makeAttack", (sourceCardInfo, targetCardInfo, mainTree) => {
+  socket.on("makeAttack", (sourceCardInfo, targetCardInfo) => {
     const gameId = Array.from(activeGames.keys()).find((id) =>
       id.includes(socket.id)
     );
@@ -394,13 +443,14 @@ io.on("connection", (socket) => {
       return;
     }
 
-    if (mainTree) {
-      targetCardInfo = {
-        row: rotate ? 3 : 0,
-        col: 1,
-        name: "main tree",
-      };
-    }
+    // if (mainTree) {
+    //   targetCardInfo = {
+    //     row: rotate ? 3 : 0,
+    //     col: 1,
+    //     name: "main tree",
+    //   };
+    // }
+    const mainTree = targetCardInfo.name === "main tree";
 
     if (
       sourceCardInfo?.row === undefined ||
@@ -416,6 +466,18 @@ io.on("connection", (socket) => {
       (!mainTree && !Object.keys(cardProperties).includes(targetCardInfo?.name))
     ) {
       socket.emit("error", "A given card does not exist");
+      return;
+    }
+
+    const enemyId = Object.keys(game.players).find(
+      (id) => id !== playerConnectionId
+    );
+    if (
+      targetCardInfo.name === "main tree" &&
+      !["creepers"].includes(sourceCardInfo?.name) &&
+      checkAnyEnemies(game.board, enemyId)
+    ) {
+      socket.emit("error", "Cannot attack main tree. Enemies on board");
       return;
     }
     // // you need to translate coords if the attacker is the player at the top!
@@ -447,9 +509,6 @@ io.on("connection", (socket) => {
       return;
     }
 
-    const enemyId = Object.keys(game.players).find(
-      (id) => id !== playerConnectionId
-    );
     // ensure these are really player's and opponent's cards
     const sourceCard = game.board[sourceRow][sourceCol].cards.find(
       (card) =>
@@ -459,7 +518,7 @@ io.on("connection", (socket) => {
       ? {
           owner: enemyId,
           name: "main tree",
-          hp: game[enemyId].mainTree,
+          hp: game.players[enemyId].mainTree,
           type: "tree",
         }
       : game.board[targetRow][targetCol].cards.find(
@@ -495,6 +554,15 @@ io.on("connection", (socket) => {
       socket.emit("error", "Invalid range");
       return;
     }
+    if (
+      sourceCard.name === "creepers" &&
+      // (targetRow !== 0 || targetColGeo !== 2)
+      (targetCard.name !== "main tree" || targetCard.owner !== enemyId)
+    ) {
+      // if didn't click enemy's main tree
+      socket.emit("error", "Creepers must attack the main tree!");
+      return;
+    }
 
     const changesVector = [];
 
@@ -521,7 +589,7 @@ io.on("connection", (socket) => {
         game.players[enemyId].cycle.push(targetCard.name);
       }
     }
-    if(mainTree){
+    if (mainTree) {
       // update it's hp status
       game.players[enemyId].mainTree = targetCard.hp;
     }
@@ -553,10 +621,12 @@ io.on("connection", (socket) => {
             hand: game.players[enemyId].hand,
             pts: game.players[enemyId].pts,
             passed: game.players[enemyId].passed,
+            mainTree: game.players[enemyId].mainTree,
           },
           [playerConnectionId]: {
             pts: game.players[playerConnectionId].pts,
             passed: game.players[playerConnectionId].passed,
+            mainTree: game.players[playerConnectionId].mainTree,
           },
         },
         board: adjustBoard(game.board, !rotate),
@@ -572,10 +642,12 @@ io.on("connection", (socket) => {
             hand: game.players[playerConnectionId].hand,
             pts: game.players[playerConnectionId].pts,
             passed: game.players[playerConnectionId].passed,
+            mainTree: game.players[playerConnectionId].mainTree,
           },
           [enemyId]: {
             pts: game.players[enemyId].pts,
             passed: game.players[enemyId].passed,
+            mainTree: game.players[enemyId].mainTree,
           },
         },
         board: adjustBoard(game.board, rotate),
@@ -726,10 +798,12 @@ io.on("connection", (socket) => {
               hand: game.players[enemyId].hand,
               pts: game.players[enemyId].pts,
               passed: game.players[enemyId].passed,
+              mainTree: game.players[enemyId].mainTree,
             },
             [playerConnectionId]: {
               pts: game.players[playerConnectionId].pts,
               passed: game.players[playerConnectionId].passed,
+              mainTree: game.players[playerConnectionId].mainTree,
             },
           },
           board: adjustBoard(game.board, !rotate),
@@ -745,10 +819,12 @@ io.on("connection", (socket) => {
               hand: game.players[playerConnectionId].hand,
               pts: game.players[playerConnectionId].pts,
               passed: game.players[playerConnectionId].passed,
+              mainTree: game.players[playerConnectionId].mainTree,
             },
             [enemyId]: {
               pts: game.players[enemyId].pts,
               passed: game.players[enemyId].passed,
+              mainTree: game.players[enemyId].mainTree,
             },
           },
           board: adjustBoard(game.board, rotate),

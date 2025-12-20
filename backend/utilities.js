@@ -74,9 +74,9 @@ function adjustVector(vector, rotate) {
 }
 
 // by either object or spell
-function dealDamage(targetCard, value){
+function dealDamage(targetCard, value) {
   targetCard.hp -= value;
-  if(targetCard.name === "linden"){
+  if (targetCard.name === "linden") {
     // info that linden doubled its attack (?)
     targetCard.dmg *= 2;
   }
@@ -84,8 +84,11 @@ function dealDamage(targetCard, value){
   return targetCard.hp <= 0;
 }
 
-function healObject(targetCard, value){
-  const newHp = Math.min(cardProperties[targetCard.name].hp + 1, targetCard.hp + value);
+function healObject(targetCard, value) {
+  const newHp = Math.min(
+    cardProperties[targetCard.name].hp + 1,
+    targetCard.hp + value
+  );
   const healedBy = newHp - targetCard.hp;
   targetCard.hp = newHp;
   // returns by how much healed
@@ -93,10 +96,16 @@ function healObject(targetCard, value){
 }
 
 // remember: geo columns!!!
-function checkDistance(sourceRow, sourceCol, targetRow, targetCol, diagonally){
+function checkDistance(sourceRow, sourceCol, targetRow, targetCol, diagonally) {
   const rowDist = Math.abs(sourceRow - targetRow);
   const colDist = Math.abs(sourceCol - targetCol);
   return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
+}
+
+function checkAnyEnemies(board, enemyId) {
+  return board.some((row) =>
+    row.some((tile) => tile.cards.some((card) => card.owner === enemyId))
+  );
 }
 
 const cardTypes = ["tree", "spell", "bush", "building"];
@@ -238,5 +247,6 @@ module.exports = {
   adjustVector,
   dealDamage,
   healObject,
-  checkDistance
+  checkDistance,
+  checkAnyEnemies,
 };
