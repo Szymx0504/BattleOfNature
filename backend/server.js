@@ -18,6 +18,8 @@ const {
   healObject,
   checkDistance,
   checkAnyEnemies,
+  checkOpponentsMainTree,
+  checkAttacksLeft,
 } = require("./utilities.js");
 
 const app = express();
@@ -256,9 +258,14 @@ io.on("connection", (socket) => {
     } else {
       // spells, only targeted for now
       if (
-        (card !== "medicinal herbs" &&
+        (!["medicinal herbs", "bark beetles"].includes(card) &&
           !game.board[row][col].cards.find((card) => card.owner === enemyId) &&
-          (row !== rotate ? 3 : 0, colGeo !== 2)) ||
+          !checkOpponentsMainTree(row, col, rotate)) ||
+        (card === "bark beetles" &&
+          !game.board[row][col].cards.find(
+            (card) => card.owner === enemyId && card.type === "tree"
+          ) &&
+          !checkOpponentsMainTree(row, col, rotate)) ||
         (card === "medicinal herbs" && // "good" cards
           !game.board[row][col].cards.find(
             (card) => card.owner === playerConnectionId
@@ -268,27 +275,29 @@ io.on("connection", (socket) => {
         socket.emit("error", "No available target");
         return;
       }
-      if (
-        card === "bark beetles" &&
-        !game.board[row][col].cards.find((card) => card.type === "tree") &&
-        (row !== rotate ? 3 : 0, colGeo !== 2)
-      ) {
-        // account for multiple cards per tile in the future
-        socket.emit("error", "No tree to attack");
-        return;
-      }
+      // if (
+      //   card === "bark beetles" &&
+      //   !game.board[row][col].cards.find((card) => card.type === "tree") &&
+      //   // (row !== rotate ? 3 : 0, colGeo !== 2)
+      //   !checkOpponentsMainTree(row, col, rotate)
+      // ) {
+      //   // account for multiple cards per tile in the future
+      //   socket.emit("error", "No tree to attack");
+      //   return;
+      // }
 
       // account for healing spells on something on enemy's main tree (medicinal herbs)
-      const mainTree = row === (rotate ? 3 : 0) && col === 1;
-      const targetCard = mainTree
-        ? {
-            name: "main tree",
-            hp: game.players[enemyId].mainTree,
-            owner: enemyId,
-            type: "tree",
-          }
-        : game.board[row][col].cards[0];
-      if (targetCard.name === "creepers") {
+      const mainTree = checkOpponentsMainTree(row, col, rotate);
+      const targetCard =
+        mainTree && card !== "medicinal herbs"
+          ? {
+              name: "main tree",
+              hp: game.players[enemyId].mainTree,
+              owner: enemyId,
+              type: "tree",
+            }
+          : game.board[row][col].cards[0]; // account for multiple cards per tile
+      if (targetCard.name === "creepers" && card !== "medicinal herbs") {
         socket.emit("error", "Creepers are resistant to spells");
         return;
       }
@@ -347,9 +356,10 @@ io.on("connection", (socket) => {
         // );
         // const healValue = newHp - targetCard.hp;
         // targetCard.hp = newHp;
-        if (mainTree) {
-          game.players[enemyId].mainTree = targetCard.hp;
-        }
+        // if (mainTree) { przeciez nie da sie healowac main tree spellami lool
+        //   game.players[enemyId].mainTree = targetCard.hp;
+        // }
+        // uwazaj tutaj bo przy healowaniu creepers mainTree jest tutaj true!
         changesVector.push({
           action: "heal",
           row,
@@ -722,18 +732,26 @@ io.on("connection", (socket) => {
       socket.emit("error", "You have already passed this turn!");
       return;
     }
-    for (const row of game.board) {
-      for (const tile of row) {
-        for (const cardObj of tile.cards) {
-          if (cardObj.hasAttack && cardObj.owner === playerConnectionId) {
-            socket.emit(
-              "error",
-              "Some of your cards still have an attack to be performed!"
-            );
-            return;
-          }
-        }
-      }
+    // for (const row of game.board) {
+    //   for (const tile of row) {
+    //     for (const cardObj of tile.cards) {
+    //       if (cardObj.hasAttack && cardObj.owner === playerConnectionId) {
+    //         socket.emit(
+    //           "error",
+    //           "Some of your cards still have an attack to be performed!"
+    //         );
+    //         return;
+    //       }
+    //     }
+    //   }
+    // }
+    const rotate = !gameId.startsWith(playerConnectionId);
+    if (checkAttacksLeft(game.board, playerConnectionId, rotate)) {
+      socket.emit(
+        "error",
+        "Some of your cards still have an attack to be performed!"
+      );
+      return;
     }
 
     game.players[playerConnectionId].passed = true;
@@ -788,7 +806,7 @@ io.on("connection", (socket) => {
         game.players[enemyId].cycle.shift();
       }
       // all effects resets etc etc as new cards get added
-      const rotate = !gameId.startsWith(playerConnectionId);
+      // const rotate = !gameId.startsWith(playerConnectionId);
       io.to(enemyId).emit(
         "update",
         {

@@ -57,16 +57,15 @@ a timer + all of time-y stuff
 dopracowanie poszczegolnych kart DONE (poczatkowych)
 info na klikniecie (narazie tylko na kompy)
 jakies UI typu ile graczy online, info jak rywal disconnected (ale to rzeczy mniej wazne)
-atak na main tree (1/2, add spells)
+atak na main tree DONE
 tez ze jak wartosc ataku 0 bez zadnych dodatkowych abilitek to atak nie ma miejsca (wazne) + nie da sie miec minusowego ataku (ale to jak dodam trudniejsze karty)
 area spells (affecting the whole board)
 simple cards (like platan, baobab, jodla etc)
 add more logs like Linden doubled dmg or sth like that
 
-IMPORTANT fix medicinal herbs - main tree alerts (checking) both frontend and backend
+IMPORTANT fix medicinal herbs - main tree alerts (checking) both frontend and backend DONE!
 
 maybe swap !== socketId for globally held enemyId (?) idk for now it works, not important for now
 
 # now everything works fine but keep it in mind for the future:
-everywhere where finding/checking mainTrees coords: row===0,col===1 or colGeo===2 or row===3 when rotate => assumption no object on self's tree.
-maybe even extract this check into a function
+everywhere where finding/checking mainTrees coords: => assumption no object on self's tree.

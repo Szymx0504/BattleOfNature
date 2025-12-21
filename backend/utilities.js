@@ -57,6 +57,10 @@ function getColGeometrically(row, col) {
   return row == 0 || row == 3 ? col + 1 : col;
 }
 
+function getColIndexWise(row, colGeo){
+  return row === 0 || row === 3 ? colGeo - 1 : colGeo;
+}
+
 function adjustVector(vector, rotate) {
   const newVector = vector.map((action) => ({ ...action }));
   if (rotate) {
@@ -96,9 +100,9 @@ function healObject(targetCard, value) {
 }
 
 // remember: geo columns!!!
-function checkDistance(sourceRow, sourceCol, targetRow, targetCol, diagonally) {
+function checkDistance(sourceRow, sourceColGeo, targetRow, targetColGeo, diagonally) {
   const rowDist = Math.abs(sourceRow - targetRow);
-  const colDist = Math.abs(sourceCol - targetCol);
+  const colDist = Math.abs(sourceColGeo - targetColGeo);
   return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
 }
 
@@ -106,6 +110,46 @@ function checkAnyEnemies(board, enemyId) {
   return board.some((row) =>
     row.some((tile) => tile.cards.some((card) => card.owner === enemyId))
   );
+}
+
+function checkOpponentsMainTree(row, col, rotate) {
+  // col index wise!!!
+  return row === (rotate ? 3 : 0) && col === 1;
+}
+
+function checkAttacksLeft(board, playerId, rotate) {
+  for (let row=0; row < board.length; row++) {
+    for (let col=0; col < board[row].length; col++) {
+      for (const cardObj of board[row][col].cards) {
+        if (cardObj.hasAttack && cardObj.owner === playerId) {
+          // account for cards with limited ranges or idk if we add potato later on - that may complicate things a lot
+          if (cardObj.name === "chopper") {
+            const colGeo = getColGeometrically(row, col);
+            for(let dy=-1; dy<2; dy++){
+              for(let dx=-1; dx<2; dx++){
+                const new_row = row+dy;
+                const new_colGeo = colGeo+dx;
+                // assumption: no enemy ONTOP of you, also -> account coording when adding Ground card (add forbidden tiles (0,0), (0,4), (3,0), (3,4) and colGeo between 0 and 4)
+                if((dy!=0 || dx!=0) && new_row>=0 && new_row<=3 && new_colGeo>=1 && new_colGeo<=3){
+                  for(const card of board[new_row][getColIndexWise(new_row, new_colGeo)].cards){
+                    if(card.owner !== playerId){
+                      return true;
+                    }
+                  }
+                }
+              }
+            }
+            // will be possible with wichura, check if it will work then
+            const oppMainTreeRow = rotate ? 3 : 0;
+            const oppMainTreeColGeo = 2;
+            if(checkDistance(row, colGeo, oppMainTreeRow, oppMainTreeColGeo, true) <= 1){
+              return true;
+            }
+          } else return true;
+        }
+      }
+    }
+  }
 }
 
 const cardTypes = ["tree", "spell", "bush", "building"];
@@ -249,4 +293,6 @@ module.exports = {
   healObject,
   checkDistance,
   checkAnyEnemies,
+  checkOpponentsMainTree,
+  checkAttacksLeft
 };

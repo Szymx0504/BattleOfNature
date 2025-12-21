@@ -15,9 +15,13 @@ function getColGeometrically(row, col) {
   return row == 0 || row == 3 ? col + 1 : col;
 }
 
-function checkDistance(sourceRow, sourceCol, targetRow, targetCol, diagonally) {
+function getColIndexWise(row, colGeo) {
+  return row === 0 || row === 3 ? colGeo - 1 : colGeo;
+}
+
+function checkDistance(sourceRow, sourceColGeo, targetRow, targetColGeo, diagonally) {
   const rowDist = Math.abs(sourceRow - targetRow);
-  const colDist = Math.abs(sourceCol - targetCol);
+  const colDist = Math.abs(sourceColGeo - targetColGeo);
   return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
 }
 
@@ -25,6 +29,61 @@ function checkAnyEnemies(board, socketId) {
   return board.some((row) =>
     row.some((tile) => tile.cards.some((card) => card.owner !== socketId))
   );
+}
+
+function checkOpponentsMainTree(row, col) {
+  return row === 0 && col === 1;
+}
+
+function checkAttacksLeft(board, playerId) {
+  for (let row = 0; row < board.length; row++) {
+    for (let col = 0; col < board[row].length; col++) {
+      for (const cardObj of board[row][col].cards) {
+        if (cardObj.hasAttack && cardObj.owner === playerId) {
+          // account for cards with limited ranges or idk if we add potato later on - that may complicate things a lot
+          if (cardObj.name === "chopper") {
+            const colGeo = getColGeometrically(row, col);
+            for (let dy = -1; dy < 2; dy++) {
+              for (let dx = -1; dx < 2; dx++) {
+                const new_row = row + dy;
+                const new_colGeo = colGeo + dx;
+                // assumption: no enemy ONTOP of you, also -> account coording when adding Ground card (add forbidden tiles (0,0), (0,4), (3,0), (3,4) and colGeo between 0 and 4)
+                if (
+                  (dy != 0 || dx != 0) &&
+                  new_row >= 0 &&
+                  new_row <= 3 &&
+                  new_colGeo >= 1 &&
+                  new_colGeo <= 3
+                ) {
+                  for (const card of board[new_row][
+                    getColIndexWise(new_row, new_colGeo)
+                  ].cards) {
+                    if (card.owner !== playerId) {
+                      return true;
+                    }
+                  }
+                }
+              }
+            }
+            // will be possible with wichura, check if it will work then
+            const oppMainTreeRow = 0;
+            const oppMainTreeColGeo = 2;
+            if (
+              checkDistance(
+                row,
+                colGeo,
+                oppMainTreeRow,
+                oppMainTreeColGeo,
+                true
+              ) <= 1
+            ) {
+              return true;
+            }
+          } else return true;
+        }
+      }
+    }
+  }
 }
 
 const Arena = () => {
@@ -63,9 +122,11 @@ const Arena = () => {
         }); // adjust when adding multiple cards per tile (possible to select opponent's one)
         return;
       }
+      const oppMainTree = checkOpponentsMainTree(rowIndex, colIndex);
       if (
         selectedCard?.type === "spell" &&
-        (rowIndex !== 0 || colIndex !== 1) &&
+        // (rowIndex !== 0 || colIndex !== 1) &&
+        !oppMainTree &&
         !tile.cards.find(
           (card) =>
             card.owner ===
@@ -78,7 +139,12 @@ const Arena = () => {
         setSelectedCard(null);
         return;
       }
-      if(selectedCard?.type === "spell" && rowIndex === 0 && colIndex === 1 && checkAnyEnemies(gameState?.board, socketId)){
+      if (
+        selectedCard?.type === "spell" &&
+        oppMainTree &&
+        selectedCard?.name !== "medicinal herbs" &&
+        checkAnyEnemies(gameState?.board, socketId)
+      ) {
         console.log("cannot attack main tree. Enemies on board");
         setSelectedCard(null);
         return;
@@ -88,16 +154,13 @@ const Arena = () => {
       if (
         selectedCard?.name === "bark beetles" &&
         !tile.cards.find((card) => card.type === "tree") &&
-        (rowIndex !== 0 || colIndex !== 1)
+        !oppMainTree
       ) {
         console.log("no tree to attack");
         setSelectedCard(null);
         return;
       }
-      if (
-        selectedCard?.name === "creepers" &&
-        (rowIndex !== 0 || colIndex !== 1)
-      ) {
+      if (selectedCard?.name === "creepers" && !oppMainTree) {
         console.log("creepers must be placed on opponent's Main Tree");
         setSelectedCard(null);
         return;
@@ -143,10 +206,9 @@ const Arena = () => {
 
       // opponent's card
       // IMPORTANT BELOW: account for different cards (maybe?? idk, OH with healing plants!) -> sprawdzaj i jak healujaca karta to ja zamiast "main tree"
-      const opponentCard =
-        rowIndex === 0 && colIndex === 1
-          ? { name: "main tree" }
-          : tile.cards.find((card) => card.owner !== socketId);
+      const opponentCard = checkOpponentsMainTree(rowIndex, colIndex)
+        ? { name: "main tree" }
+        : tile.cards.find((card) => card.owner !== socketId);
       // selected card may be opponent's card!
       if (opponentCard && selectedCard.owner === socketId) {
         if (gameState?.whoseMove !== socketId) {
@@ -225,15 +287,19 @@ const Arena = () => {
       console.log("not your turn!");
       return; // you could add it do disabled in <button>, idk
     }
-    for (const row of gameState?.board) {
-      for (const tile of row) {
-        for (const card of tile.cards) {
-          if (card.hasAttack && card.owner === socketId) {
-            console.log("some cards still have an attack to be performed");
-            return;
-          }
-        }
-      }
+    // for (const row of gameState?.board) {
+    //   for (const tile of row) {
+    //     for (const card of tile.cards) {
+    //       if (card.hasAttack && card.owner === socketId) {
+    //         console.log("some cards still have an attack to be performed");
+    //         return;
+    //       }
+    //     }
+    //   }
+    // }
+    if (checkAttacksLeft(gameState?.board, socketId)) {
+      console.log("some cards still have an attack to be performed");
+      return;
     }
     passTurn();
   };
