@@ -1,0 +1,18 @@
+:root {
+  /* Zmieniamy bazowe kolory motywu dark */
+  --toastify-color-dark: rgba(25, 45, 55, 0.85); 
+  --toastify-text-color-dark: #f0e6d2;
+}
+
+/* Dodajemy sznytu wizualnego - tego zmienne root nie potrafią */
+.Toastify__toast {
+  border: 1px solid rgba(100, 210, 255, 0.3); /* Ta sama ramka co w opisie karty */
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Opcjonalnie: kolor paska postępu, aby pasował do Twojej jasnej wody */
+.Toastify__progress-bar--dark {
+  background: rgba(100, 210, 255, 1);
+}

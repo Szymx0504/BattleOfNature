@@ -10,7 +10,7 @@ const Hand = ({ hand, selectedCard, onCardClick, socketId }) => {
         {hand?.map((card, i) => (
           <Card
             i={i}
-            classKeys={["card", selectedCard?.name === card && selectedCard?.owner === socketId && "cardSelected", cardProperties[card].rarity, "hand"]}
+            classKeys={[selectedCard?.name === card && selectedCard?.owner === socketId && "cardSelected", cardProperties[card].rarity, "hand"]}
             cardName={card}
             cardDetails={cardProperties[card]}
             handleClick={() =>

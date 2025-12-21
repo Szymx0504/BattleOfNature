@@ -6,7 +6,7 @@ const Card = ({i, classKeys, cardName, cardDetails, handleClick}) => {
       key={i}
       // id={`CardSelection__${cardName}`}
       onClick={handleClick && handleClick}
-      className={classKeys.filter(c=>c).map(c => classes[c]).join(" ")}
+      className={[classes.card, ...classKeys.map(c => classes[c])].filter(Boolean).join(" ")}
     >
       <p>{cardName}</p>
       <img src={"/src/assets/cards/" + cardName.replace(" ", "_") + ".png"} />
@@ -23,6 +23,7 @@ const Card = ({i, classKeys, cardName, cardDetails, handleClick}) => {
             ? cardDetails.dmg + "dmg"
             : cardDetails.hp + "hp"}
         </span>
+        <div className={classes.description}>{cardDetails.description}</div>
       </div>
     </li>
   );

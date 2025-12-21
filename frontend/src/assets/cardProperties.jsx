@@ -6,6 +6,7 @@ export const cardProperties = {
     type: "spell",
     intendedFor: "aimed",
     rarity: "legendary",
+    description: "Spell which evokes a timberman",
   },
   acacia: {
     name: "acacia",
@@ -14,6 +15,7 @@ export const cardProperties = {
     dmg: 9,
     type: "tree",
     rarity: "rare",
+    description: "A delicate tree",
   },
   chopper: {
     name: "chopper",
@@ -22,6 +24,7 @@ export const cardProperties = {
     dmg: 8,
     type: "bush",
     rarity: "rare",
+    description: "Range of 1 tile",
   },
   creepers: {
     name: "creepers",
@@ -30,6 +33,8 @@ export const cardProperties = {
     dmg: 3,
     type: "bush",
     rarity: "rare",
+    description:
+      "Attack and grow on the main tree. Resistant to opponent's spells",
   },
   linden: {
     name: "linden",
@@ -38,6 +43,7 @@ export const cardProperties = {
     dmg: 2,
     type: "tree",
     rarity: "rare",
+    description: "Doubles its current attack when it is attacked (up to 32)",
   },
   "medicinal herbs": {
     name: "medicinal herbs",
@@ -46,6 +52,7 @@ export const cardProperties = {
     type: "spell",
     intendedFor: "aimed",
     rarity: "rare",
+    description: "Heals the chosen object",
   },
   "apple tree": {
     name: "apple tree",
@@ -54,6 +61,7 @@ export const cardProperties = {
     dmg: 3,
     type: "tree",
     rarity: "common",
+    description: "A rain od apples",
   },
   "bark beetles": {
     name: "bark beetles",
@@ -62,6 +70,7 @@ export const cardProperties = {
     type: "spell",
     intendedFor: "aimed",
     rarity: "common",
+    description: "They work only on trees",
   },
   birch: {
     name: "birch",
@@ -70,6 +79,7 @@ export const cardProperties = {
     dmg: 3,
     type: "tree",
     rarity: "common",
+    description: "A solid tree",
   },
   bush: {
     name: "bush",
@@ -78,6 +88,7 @@ export const cardProperties = {
     dmg: 1,
     type: "bush",
     rarity: "common",
+    description: "A small bush",
   },
   chestnut: {
     name: "chestnut",
@@ -86,6 +97,7 @@ export const cardProperties = {
     dmg: 5,
     type: "tree",
     rarity: "common",
+    description: "Attacks with chestnuts",
   },
   pine: {
     name: "pine",
@@ -94,6 +106,7 @@ export const cardProperties = {
     dmg: 2,
     type: "tree",
     rarity: "common",
+    description: "A medium-sized tree",
   },
   poplar: {
     name: "poplar",
@@ -102,6 +115,7 @@ export const cardProperties = {
     dmg: [4, 1],
     type: "tree",
     rarity: "common",
+    description: "4dmg against objects which are located on an adjacent tile",
   },
   spruce: {
     name: "spruce",
@@ -110,6 +124,7 @@ export const cardProperties = {
     dmg: 2,
     type: "tree",
     rarity: "common",
+    description: "Not a too big tree",
   },
   willow: {
     name: "willow",
@@ -118,5 +133,6 @@ export const cardProperties = {
     dmg: 5,
     type: "tree",
     rarity: "common",
+    description: "A voluminous tree",
   },
 };

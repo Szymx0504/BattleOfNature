@@ -41,7 +41,7 @@ enable unselecting a card from hand by clicking it the second time DONE
 
 zakaż wystawiania spelli jako playCard
 
-add notifications about the errors with toastify
+add notifications about the errors with toastify DONE
 
 in card selection:
 first for computers -> cardInfo on hover
@@ -55,10 +55,9 @@ then on phone -> on click -> info or pick (like in Clash Royale)
 
 a timer + all of time-y stuff
 dopracowanie poszczegolnych kart DONE (poczatkowych)
-info na klikniecie (narazie tylko na kompy)
+info na klikniecie (narazie tylko na kompy) DONE
 jakies UI typu ile graczy online, info jak rywal disconnected (ale to rzeczy mniej wazne)
 atak na main tree DONE
-tez ze jak wartosc ataku 0 bez zadnych dodatkowych abilitek to atak nie ma miejsca (wazne) + nie da sie miec minusowego ataku (ale to jak dodam trudniejsze karty)
 area spells (affecting the whole board)
 simple cards (like platan, baobab, jodla etc)
 add more logs like Linden doubled dmg or sth like that
@@ -69,3 +68,6 @@ maybe swap !== socketId for globally held enemyId (?) idk for now it works, not 
 
 # now everything works fine but keep it in mind for the future:
 everywhere where finding/checking mainTrees coords: => assumption no object on self's tree.
+
+#!!! think whether only on the backend or also on frontend in the future: (when fog etc cards get added)
+tez ze jak wartosc ataku 0 bez zadnych dodatkowych abilitek to atak nie ma miejsca (wazne) + nie da sie miec minusowego ataku (ale to jak dodam trudniejsze karty)

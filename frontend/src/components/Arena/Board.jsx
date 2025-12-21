@@ -42,7 +42,6 @@ const Board = ({ board, onTileClick, selectedCard, socketId, mainTreeHp, enemyMa
                       <Card
                         i="0"
                         classKeys={[
-                          "card",
                           selectedCard?.name === tile.cards[0].name &&
                             selectedCard?.owner === tile.cards[0].owner &&
                             "cardSelected",

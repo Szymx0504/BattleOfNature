@@ -1,5 +1,6 @@
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 import { useSocket } from "../hooks/useSocket";
 
@@ -145,7 +146,8 @@ const Arena = () => {
         selectedCard?.name !== "medicinal herbs" &&
         checkAnyEnemies(gameState?.board, socketId)
       ) {
-        console.log("cannot attack main tree. Enemies on board");
+        toast.warn("Cannot attack the Main Tree. There are enemies on board");
+        // console.log("cannot attack main tree. Enemies on board");
         setSelectedCard(null);
         return;
       }
@@ -156,12 +158,14 @@ const Arena = () => {
         !tile.cards.find((card) => card.type === "tree") &&
         !oppMainTree
       ) {
-        console.log("no tree to attack");
+        toast.warn("There is no tree to attack here");
+        // console.log("no tree to attack");
         setSelectedCard(null);
         return;
       }
       if (selectedCard?.name === "creepers" && !oppMainTree) {
-        console.log("creepers must be placed on opponent's Main Tree");
+        toast.warn("Creepers must be placed on the opponent's Main Tree");
+        // console.log("creepers must be placed on opponent's Main Tree");
         setSelectedCard(null);
         return;
       }
@@ -173,7 +177,8 @@ const Arena = () => {
       ) {
         // possibly card.owner check here redundant, but doesn't hurt to leave it (maybe not to block YOUR creepers on the same tile with sth else (?))
         // account for multiple cards per tile (?) idk it may already be fine
-        console.log("creepers are resistant to speels");
+        toast.warn("Creepers are resistant to spells");
+        // console.log("creepers are resistant to speels");
         setSelectedCard(null);
         return;
       }
@@ -184,14 +189,16 @@ const Arena = () => {
         selectedCard?.name !== "creepers"
       ) {
         // adjust for special cards in the future
-        console.log(selectedCard);
-        console.log("the tile is not yours!");
+        toast.warn("The tile doesn't belong to you");
+        // console.log("the tile is not yours!");
       } else if (
         gameState?.players[socketId].pts < cardProperties[selectedCard.name].pts
       ) {
-        console.log("not enough points!!!");
+        toast.warn("You don't enough points to play this card");
+        // console.log("not enough points!!!");
       } else if (gameState?.whoseMove !== socketId) {
-        console.log("not your turn!");
+        // console.log("not your turn!");
+        toast.warn("It's not your turn");
       } else {
         playCard(selectedCard.name, { row: rowIndex, col: colIndex });
       }
@@ -212,14 +219,16 @@ const Arena = () => {
       // selected card may be opponent's card!
       if (opponentCard && selectedCard.owner === socketId) {
         if (gameState?.whoseMove !== socketId) {
-          console.log("not your turn!");
+          toast.warn("It's not your turn");
+          // console.log("not your turn!");
         } else if (
           opponentCard.name === "main tree" &&
           !["creepers"].includes(selectedCard.name) &&
           checkAnyEnemies(gameState?.board, socketId)
         ) {
           // make exceptions for cards that can ignore this rule!
-          console.log("cannot attack main tree, other enemies on the board");
+          toast.warn(`${selectedCard.name} cannot attack the Main Tree. There are other enemies on the board`);
+          // console.log("cannot attack main tree, other enemies on the board");
         } else if (
           selectedCard.name === "chopper" &&
           checkDistance(
@@ -230,7 +239,8 @@ const Arena = () => {
             true
           ) > 1
         ) {
-          console.log("invalid range");
+          toast.warn(`The target is out of range of ${selectedCard.name}'s attack`);
+          // console.log("invalid range");
         } else {
           makeAttack(
             {
@@ -271,7 +281,7 @@ const Arena = () => {
       // const clickedCard = tile.cards.find((card) => card.owner === socketId); //  && card.hasAttack - maybe not (?) - upgrading or for info
       if (tile.cards.length > 0) {
         const clickedCard = tile.cards[0]; // adjust when adding multiple cards per tile (possible to select opponent's one)
-        console.log({ ...clickedCard, hand: false });
+        // console.log({ ...clickedCard, hand: false });
         setSelectedCard({
           ...clickedCard,
           hand: false,
@@ -284,7 +294,8 @@ const Arena = () => {
 
   const handlePass = () => {
     if (gameState?.whoseMove !== socketId) {
-      console.log("not your turn!");
+      toast.warn("It's not your turn");
+      // console.log("not your turn!");
       return; // you could add it do disabled in <button>, idk
     }
     // for (const row of gameState?.board) {
@@ -298,7 +309,8 @@ const Arena = () => {
     //   }
     // }
     if (checkAttacksLeft(gameState?.board, socketId)) {
-      console.log("some cards still have an attack to be performed");
+      toast.warn("Some of your cards still have an attack to be performed");
+      // console.log("some cards still have an attack to be performed");
       return;
     }
     passTurn();

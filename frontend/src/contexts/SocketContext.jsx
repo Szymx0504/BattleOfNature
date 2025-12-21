@@ -1,5 +1,6 @@
 // contexts/SocketContext.js
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import socketService from "../services/socket";
 
 export const SocketContext = createContext();
@@ -20,31 +21,36 @@ export const SocketProvider = ({ children }) => {
     }
 
     const handleConnect = () => {
-      console.log("Connected to server");
+      toast.info("Connected to the server");
+      // console.log("Connected to server");
       setIsConnected(true);
       setSocketId(socket.id);
     };
 
     const handleDisconnect = (reason) => {
-      console.log("Disconnected:", reason);
+      toast.error(`Disconnected: ${reason}`);
+      // console.log("Disconnected:", reason);
       setIsConnected(false);
       setSocketId(null);
     };
 
     const handleError = (reason) => {
-      console.log("Error:", reason);
+      toast.error(`Error: ${reason}`);
+      // console.log("Error:", reason);
       //     setError(errorMessage); // option for the future
       // // Auto-clear error after 5 seconds
       // setTimeout(() => setError(null), 5000);
     };
 
     const handleOpponentLeft = () => {
-      console.log("You won!!! Opponent left");
+      toast.success("You won! Opponent left");
+      // console.log("You won!!! Opponent left");
       // setGameState(prev => ({...prev, status: "victory"}));
     };
 
     const handleOpponentFound = (gid, gameData) => {
-      console.log("Opponent found! Game ID:", gid);
+      toast.success("Opponent found! The game begins now");
+      // console.log("Opponent found! Game ID:", gid);
       setGameState(gameData);
       setGameId(gid);
     };

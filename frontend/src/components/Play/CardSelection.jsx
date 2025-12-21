@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 import Card from "../elements/Card";
 import { cardProperties } from "../../assets/cardProperties";
 
@@ -19,6 +21,7 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
         }));
         // htmlCard.style.opacity = 0.5;
       } else {
+        toast.warn("Not a valid choice!")
         console.log("not a valid choice!!!"); // yield a warning
       }
     } else {
@@ -55,7 +58,7 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
           {Object.entries(cardProperties).map(([cardName, cardDetails], i) => (
             <Card
               i={i}
-              classKeys={["card", deckInfo.cards.includes(cardName) && "cardSelected", cardDetails.rarity]}
+              classKeys={[deckInfo.cards.includes(cardName) && "cardSelected", cardDetails.rarity]}
               cardName={cardName}
               cardDetails={cardDetails}
               deckInfo={deckInfo}

@@ -26,6 +26,8 @@
   list-style: none;
 
   transform-origin: center center;
+
+  position: relative;
 }
 
 .card p {
@@ -163,6 +165,56 @@
   background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
     url("src/assets/backgrounds/legendary_background.png");
   border: 1px solid #8a2be2;
+}
+
+.description {
+  position: absolute;
+  bottom: 105%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+
+  /* --- STYL "NATURALNY" --- */
+  /* Bardzo ciemny brąz/oliwka - świetnie siedzi na zielonym tle */
+  background: rgba(25, 30, 20, 0.8); 
+  
+  /* Efekt rozmycia (robi robotę przy nakładaniu na inne płytki) */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
+  /* Zamiast błękitu - bardzo subtelna złotawo-beżowa ramka */
+  border: 1px solid rgba(200, 180, 150, 0.25);
+  
+  /* Kremowy tekst - znacznie bardziej naturalny niż czysta biel */
+  color: #f0e6d2; 
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+  /* ------------------------ */
+
+  width: 180px;
+  padding: 10px;
+  border-radius: 6px;
+  z-index: 100;
+  
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-out;
+  pointer-events: none;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.card:hover {
+  z-index: 10; /*to make description display over different tiles (in .description it was not enough)*/
+}
+
+/* Pokazywanie po najechaniu na kartę */
+.card:hover .description {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0); /* Płynnie wraca na górę */
 }
 
 .card.board {

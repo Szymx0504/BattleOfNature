@@ -1,5 +1,6 @@
-import { useState } from "react";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { SocketProvider } from "./contexts/SocketContext";
 
@@ -57,6 +58,12 @@ function App() {
   return (
     <SocketProvider>
       <RouterProvider router={router} />
+      <ToastContainer 
+        position="bottom-right"
+        theme="dark"
+        pauseOnFocusLoss={false}
+        autoClose={3500}
+      />
     </SocketProvider>
   );
 }
