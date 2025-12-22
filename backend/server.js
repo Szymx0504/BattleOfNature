@@ -165,7 +165,7 @@ io.on("connection", (socket) => {
         });
       } else {
         waitingPlayers.push({ enemyId: playerConnectionId, enemyDeck: deck });
-        console.log("waiting...");
+        // console.log("waiting...");
       }
     } else {
       socket.emit("error", "Invalid deck - cannot find opponent"); // WRONG DECK
@@ -222,6 +222,7 @@ io.on("connection", (socket) => {
       (id) => id !== playerConnectionId
     );
 
+    let winner = null;
     if (cardProperties[card].type !== "spell") {
       if (card === "creepers") {
         if (colGeo !== 2 || (rotate && row !== 3) || (!rotate && row !== 0)) {
@@ -329,7 +330,9 @@ io.on("connection", (socket) => {
           // account for multiple cards per tile
           if (mainTree) {
             game.players[enemyId].mainTree = targetCard.hp;
-            console.log("the game ended.");
+            console.log("the game ended."); // RETURN STH HERE!!!
+            winner = playerConnectionId;
+            activeGames.delete(gameId);
           } else {
             // account for multiple cards per tile
             game.board[row][col].cards.splice(0, 1);
@@ -414,7 +417,7 @@ io.on("connection", (socket) => {
         },
         board: adjustBoard(game.board, !rotate),
       },
-      adjustVector(changesVector, !rotate)
+      adjustVector(changesVector, !rotate), winner
     );
     socket.emit(
       "update",
@@ -435,7 +438,7 @@ io.on("connection", (socket) => {
         },
         board: adjustBoard(game.board, rotate),
       },
-      adjustVector(changesVector, rotate)
+      adjustVector(changesVector, rotate), winner
     );
   });
 
@@ -575,6 +578,7 @@ io.on("connection", (socket) => {
     }
 
     const changesVector = [];
+    let winner = null;
 
     // simple attack for now
     // targetCard.hp -= sourceCard.dmg; // will update, reference
@@ -589,7 +593,9 @@ io.on("connection", (socket) => {
     if (dealDamage(targetCard, dmgValue)) {
       if (mainTree) {
         game.players[enemyId].mainTree = targetCard.hp;
-        console.log("the game ended.");
+        console.log("the game ended."); // RETURN STH HERE
+        winner = playerConnectionId; // at least here it's clear, uwazaj z chain reactions itp
+        activeGames.delete(gameId);
         // account for multiple cards per tile - drzewo i pnacza np, latwe bo inni ownerzy
       } else {
         game.board[targetRow][targetCol].cards.splice(
@@ -641,7 +647,7 @@ io.on("connection", (socket) => {
         },
         board: adjustBoard(game.board, !rotate),
       },
-      adjustVector(changesVector, !rotate)
+      adjustVector(changesVector, !rotate), winner
     );
     socket.emit(
       "update",
@@ -662,7 +668,7 @@ io.on("connection", (socket) => {
         },
         board: adjustBoard(game.board, rotate),
       },
-      adjustVector(changesVector, rotate)
+      adjustVector(changesVector, rotate), winner
     );
   });
 
@@ -724,7 +730,6 @@ io.on("connection", (socket) => {
     }
     const game = activeGames.get(gameId);
     if (game.whoseMove !== playerConnectionId) {
-      console.log("here");
       socket.emit("error", "Not your turn");
       return;
     }
@@ -773,6 +778,14 @@ io.on("connection", (socket) => {
       }
       game.whoseMove = game.whoStartedTurn;
       game.turnNumber++;
+      if(game.turnNumber > 15){
+        // OR RATHER NO!!! CAUSE THE BREAK BETWEEN TURNS AFTER TURN 15 DOESN'T EXIST!!!
+        // IMPORTANT: ALL MID-TURN ACTIONS NEED TO HAPPEN BEFORE THAT! IN ORDER TO DISPLAY THE CORRECT FINAL STATE OF A GAME
+        io.to(enemyId).emit("draw");
+        socket.emit("draw");
+        activeGames.delete(gameId);
+      }
+      console.log(game.turnNumber, "here");
       if (game.turnNumber <= 12) {
         game.players[playerConnectionId].pts = 10;
         game.players[enemyId].pts = 10;

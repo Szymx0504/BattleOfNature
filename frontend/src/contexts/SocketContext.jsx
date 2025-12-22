@@ -5,12 +5,18 @@ import socketService from "../services/socket";
 
 export const SocketContext = createContext();
 
+const gameEndingOptions = {
+  autoClose: false,
+  draggable: false,
+};
+
 export const SocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [gameState, setGameState] = useState(null);
   const [gameId, setGameId] = useState(null);
   const [socketId, setSocketId] = useState(null);
   const [changesVector, setChangesVector] = useState(null);
+  const [gameWinner, setGameWinner] = useState(false);
 
   useEffect(() => {
     const socket = socketService.connect();
@@ -43,7 +49,9 @@ export const SocketProvider = ({ children }) => {
     };
 
     const handleOpponentLeft = () => {
-      toast.success("You won! Opponent left");
+      gameWinner
+        ? toast.info("Opponent left the game", gameEndingOptions)
+        : toast.success("You won! Opponent left", gameEndingOptions);
       // console.log("You won!!! Opponent left");
       // setGameState(prev => ({...prev, status: "victory"}));
     };
@@ -55,14 +63,22 @@ export const SocketProvider = ({ children }) => {
       setGameId(gid);
     };
 
-    const handleUpdate = (gameData, changes) => {
+    const handleUpdate = (gameData, changes, winner) => {
       setGameState(gameData);
       setChangesVector(changes);
+      if (winner) {
+        winner === socket.id
+          ? toast.success("Fantastic, you won!", gameEndingOptions)
+          : toast.error("Enemy has won...", gameEndingOptions);
+        setGameWinner(true);
+      }
     };
 
     const handlePassed = (newData, changes) => {
       setGameState((prev) => {
-        const enemyId = Object.keys(prev.players).find(id => id !== socket.id);
+        const enemyId = Object.keys(prev.players).find(
+          (id) => id !== socket.id
+        );
         return {
           ...prev,
           players: {
@@ -78,6 +94,11 @@ export const SocketProvider = ({ children }) => {
       setChangesVector(changes);
     };
 
+    const handleDraw = () => {
+      toast.info("It's a draw! The game ended!", gameEndingOptions);
+      setGameWinner(true);
+    };
+
     socket.on("connect", handleConnect);
     socket.on("disconnect", handleDisconnect);
     socket.on("error", handleError);
@@ -85,6 +106,7 @@ export const SocketProvider = ({ children }) => {
     socket.on("opponentFound", handleOpponentFound);
     socket.on("update", handleUpdate);
     socket.on("passedTurn", handlePassed);
+    socket.on("draw", handleDraw);
 
     return () => {
       socket.off("connect", handleConnect);
@@ -94,6 +116,7 @@ export const SocketProvider = ({ children }) => {
       socket.off("opponentFound", handleOpponentFound);
       socket.off("update", handleUpdate);
       socket.off("passedTurn", handlePassed);
+      socket.off("draw", handleDraw);
     };
   }, []);
 
@@ -140,6 +163,7 @@ export const SocketProvider = ({ children }) => {
     gameId,
     socketId,
     changesVector,
+    gameWinner,
     findOpponent,
     playCard,
     makeAttack,

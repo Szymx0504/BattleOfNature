@@ -20,7 +20,13 @@ function getColIndexWise(row, colGeo) {
   return row === 0 || row === 3 ? colGeo - 1 : colGeo;
 }
 
-function checkDistance(sourceRow, sourceColGeo, targetRow, targetColGeo, diagonally) {
+function checkDistance(
+  sourceRow,
+  sourceColGeo,
+  targetRow,
+  targetColGeo,
+  diagonally
+) {
   const rowDist = Math.abs(sourceRow - targetRow);
   const colDist = Math.abs(sourceColGeo - targetColGeo);
   return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
@@ -94,6 +100,7 @@ const Arena = () => {
     gameState,
     socketId,
     findOpponent,
+    gameWinner,
     playCard,
     makeAttack,
     passTurn,
@@ -105,6 +112,10 @@ const Arena = () => {
   // think about selecting card on hand vS on board. and reseting if tile clicked
 
   const handleTileClick = (tile, rowIndex, colIndex) => {
+    if (gameWinner) {
+      toast.warn("The game has already ended!");
+      return;
+    }
     // genius!
     // if (selectedCard) {
 
@@ -227,7 +238,9 @@ const Arena = () => {
           checkAnyEnemies(gameState?.board, socketId)
         ) {
           // make exceptions for cards that can ignore this rule!
-          toast.warn(`${selectedCard.name} cannot attack the Main Tree. There are other enemies on the board`);
+          toast.warn(
+            `${selectedCard.name} cannot attack the Main Tree. There are other enemies on the board`
+          );
           // console.log("cannot attack main tree, other enemies on the board");
         } else if (
           selectedCard.name === "chopper" &&
@@ -239,7 +252,9 @@ const Arena = () => {
             true
           ) > 1
         ) {
-          toast.warn(`The target is out of range of ${selectedCard.name}'s attack`);
+          toast.warn(
+            `The target is out of range of ${selectedCard.name}'s attack`
+          );
           // console.log("invalid range");
         } else {
           makeAttack(
@@ -290,6 +305,23 @@ const Arena = () => {
         });
       }
     }
+  };
+
+  const handleHandClick = (card) => {
+    if (gameWinner) {
+      toast.warn("The game has already ended!");
+      return;
+    }
+    setSelectedCard(
+      selectedCard?.hand && selectedCard?.name === card
+        ? null
+        : {
+            name: card,
+            hand: true,
+            owner: socketId,
+            type: cardProperties[card].type,
+          }
+    );
   };
 
   const handlePass = () => {
@@ -359,7 +391,7 @@ const Arena = () => {
         <Hand
           hand={gameState?.players[socketId].hand}
           selectedCard={selectedCard}
-          onCardClick={setSelectedCard}
+          onCardClick={handleHandClick}
           socketId={socketId}
         />
         <PtsBar curPts={gameState?.players[socketId].pts} />

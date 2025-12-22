@@ -61,8 +61,10 @@ atak na main tree DONE
 area spells (affecting the whole board)
 simple cards (like platan, baobab, jodla etc)
 add more logs like Linden doubled dmg or sth like that
+add more notifications like turn X, last turn etc
 
 IMPORTANT fix medicinal herbs - main tree alerts (checking) both frontend and backend DONE!
+game ending logic DONE
 
 maybe swap !== socketId for globally held enemyId (?) idk for now it works, not important for now
 
