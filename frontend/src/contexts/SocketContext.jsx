@@ -63,18 +63,31 @@ export const SocketProvider = ({ children }) => {
       setGameId(gid);
     };
 
-    const handleUpdate = (gameData, changes, winner) => {
+    const handleUpdate = (gameData, changes, extraData) => {
       setGameState(gameData);
       setChangesVector(changes);
-      if (winner) {
-        winner === socket.id
+      if(extraData.newTurn){
+        switch(Number(extraData.newTurn)){
+          case 13:
+            toast.info("Sudden death! Each player gets 15pts per turn from now on!");
+            break;
+          case 15:
+            toast.info("The last turn! If no-one wins, there is going to be a draw");
+            break;
+          default:
+            toast.info(`Turn ${extraData.newTurn} has just began`);
+        }
+      }
+      // think if there can be an else if or not, cause someone may win between the turns (with more complicated cards in the future)
+      if (extraData.winner) {
+        extraData.winner === socket.id
           ? toast.success("Fantastic, you won!", gameEndingOptions)
           : toast.error("Enemy has won...", gameEndingOptions);
         setGameWinner(true);
       }
     };
 
-    const handlePassed = (newData, changes) => {
+    const handlePassed = (newData, changes, whoPassed) => {
       setGameState((prev) => {
         const enemyId = Object.keys(prev.players).find(
           (id) => id !== socket.id
@@ -92,6 +105,9 @@ export const SocketProvider = ({ children }) => {
         };
       });
       setChangesVector(changes);
+      if(whoPassed){
+        toast.info("Enemy has just passed")
+      }
     };
 
     const handleDraw = () => {

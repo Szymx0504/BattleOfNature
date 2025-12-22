@@ -60,6 +60,10 @@
     color: #92CDDC; /* Light Cyan/Water Blue */
 }
 
+.totalCount {
+    color: #f0f4f8;
+}
+
 .collectionWrapper {
     display: flex;
     flex-direction: column; /* Stacks the title and list vertically */

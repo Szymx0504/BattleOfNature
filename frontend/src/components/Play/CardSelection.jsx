@@ -21,7 +21,7 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
         }));
         // htmlCard.style.opacity = 0.5;
       } else {
-        toast.warn("Not a valid choice!")
+        toast.warn("Not a valid choice!");
         console.log("not a valid choice!!!"); // yield a warning
       }
     } else {
@@ -41,14 +41,22 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
         <div className={classes.rarityStats}>
           <p>
             Legendaries:{" "}
-            <span className={classes.legendaryCount}>{deckInfo.legendary}</span>
+            <span className={classes.legendaryCount}>
+              {deckInfo.legendary}/1
+            </span>
           </p>
           <p>
-            Rarity: <span className={classes.rareCount}>{deckInfo.rare}</span>
+            Rarity: <span className={classes.rareCount}>{deckInfo.rare}/5</span>
           </p>
           <p>
             Commons:{" "}
             <span className={classes.commonCount}>{deckInfo.common}</span>
+          </p>
+          <p>
+            Total:{" "}
+            <span className={classes.totalCount}>
+              {deckInfo.legendary + deckInfo.rare + deckInfo.common}/15
+            </span>
           </p>
         </div>
       </div>
@@ -58,10 +66,12 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
           {Object.entries(cardProperties).map(([cardName, cardDetails], i) => (
             <Card
               i={i}
-              classKeys={[deckInfo.cards.includes(cardName) && "cardSelected", cardDetails.rarity]}
+              classKeys={[
+                deckInfo.cards.includes(cardName) && "cardSelected",
+                cardDetails.rarity,
+              ]}
               cardName={cardName}
               cardDetails={cardDetails}
-              deckInfo={deckInfo}
               handleClick={() => {
                 selectCard(cardName, cardDetails.rarity);
               }}

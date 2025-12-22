@@ -61,10 +61,13 @@ atak na main tree DONE
 area spells (affecting the whole board)
 simple cards (like platan, baobab, jodla etc)
 add more logs like Linden doubled dmg or sth like that
-add more notifications like turn X, last turn etc
+add more notifications like turn X, last turn etc DONE
 
 IMPORTANT fix medicinal herbs - main tree alerts (checking) both frontend and backend DONE!
 game ending logic DONE
+pts bar -> to fit all your points (dynamic length)
+IMPORTANT when checking if attacks left check if the card HAS ATTACK > 0 or any ability!!! otherwise it's as if it had no attack!!!
+JAK TYLKO PNACZA MA RYWAL TO SPELLE MOGA NA GLOWNE - DODAJ TO!!
 
 maybe swap !== socketId for globally held enemyId (?) idk for now it works, not important for now
 
@@ -73,3 +76,12 @@ everywhere where finding/checking mainTrees coords: => assumption no object on s
 
 #!!! think whether only on the backend or also on frontend in the future: (when fog etc cards get added)
 tez ze jak wartosc ataku 0 bez zadnych dodatkowych abilitek to atak nie ma miejsca (wazne) + nie da sie miec minusowego ataku (ale to jak dodam trudniejsze karty)
+
+goBack on the gorny pasek w aplikacji - jak beda konta itp to to pododajesz
+
+include in cards descriptions that they CAN ATTACK main tree, cause in the rules it will be only that "some... may"
+
+choosing if to reshuffle at the beggining
+choosing in which order they go to the cycle -> pomysl o tym + aktualnie nie ma tego w instrukcji
+
+o trzcinie/trzcina/reed: w tej samej rundzie jesli zginie lub w przerwie pomiedzy rundami -> no pts. also you cannot delete it the same round you played it

@@ -22,7 +22,7 @@ const HomePage = () => {
         </Link>{" "}
         {/* Added a path and label */}
         <Link to="/updates" className={classes.navLink}>
-          Update logs
+          Updates
         </Link>
       </div>
     </div>

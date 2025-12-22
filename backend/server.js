@@ -417,7 +417,8 @@ io.on("connection", (socket) => {
         },
         board: adjustBoard(game.board, !rotate),
       },
-      adjustVector(changesVector, !rotate), winner
+      adjustVector(changesVector, !rotate),
+      { winner }
     );
     socket.emit(
       "update",
@@ -438,7 +439,8 @@ io.on("connection", (socket) => {
         },
         board: adjustBoard(game.board, rotate),
       },
-      adjustVector(changesVector, rotate), winner
+      adjustVector(changesVector, rotate),
+      { winner }
     );
   });
 
@@ -647,7 +649,8 @@ io.on("connection", (socket) => {
         },
         board: adjustBoard(game.board, !rotate),
       },
-      adjustVector(changesVector, !rotate), winner
+      adjustVector(changesVector, !rotate),
+      { winner }
     );
     socket.emit(
       "update",
@@ -668,7 +671,8 @@ io.on("connection", (socket) => {
         },
         board: adjustBoard(game.board, rotate),
       },
-      adjustVector(changesVector, rotate), winner
+      adjustVector(changesVector, rotate),
+      { winner }
     );
   });
 
@@ -778,14 +782,14 @@ io.on("connection", (socket) => {
       }
       game.whoseMove = game.whoStartedTurn;
       game.turnNumber++;
-      if(game.turnNumber > 15){
+      if (game.turnNumber > 15) {
         // OR RATHER NO!!! CAUSE THE BREAK BETWEEN TURNS AFTER TURN 15 DOESN'T EXIST!!!
         // IMPORTANT: ALL MID-TURN ACTIONS NEED TO HAPPEN BEFORE THAT! IN ORDER TO DISPLAY THE CORRECT FINAL STATE OF A GAME
         io.to(enemyId).emit("draw");
         socket.emit("draw");
         activeGames.delete(gameId);
+        return;
       }
-      console.log(game.turnNumber, "here");
       if (game.turnNumber <= 12) {
         game.players[playerConnectionId].pts = 10;
         game.players[enemyId].pts = 10;
@@ -839,7 +843,8 @@ io.on("connection", (socket) => {
           },
           board: adjustBoard(game.board, !rotate),
         },
-        adjustVector(changesVector, !rotate)
+        adjustVector(changesVector, !rotate),
+        { newTurn: game.turnNumber }
       );
       socket.emit(
         "update",
@@ -860,7 +865,8 @@ io.on("connection", (socket) => {
           },
           board: adjustBoard(game.board, rotate),
         },
-        adjustVector(changesVector, rotate)
+        adjustVector(changesVector, rotate),
+        { newTurn: game.turnNumber }
       );
     } else {
       game.whoseMove = enemyId;
@@ -874,7 +880,9 @@ io.on("connection", (socket) => {
           [enemyId]: game.players[enemyId].passed,
           whoseMove: game.whoseMove,
         },
-        changesVector
+        changesVector,
+        // playerConnectionId // wystarczy dawac true do rywala
+        true
       );
       socket.emit(
         "passedTurn",
@@ -884,6 +892,7 @@ io.on("connection", (socket) => {
           whoseMove: game.whoseMove,
         },
         changesVector
+        // playerConnectionId
       );
     }
   });

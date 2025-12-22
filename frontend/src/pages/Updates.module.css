@@ -1,0 +1,112 @@
+.updatesContainer {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: radial-gradient(circle at center, #1a2a35 0%, #050a0f 100%);
+    color: #f0e6d2;
+    padding: 60px 20px;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.title {
+    color: #64d2ff;
+    font-size: 2.5rem;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    margin-bottom: 50px;
+    text-shadow: 0 0 15px rgba(100, 210, 255, 0.4);
+}
+
+.updateList {
+    list-style: none;
+    padding: 0;
+    max-width: 700px;
+    width: 100%;
+    /* The vertical timeline line */
+    border-left: 2px solid rgba(100, 210, 255, 0.2);
+    padding-left: 40px;
+    margin: 0;
+}
+
+.updateItem {
+    position: relative;
+    margin-bottom: 60px;
+    background: rgba(25, 45, 55, 0.4);
+    backdrop-filter: blur(8px);
+    padding: 25px;
+    border-radius: 12px;
+    border: 1px solid rgba(100, 210, 255, 0.1);
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.updateItem:hover {
+    transform: translateX(10px);
+    background: rgba(25, 45, 55, 0.6);
+    border-color: rgba(100, 210, 255, 0.4);
+}
+
+/* Timeline Dot */
+.updateItem::before {
+    content: "";
+    position: absolute;
+    left: -51px; /* Aligns with the border-left of updateList */
+    top: 28px;
+    width: 18px;
+    height: 18px;
+    background: #050a0f;
+    border: 2px solid #64d2ff;
+    border-radius: 50%;
+    box-shadow: 0 0 12px #64d2ff;
+    z-index: 1;
+}
+
+.versionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 20px;
+    border-bottom: 1px solid rgba(100, 210, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.versionNumber {
+    color: #64d2ff;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+.date {
+    font-size: 0.85rem;
+    color: #a0aab2;
+    text-transform: uppercase;
+    font-style: italic;
+}
+
+.changeDetails {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.changeDetails li {
+    margin-bottom: 12px;
+    color: #eaece3;
+    line-height: 1.6;
+    font-size: 1.05rem;
+}
+
+.changeDetails li strong {
+    color: #64d2ff;
+    font-weight: 600;
+}
+
+.footerHint {
+    margin-top: 40px;
+    color: #64d2ff;
+    opacity: 0.6;
+    font-style: italic;
+    letter-spacing: 1px;
+}
