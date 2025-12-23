@@ -18,7 +18,7 @@ const Updates = () => {
               ⚔️ <strong>Multiplayer Mode:</strong> The first playable version of real-time network battles is now live.
             </li>
             <li>
-              🃏 <strong>Card Collection:</strong> Explore the first 25 unique cards available in the core set.
+              🃏 <strong>Card Collection:</strong> Explore the first 15 unique cards available in the core set.
             </li>
             <li>
               🌊 <strong>Sea Aesthetic:</strong> The initial implementation of the deep-sea interface for the main menus.
