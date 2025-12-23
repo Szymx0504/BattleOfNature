@@ -21,16 +21,17 @@
 }
 
 .tile {
-    /* Twoje powiększone wymiary */
+    /* Twoje bazowe wymiary kafelka muszą być sztywne */
     width: 120px; 
     height: 160px; 
-    
     background: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(90, 146, 102, 0.4); 
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     position: relative;
+    /* KLUCZ: Zapobiega zapadaniu się kafelków w rzędzie */
+    flex-shrink: 0; 
 }
 
 .tile:hover {
@@ -41,6 +42,7 @@
 }
 
 .tileContent {
+    position: relative;
     width: 100%;
     height: 100%;
     display: flex;
@@ -49,32 +51,31 @@
 }
 
 .mainTree {
+    /* Używamy flex, aby drzewo wypełniło kafelek i trzymało strukturę */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around; /* Rozkłada obrazek i HP równomiernie */
+    justify-content: space-around; 
     height: 100%;
     width: 100%;
     padding: 10px 0;
+    /* Gdy pojawi się karta, drzewo pozostaje pod nią */
+    z-index: 1;
 }
 
 .mainTree img {
-    /* Powiększamy drzewo, by wypełniło kafelek */
     width: 100px; 
     height: auto;
     filter: drop-shadow(0 0 12px rgba(90, 146, 102, 0.7));
-    transition: transform 0.3s ease;
 }
-
-
 
 .mainTree p {
     color: #eaece3;
     font-weight: 900;
-    font-size: 1.1rem; /* Większy font dla HP bazy */
-    background: rgba(25, 40, 30, 0.8); /* Ciemniejsze tło bazy */
+    font-size: 1.1rem; 
+    background: rgba(25, 40, 30, 0.8); 
     padding: 4px 14px;
-    border-radius: 20px; /* Bardziej zaokrąglony kształt pigułki */
+    border-radius: 20px; 
     border: 1px solid #5A9266;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
     margin: 0;

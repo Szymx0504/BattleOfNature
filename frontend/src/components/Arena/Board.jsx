@@ -48,7 +48,8 @@ const Board = ({ board, onTileClick, selectedCard, socketId, mainTreeHp, enemyMa
                           tile.cards[0]?.rarity,
                           "board",
                           tile.cards[0].owner !== socketId && "opponent",
-                          tile.cards[0].hasAttack && "hasAttack"
+                          tile.cards[0].hasAttack && "hasAttack",
+                          tile.mainTree && "onMainTree"
                         ]}
                         cardName={tile.cards[0].name}
                         cardDetails={tile.cards[0]}
