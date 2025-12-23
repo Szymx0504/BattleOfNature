@@ -1,81 +1,109 @@
 /* --- BASE CONTAINER --- */
 .logContainer {
-    background-color: rgba(30, 40, 35, 0.9); /* Darker background than the main game */
-    border: 1px solid #5A9266; /* Moss Green border */
+    /* Ustawienia szerokości i stabilności */
+    width: 300px;
+    min-width: 300px;
+    flex-shrink: 0;
+
+    /* DOPASOWANIE DO BOARD: */
+    /* Identyczny margines jak w .board sprawia, że kontenery się zrównują */
+    margin: 20px 0; 
+    /* Pozwala flexboxowi (boardArea) dopasować wysokość do sąsiada */
+    height: auto; 
+    align-self: stretch;
+
+    /* Wygląd i kolory */
+    background-color: rgba(30, 40, 35, 0.95); /* Twoje ulubione ciemne tło */
+    border: 1px solid #5A9266; /* Zieleń mchu #5A9266 */
     border-radius: 8px;
-    padding: 10px;
-    height: 300px; /* Fixed height for scrollability */
-    max-width: 300px; /* Optional: Constrain width */
+    padding: 15px;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 /* --- LOG TITLE --- */
 .logTitle {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: bold;
-    color: #EAECE3; /* Light text */
-    margin-bottom: 8px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid rgba(90, 146, 102, 0.5); /* Subtle separator */
+    color: #EAECE3; /* Jasny tekst */
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(90, 146, 102, 0.5); /* Subtle separator */
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 /* --- SCROLLABLE LIST WRAPPER --- */
 .logListWrapper {
-    flex-grow: 1; /* Allows the list to take up remaining height */
-    overflow-y: auto; /* Enables vertical scrolling */
-    padding-right: 5px; /* Space for scrollbar */
+    flex-grow: 1; /* Pozwala liście zająć resztę wysokości */
+    overflow-y: auto; /* Przewijanie pionowe */
+    padding-right: 8px; 
 }
 
-/* --- INDIVIDUAL LOG ENTRY (LI) --- */
+/* --- INDIVIDUAL LOG ENTRY (UL/LI) --- */
 .logListWrapper ul {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .logListWrapper li {
-    margin-bottom: 6px;
-    padding: 4px 0;
-    font-size: 0.9rem;
-    line-height: 1.3;
+    padding: 6px 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.logListWrapper li:hover {
+    background: rgba(90, 146, 102, 0.1);
 }
 
 /* --- LOG ENTRY TEXT (P) --- */
 .logEntryText {
     margin: 0;
-    /* Use monospace font for a log-like look (optional) */
+    font-size: 0.85rem;
+    line-height: 1.4;
+    /* Twoje ustawienie monospace dla technicznego looku */
     font-family: 'Consolas', 'Courier New', monospace; 
+    word-break: break-word; /* Zapobiega wychodzeniu tekstu poza kontener */
 }
 
-/* --- PLAYER SPECIFIC COLORS --- */
+/* --- PLAYER SPECIFIC COLORS (getActionImpact) --- */
 
-/* Enemy action text color: Red */
+/* Enemy action: Red #C14A4A */
 .negativeAction {
-    color: #C14A4A; /* Soft Red */
+    color: #C14A4A; 
     font-weight: bold;
 }
 
-/* Your action text color: Blue/Green */
+/* Your action: Twój preferowany błękit #92CDDC */
 .positiveAction {
-    color: #92CDDC; /* Light Water Blue */
+    color: #92CDDC; 
     font-weight: bold;
 }
 
+/* Default / System: White/Light */
 .neutralAction {
-    color: #EAECE3; /* Default white/light color */
+    color: #EAECE3; 
     font-weight: bold;
 }
 
-/* --- Scrollbar Styling (Optional, for better theme integration) --- */
-/* OPTIONAL - IF THERE POTENTIALLY WAS A SCROLL (SUCH COMPLICATED ACTION) */
+/* --- SCROLLBAR STYLING --- */
 .logListWrapper::-webkit-scrollbar {
     width: 6px;
 }
+
 .logListWrapper::-webkit-scrollbar-thumb {
-    background-color: #5A9266; /* Moss Green thumb */
+    background-color: #5A9266; /* Zieleń mchu */
     border-radius: 3px;
 }
+
 .logListWrapper::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
 }

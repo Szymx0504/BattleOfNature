@@ -2,27 +2,47 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 0;
-  background-color: rgba(30, 40, 35, 0.85); /* Dark background */
-  border-radius: 8px;
+  padding: 8px 15px;
+  background-color: rgba(20, 30, 25, 0.9); /* Głęboki, ciemny zielony/czarny */
+  border-top: 1px solid rgba(100, 210, 255, 0.3); /* Subtelna linia błękitu na górze */
+  border-radius: 12px;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.4);
+  margin-top: 5px;
 }
 
 .ptsBarContent {
   display: flex;
   align-items: center;
-  gap: 8px; /* Spacing between points and text */
+  gap: 10px;
 }
 
 .SquareRepresentingAPoint {
-  width: 20px;
-  height: 20px;
-  background-color: #69a9bb; /* Water Blue accent color */
-  border-radius: 4px;
-  border: 1px solid #eaece3;
+  width: 16px;
+  height: 22px;
+  /* Twój błękit #64d2ff */
+  background-color: #64d2ff; 
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  transition: all 0.3s ease;
+  
+  /* Efekt kryształu/szkła */
+  background: linear-gradient(135deg, #64d2ff 0%, #3a8fb7 100%);
+  box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Stan, gdy punkt jest aktywny (opacity sterowane w JS, ale tutaj dodajemy blask) */
+.SquareRepresentingAPoint[style*="opacity: 1"] {
+  box-shadow: 0 0 10px rgba(100, 210, 255, 0.8), 
+              inset 0 0 5px rgba(255, 255, 255, 0.6);
+  border-color: #ffffff;
 }
 
 .ptsBarWrapper p {
-  font-size: 0.9rem;
-  color: #eaece3;
-  margin: 0;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #64d2ff; /* Napis w kolorze energii */
+  margin: 0 0 0 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 0 5px rgba(100, 210, 255, 0.5);
 }

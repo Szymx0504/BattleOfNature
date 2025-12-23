@@ -108,7 +108,7 @@ io.on("connection", (socket) => {
               pts: 5,
               passed: false,
               mainTree: 25,
-              globalTime: 0,
+              globalTime: 180,
             },
             [enemyId]: {
               deck: enemyDeck,
@@ -117,7 +117,7 @@ io.on("connection", (socket) => {
               pts: 5,
               passed: false,
               mainTree: 25,
-              globalTime: 0,
+              globalTime: 180,
             },
           },
           board: generateBoard(playerConnectionId, enemyId),

@@ -1,10 +1,30 @@
 .hand {
-  display: flex;
-  justify-content: center; /* Center the card hand */
-  align-items: flex-end; /* Align cards to the bottom if they are different sizes */
-  gap: 15px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  /* Cards (li elements) inside this ul will use the .card styling from Play.module.css */
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    /* gap: 4px;  */
+    list-style: none;
+    padding: 22px 0px;
+    margin: 0;
+
+    /* KLUCZ: Stała szerokość zapobiega skakaniu i zabieraniu miejsca */
+    /* 560px wystarczy na ok. 5 kart przy scale 0.75 */
+    width: 900px; 
+    /* Blokujemy rozciąganie i kurczenie się dłoni */
+    flex: 0 0 auto; 
+    
+    background: rgba(30, 45, 35, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(90, 146, 102, 0.4);
+    border-radius: 12px;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5), 0 4px 10px rgba(0, 0, 0, 0.3);
+    
+    max-height: 180px;
+    overflow: visible;
+}
+
+/* Opcjonalnie: tło dłoni może się lekko podświetlać, gdy najedziesz na ten obszar */
+.hand:hover {
+    background: rgba(40, 60, 45, 0.8);
+    border-color: rgba(100, 210, 255, 0.3); /* Subtelny akcent błękitu #64d2ff */
 }

@@ -118,7 +118,7 @@ const Arena = () => {
   // think about selecting card on hand vS on board. and reseting if tile clicked
 
   const handleTileClick = (tile, rowIndex, colIndex) => {
-    if (gameEnded) { // gameEnded + in 1 more place
+    if (gameEnded) {
       toast.warn("The game has already ended!");
       return;
     }

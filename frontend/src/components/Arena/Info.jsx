@@ -44,7 +44,7 @@ const Info = ({ gameState, socketId, handlePass }) => {
   <div className={classes.info}>
     {/* Sekcja Tury */}
     <div className={classes.timerWrapper}>
-      <p className={classes.label}>Turn {gameState?.turnNumber}</p>
+      <p className={classes.label}>Turn {gameState?.turnNumber}/15</p>
       <p className={gameState?.whoseMove === socketId ? classes.activeMove : classes.passiveMove}>
         {gameState?.whoseMove === socketId ? "Your move" : "Opponent's move"}
       </p>

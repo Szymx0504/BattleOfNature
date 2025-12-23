@@ -1,77 +1,81 @@
 .board {
-    /* Ensures the board takes up as much vertical space as possible */
-    flex-grow: 1; 
-    background-color: rgba(90, 146, 102, 0.25); 
-    border-radius: 15px;
-    /* Increase vertical margin for more separation from info/hand bars */
-    margin: 20px 0; 
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5); 
-    border: 1px solid #5a9266;
+    display: flex;
+    flex-direction: column;
+    /* Zmniejszony gap między wierszami */
+    gap: 4px; 
+    align-items: center;
+    justify-content: center;
+    /* Kluczowa zmiana: padding 0 zamiast 20px oszczędza 40px wysokości */
+    padding: 0;
+    /* Minimalny margines góra/dół */
+    margin: 5px 0; 
+    background: radial-gradient(circle, rgba(90, 146, 102, 0.1) 0%, transparent 80%);
 }
 
 .row {
     display: flex;
-    gap: 5px;
-    /* FIX: Add vertical gap between rows */
-    margin-bottom: 15px; 
-}
-
-/* Row 0 and 3: 3 tiles centered */
-.row:nth-child(1),
-.row:nth-child(4) {
-  justify-content: center;
-  width: 100%;
-}
-
-/* Row 1 and 2: 5 tiles centered */
-.row:nth-child(2),
-.row:nth-child(3) {
-  justify-content: center;
-  width: 100%;
+    /* Zmniejszony odstęp między kafelkami w poziomie */
+    gap: 6px;
+    justify-content: center;
+    width: 100%;
 }
 
 .tile {
-    /* FIX: Increased base width from 60px to 100px */
-    width: 100px;
+    /* Twoje powiększone wymiary */
+    width: 120px; 
+    height: 160px; 
     
-    /* FIX: Recalculate padding-bottom (150% of 100px = 150px) */
-    padding-bottom: 150px;
-    
+    background: rgba(255, 255, 255, 0.05); 
+    border: 1px solid rgba(90, 146, 102, 0.4); 
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
     position: relative;
-    
-    border: 1px solid #5a9266; 
-    background: rgba(90, 146, 102, 0.5); 
-    border-radius: 4px; 
+}
+
+.tile:hover {
+    background: rgba(100, 210, 255, 0.1);
+    border-color: #64d2ff;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(100, 210, 255, 0.3);
 }
 
 .tileContent {
-    /* REMOVED: position: absolute; top: 0; left: 0; width: 100%; height: 100%; */
-    
-    /* FIX: Revert to normal flow, using Flex to center the *absolute* card */
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    
-    /* Ensure it fills the relative space of the tile */
-    position: absolute; /* Keep absolute position to fill the tile space */
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%; 
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-    padding: 0; 
-    margin: 0;
-    line-height: 0; 
-    
-    /* REMOVED: text-align: center; font-size: 12px; padding: 5px; */
+.mainTree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around; /* Rozkłada obrazek i HP równomiernie */
+    height: 100%;
+    width: 100%;
+    padding: 10px 0;
 }
 
 .mainTree img {
-  width: 100%;
-  max-height: 15em;
-  /* object-fit: contain; */
+    /* Powiększamy drzewo, by wypełniło kafelek */
+    width: 100px; 
+    height: auto;
+    filter: drop-shadow(0 0 12px rgba(90, 146, 102, 0.7));
+    transition: transform 0.3s ease;
 }
 
+
+
 .mainTree p {
-  text-align: center;
+    color: #eaece3;
+    font-weight: 900;
+    font-size: 1.1rem; /* Większy font dla HP bazy */
+    background: rgba(25, 40, 30, 0.8); /* Ciemniejsze tło bazy */
+    padding: 4px 14px;
+    border-radius: 20px; /* Bardziej zaokrąglony kształt pigułki */
+    border: 1px solid #5A9266;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    margin: 0;
 }

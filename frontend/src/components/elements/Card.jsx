@@ -1,6 +1,6 @@
 import classes from "./Card.module.css";
 
-const Card = ({i, classKeys, cardName, cardDetails, handleClick}) => {
+const Card = ({i, classKeys, cardName, cardDetails, handleClick, menu}) => {
   return (
     <li
       key={i}
@@ -10,7 +10,7 @@ const Card = ({i, classKeys, cardName, cardDetails, handleClick}) => {
     >
       <p>{cardName}</p>
       <img src={"/src/assets/cards/" + cardName.replace(" ", "_") + ".png"} />
-      <div className={classes.stats}>
+      <div className={`${classes.stats} ${menu && classes.menuStats}`}>
         <span className={cardDetails.hp ? classes.hp : classes.dmg}>
           {/* {cardDetails.hp || cardDetails.dmg} */}
           {cardDetails.hp ? cardDetails.hp + "hp" : cardDetails.dmg + "dmg"}

@@ -75,6 +75,7 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
               handleClick={() => {
                 selectCard(cardName, cardDetails.rarity);
               }}
+              menu
             />
           ))}
         </ul>

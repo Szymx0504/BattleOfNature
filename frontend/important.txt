@@ -53,7 +53,7 @@ then on phone -> on click -> info or pick (like in Clash Royale)
 -DONE show which cards have attacks left
 -DONE prohibit passing a turn if an attack left
 
-a timer + all of time-y stuff
+a timer + all of time-y stuff DONE
 dopracowanie poszczegolnych kart DONE (poczatkowych)
 info na klikniecie (narazie tylko na kompy) DONE
 jakies UI typu ile graczy online, info jak rywal disconnected (ale to rzeczy mniej wazne) DONE

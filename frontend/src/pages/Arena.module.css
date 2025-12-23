@@ -1,26 +1,39 @@
-/* Assumed Wrapper: Use the main parent of the game view */
 .gameWrapper {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    background: linear-gradient(
-        135deg,
-        #212e27 0%,
-        #1d594b 100%
-    ); 
+    height: 100vh;
+    /* Znacznie jaśniejszy, nasycony gradient natury */
+    background: radial-gradient(circle at center, #3d5a4d 0%, #2a3d35 60%, #1b2621 100%);
+    overflow: hidden;
     color: #eaece3;
-    font-family: Arial, sans-serif;
-    /* FIX 1: Removed top padding from wrapper to make content flush */
-    padding: 0 10px 10px 10px; 
+}
+
+
+.boardArea {
+    flex: 1;
+    display: flex;
+    flex-direction: row;      /* Board i Logi obok siebie */
+    justify-content: center;  /* KLUCZ: Centruje oba komponenty jako grupę */
+    align-items: center;      /* Centrowanie w pionie */
+    padding: 5px 20px;
+    gap: 120px;                /* Odstęp między planszą a logami */
+    width: 100%;
+    position: relative;
+    background: linear-gradient(180deg, rgba(100, 210, 255, 0.08) 0%, transparent 40%);
 }
 
 .table {
     display: flex;
-    flex-direction: column; 
-    gap: 10px;
-    padding: 10px 0;
-}
-
-.boardArea {
-    display: flex;
+    flex-direction: row; 
+    justify-content: center;
+    /* Zmieniamy na center, żeby PtsBar nie leżał na samej ziemi */
+    align-items: center; 
+    width: 100%;
+    gap: 100px;
+    /* KLUCZ: Ten padding podnosi całą zawartość nad dolną krawędź ekranu */
+    padding: 0 0 30px 0; 
+    margin: 0;
+    height: auto;
+    position: relative;
+    z-index: 20;
 }
