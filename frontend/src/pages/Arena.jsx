@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import { useSocket } from "../hooks/useSocket";
@@ -11,6 +11,7 @@ import { cardProperties } from "../assets/cardProperties";
 import classes from "./Arena.module.css";
 import PtsBar from "../components/Arena/PtsBar";
 import ActionsLog from "../components/Arena/ActionsLog";
+import Info from "../components/Arena/Info";
 
 function getColGeometrically(row, col) {
   return row == 0 || row == 3 ? col + 1 : col;
@@ -32,9 +33,14 @@ function checkDistance(
   return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
 }
 
-function checkAnyEnemies(board, socketId) {
+function checkAnyEnemies(board, socketId, spell) {
   return board.some((row) =>
-    row.some((tile) => tile.cards.some((card) => card.owner !== socketId))
+    row.some((tile) =>
+      tile.cards.some(
+        (card) =>
+          card.owner !== socketId && (!spell || card.name !== "creepers")
+      )
+    )
   );
 }
 
@@ -100,7 +106,7 @@ const Arena = () => {
     gameState,
     socketId,
     findOpponent,
-    gameWinner,
+    gameEnded,
     playCard,
     makeAttack,
     passTurn,
@@ -112,7 +118,7 @@ const Arena = () => {
   // think about selecting card on hand vS on board. and reseting if tile clicked
 
   const handleTileClick = (tile, rowIndex, colIndex) => {
-    if (gameWinner) {
+    if (gameEnded) { // gameEnded + in 1 more place
       toast.warn("The game has already ended!");
       return;
     }
@@ -155,7 +161,7 @@ const Arena = () => {
         selectedCard?.type === "spell" &&
         oppMainTree &&
         selectedCard?.name !== "medicinal herbs" &&
-        checkAnyEnemies(gameState?.board, socketId)
+        checkAnyEnemies(gameState?.board, socketId, true)
       ) {
         toast.warn("Cannot attack the Main Tree. There are enemies on board");
         // console.log("cannot attack main tree. Enemies on board");
@@ -232,6 +238,8 @@ const Arena = () => {
         if (gameState?.whoseMove !== socketId) {
           toast.warn("It's not your turn");
           // console.log("not your turn!");
+        } else if (!selectedCard.hasAttack) {
+          toast.warn("This card cannot attack now");
         } else if (
           opponentCard.name === "main tree" &&
           !["creepers"].includes(selectedCard.name) &&
@@ -308,7 +316,7 @@ const Arena = () => {
   };
 
   const handleHandClick = (card) => {
-    if (gameWinner) {
+    if (gameEnded) {
       toast.warn("The game has already ended!");
       return;
     }
@@ -350,28 +358,7 @@ const Arena = () => {
 
   return (
     <div className={classes.gameWrapper}>
-      <div className={classes.info}>
-        <p>Turn {gameState?.turnNumber}</p>
-        <p>
-          {gameState?.whoseMove === socketId ? "Your move" : "Opponent's move"}
-        </p>
-        {/* <p>You currently have {gameState?.players[socketId].pts}pts</p> */}
-        <button
-          className={classes.passBtn}
-          disabled={gameState?.players[socketId].passed}
-          onClick={handlePass}
-        >
-          Pass turn
-        </button>
-        <p>
-          Opponent{" "}
-          {gameState?.players[
-            Object.keys(gameState?.players).find((id) => id !== socketId)
-          ].passed
-            ? "passed turn"
-            : "still plays"}
-        </p>
-      </div>
+      <Info gameState={gameState} socketId={socketId} handlePass={handlePass} />
       <div className={classes.boardArea}>
         <Board
           board={gameState?.board}
@@ -394,7 +381,10 @@ const Arena = () => {
           onCardClick={handleHandClick}
           socketId={socketId}
         />
-        <PtsBar curPts={gameState?.players[socketId].pts} />
+        <PtsBar
+          curPts={gameState?.players[socketId].pts}
+          turnNumber={gameState?.turnNumber}
+        />
       </div>
     </div>
   );

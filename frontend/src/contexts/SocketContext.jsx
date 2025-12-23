@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
   const [gameId, setGameId] = useState(null);
   const [socketId, setSocketId] = useState(null);
   const [changesVector, setChangesVector] = useState(null);
-  const [gameWinner, setGameWinner] = useState(false);
+  const [gameEnded, setGameEnded] = useState(false);
 
   useEffect(() => {
     const socket = socketService.connect();
@@ -49,7 +49,7 @@ export const SocketProvider = ({ children }) => {
     };
 
     const handleOpponentLeft = () => {
-      gameWinner
+      gameEnded
         ? toast.info("Opponent left the game", gameEndingOptions)
         : toast.success("You won! Opponent left", gameEndingOptions);
       // console.log("You won!!! Opponent left");
@@ -66,28 +66,35 @@ export const SocketProvider = ({ children }) => {
     const handleUpdate = (gameData, changes, extraData) => {
       setGameState(gameData);
       setChangesVector(changes);
-      if(extraData.newTurn){
-        switch(Number(extraData.newTurn)){
+      if (extraData.winner) {
+        // moved up here as winning is more important than new turn
+        // think if there can be an else if or not, cause someone may win between the turns (with more complicated cards in the future)
+        extraData.winner === socket.id
+          ? toast.success("Fantastic, you won!", gameEndingOptions)
+          : toast.error("Enemy has won...", gameEndingOptions);
+        setGameEnded(true);
+      } else if (extraData.newTurn) {
+        switch (Number(extraData.newTurn)) {
           case 13:
-            toast.info("Sudden death! Each player gets 15pts per turn from now on!");
+            toast.info(
+              "Sudden death! Each player gets 15pts per turn from now on!"
+            );
             break;
           case 15:
-            toast.info("The last turn! If no-one wins, there is going to be a draw");
+            toast.info(
+              "The last turn! If no-one wins, there is going to be a draw"
+            );
             break;
           default:
             toast.info(`Turn ${extraData.newTurn} has just began`);
         }
-      }
-      // think if there can be an else if or not, cause someone may win between the turns (with more complicated cards in the future)
-      if (extraData.winner) {
-        extraData.winner === socket.id
-          ? toast.success("Fantastic, you won!", gameEndingOptions)
-          : toast.error("Enemy has won...", gameEndingOptions);
-        setGameWinner(true);
+      } else if (extraData.enemyPlayed) {
+        // the same as with passing
+        toast.info("Enemy made a move. Your turn!");
       }
     };
 
-    const handlePassed = (newData, changes, whoPassed) => {
+    const handlePassed = (newData, changes, enemyPassed) => {
       setGameState((prev) => {
         const enemyId = Object.keys(prev.players).find(
           (id) => id !== socket.id
@@ -97,22 +104,41 @@ export const SocketProvider = ({ children }) => {
           players: {
             [socket.id]: {
               ...prev.players[socket.id],
-              passed: newData[socket.id],
+              passed: newData[socket.id].passed,
+              globalTime: newData[socket.id].globalTime,
             },
-            [enemyId]: { ...prev.players[enemyId], passed: newData[enemyId] },
+            [enemyId]: {
+              ...prev.players[enemyId],
+              passed: newData[enemyId].passed,
+              globalTime: newData[enemyId].globalTime,
+            },
           },
           whoseMove: newData.whoseMove,
+          actionStartedAt: newData.actionStartedAt,
         };
       });
       setChangesVector(changes);
-      if(whoPassed){
-        toast.info("Enemy has just passed")
+      if (enemyPassed) {
+        toast.info("Enemy has just passed");
       }
     };
 
     const handleDraw = () => {
       toast.info("It's a draw! The game ended!", gameEndingOptions);
-      setGameWinner(true);
+      setGameEnded(true);
+    };
+
+    const handleTimeOver = (res) => {
+      res.won
+        ? toast.success(
+            "You won! The enemy has run out of time",
+            gameEndingOptions
+          )
+        : toast.error(
+            "Enemy won... you have run out of time",
+            gameEndingOptions
+          );
+      setGameEnded(true);
     };
 
     socket.on("connect", handleConnect);
@@ -123,6 +149,7 @@ export const SocketProvider = ({ children }) => {
     socket.on("update", handleUpdate);
     socket.on("passedTurn", handlePassed);
     socket.on("draw", handleDraw);
+    socket.on("timeOver", handleTimeOver);
 
     return () => {
       socket.off("connect", handleConnect);
@@ -133,6 +160,7 @@ export const SocketProvider = ({ children }) => {
       socket.off("update", handleUpdate);
       socket.off("passedTurn", handlePassed);
       socket.off("draw", handleDraw);
+      socket.off("timeOver", handleTimeOver);
     };
   }, []);
 
@@ -179,7 +207,7 @@ export const SocketProvider = ({ children }) => {
     gameId,
     socketId,
     changesVector,
-    gameWinner,
+    gameEnded,
     findOpponent,
     playCard,
     makeAttack,

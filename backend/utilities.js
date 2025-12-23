@@ -78,10 +78,17 @@ function adjustVector(vector, rotate) {
 }
 
 // by either object or spell
-function dealDamage(targetCard, value) {
+function dealDamage(targetCard, value, changesVector) {
   targetCard.hp -= value;
   if (targetCard.name === "linden") {
     // info that linden doubled its attack (?)
+    if (targetCard.dmg < 32) {
+      changesVector.push({
+        action: "linden",
+        owner: targetCard.owner,
+        name: targetCard.name,
+      });
+    }
     targetCard.dmg *= 2;
   }
   // returns if died
@@ -112,9 +119,14 @@ function checkDistance(
   return diagonally ? Math.max(rowDist, colDist) : rowDist + colDist;
 }
 
-function checkAnyEnemies(board, enemyId) {
+function checkAnyEnemies(board, enemyId, spell) {
+  // also account for if attack value > 0 or has a special effect IMPORTANT
   return board.some((row) =>
-    row.some((tile) => tile.cards.some((card) => card.owner === enemyId))
+    row.some((tile) =>
+      tile.cards.some(
+        (card) => card.owner === enemyId && (!spell || card.name !== "creepers")
+      )
+    )
   );
 }
 
@@ -172,6 +184,33 @@ function checkAttacksLeft(board, playerId, rotate) {
       }
     }
   }
+}
+
+function manageTime(game, playerId) {
+  const now = Date.now();
+  const timeSpent = (now - game.actionStartedAt) / 1000;
+  if (timeSpent > 30) {
+    const extraTime = timeSpent - 30;
+    game.players[playerId].globalTime -= extraTime;
+    if (game.players[playerId].globalTime < 0) {
+      game.players[playerId].globalTime = 0;
+    }
+    if (game.players[playerId].globalTime <= 0) {
+      return false; // koniec gry
+    }
+  }
+  return true;
+}
+
+function handleTimeout(game, playerId, enemyId, io, activeGames, gameId) {
+  io.to(playerId).emit("timeOver", {won: false});
+  io.to(enemyId).emit("timeOver", {won: true});
+
+  if (game.forceEndTimer) {
+    clearTimeout(game.forceEndTimer);
+    game.forceEndTimer = null;
+  }
+  activeGames.delete(gameId);
 }
 
 const cardTypes = ["tree", "spell", "bush", "building"];
@@ -333,4 +372,6 @@ module.exports = {
   checkAnyEnemies,
   checkOpponentsMainTree,
   checkAttacksLeft,
+  manageTime,
+  handleTimeout,
 };

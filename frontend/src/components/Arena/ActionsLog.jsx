@@ -1,8 +1,17 @@
 import classes from "./ActionsLog.module.css";
 
-const goodIfYours = ["heal", "played"];
+const goodIfYours = ["heal", "played", "linden"];
 const badIfYours = ["death", "damageTaken"];
 const neutral = ["place", "passed", "newTurn"];
+
+const actionLog = {
+  heal: "healed",
+  played: "played",
+  death: "died",
+  damageTaken: "took damage",
+  place: "placed",
+  linden: "doubled its damage",
+};
 
 const getActionImpact = (socketId, change, classes) => {
   const isYourAction = change.owner === socketId;
@@ -38,12 +47,13 @@ const ActionsLog = ({ changesVector, socketId }) => {
                     : (change.owner === socketId ? "Your" : "Enemy's") +
                       " " +
                       change.name +
-                      ": " +
-                      change.action + (change.value ? " (" + change.value + ")" : "") + (change.by ? " by " + change.by : "") +
-                      " at row " +
-                      change.row +
-                      ", column " +
-                      change.col}
+                      " " +
+                      actionLog[change.action] +
+                      (change.value ? " (" + change.value + ")" : "") +
+                      (change.by ? " by " + change.by : "") +
+                      (change.row && change.col
+                        ? " at row " + change.row + ", column " + change.col
+                        : "")}
                 </span>
               </p>
             </li>

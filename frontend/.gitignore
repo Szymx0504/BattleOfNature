@@ -25,3 +25,5 @@ dist-ssr
 
 .eslint.config.js
 vite.config.js
+
+legacy.txt

@@ -4,7 +4,7 @@ import classes from "./Rules.module.css";
 const Rules = () => {
   return (
     <div className={classes.rulesContainer}>
-      <h1 className={classes.mainTitle}>Wojna Przyrody</h1>
+      <h1 className={classes.mainTitle}>Wajn Psired</h1>
 
       {/* OBJECTIVE */}
       <section className={classes.section}>

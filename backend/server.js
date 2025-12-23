@@ -20,6 +20,8 @@ const {
   checkAnyEnemies,
   checkOpponentsMainTree,
   checkAttacksLeft,
+  manageTime,
+  handleTimeout,
 } = require("./utilities.js");
 
 const app = express();
@@ -38,15 +40,23 @@ app.use(express.json());
 // Store active games (use Redis in production)
 const activeGames = new Map();
 const waitingPlayers = []; // {id, deck}
+const playersOnline = new Map();
 
-app.get("/api/test", (req, res) => {
-  res.json({ status: "Backend" });
-});
+// app.get("/api/test", (req, res) => {
+//   res.json({ status: "Backend" });
+// });
 
-app.post("/api/create-game", (req, res) => {
-  const gameId = generateGameId();
-  activeGames.set(gameId, { newGame: 5 });
-  res.json({ gameId });
+// app.post("/api/create-game", (req, res) => {
+//   const gameId = generateGameId();
+//   activeGames.set(gameId, { newGame: 5 });
+//   res.json({ gameId });
+// });
+
+app.get("/api/players", (req, res) => {
+  res.json({
+    playersOnline: playersOnline.size,
+    activeGames: activeGames.size,
+  });
 });
 
 server.listen(8080, () => {
@@ -55,6 +65,7 @@ server.listen(8080, () => {
 
 io.on("connection", (socket) => {
   const playerConnectionId = socket.id; // real id from connection
+  playersOnline.set(socket.id, { joinedAt: Date.now() });
 
   socket.on("findOpponent", (deck) => {
     const counters = { legendary: 0, rare: 0, common: 0 };
@@ -97,6 +108,7 @@ io.on("connection", (socket) => {
               pts: 5,
               passed: false,
               mainTree: 25,
+              globalTime: 0,
             },
             [enemyId]: {
               deck: enemyDeck,
@@ -105,6 +117,7 @@ io.on("connection", (socket) => {
               pts: 5,
               passed: false,
               mainTree: 25,
+              globalTime: 0,
             },
           },
           board: generateBoard(playerConnectionId, enemyId),
@@ -121,6 +134,7 @@ io.on("connection", (socket) => {
             [enemyId]: [],
           },
           attacksThisMove: [],
+          actionStartedAt: Date.now(),
         };
         activeGames.set(gameId, game);
 
@@ -129,36 +143,57 @@ io.on("connection", (socket) => {
         // repack it in a minute (rotate board, restrict deck visibitily etc, rotate in playCard)
         // const rotate = !gameId.startsWith(playerConnectionId); // we create the gameId here: `${playerConnectionId}-${enemyId}`, so rotate for opponent
 
+        // game.whoseMove is already updated (and must be - in other places)
+        const maxWaitTime =
+          (30 + game.players[game.whoseMove].globalTime) * 1000;
+        game.forceEndTimer = setTimeout(() => {
+          handleTimeout(
+            game,
+            game.whoseMove,
+            game.whoseMove === playerConnectionId
+              ? enemyId
+              : playerConnectionId,
+            io,
+            activeGames,
+            gameId
+          );
+        }, maxWaitTime);
+
+        const { forceEndTimer, ...publicGame } = game;
         io.to(enemyId).emit("opponentFound", gameId, {
-          ...game,
+          ...publicGame,
           players: {
             [enemyId]: {
               hand: game.players[enemyId].hand,
               pts: game.players[enemyId].pts,
               passed: game.players[enemyId].passed,
               mainTree: game.players[enemyId].mainTree,
+              globalTime: game.players[enemyId].globalTime,
             },
             [playerConnectionId]: {
               pts: game.players[playerConnectionId].pts,
               passed: game.players[playerConnectionId].passed,
               mainTree: game.players[playerConnectionId].mainTree,
+              globalTime: game.players[enemyId].globalTime,
             },
           },
           board: adjustBoard(game.board, true),
         });
         socket.emit("opponentFound", gameId, {
-          ...game,
+          ...publicGame,
           players: {
             [playerConnectionId]: {
               hand: game.players[playerConnectionId].hand,
               pts: game.players[playerConnectionId].pts,
               passed: game.players[playerConnectionId].passed,
               mainTree: game.players[playerConnectionId].mainTree,
+              globalTime: game.players[playerConnectionId].globalTime,
             },
             [enemyId]: {
               pts: game.players[enemyId].pts,
               passed: game.players[enemyId].passed,
               mainTree: game.players[enemyId].mainTree,
+              globalTime: game.players[enemyId].globalTime,
             },
           },
           board: adjustBoard(game.board, false), // could be ommited but maybe we'll add sth there in the future
@@ -243,6 +278,18 @@ io.on("connection", (socket) => {
         return;
       }
 
+      if (game.forceEndTimer) clearTimeout(game.forceEndTimer);
+      if (!manageTime(game, playerConnectionId)) {
+        handleTimeout(
+          game,
+          playerConnectionId,
+          enemyId,
+          io,
+          activeGames,
+          gameId
+        );
+        return console.log("lost");
+      }
       changesVector.push({
         action: "place",
         row,
@@ -304,12 +351,24 @@ io.on("connection", (socket) => {
       }
       if (
         targetCard.name === "main tree" &&
-        checkAnyEnemies(game.board, enemyId)
+        checkAnyEnemies(game.board, enemyId, true)
       ) {
         socket.emit("error", "Cannot attack main tree. Enemies on board");
         return;
       }
 
+      if (game.forceEndTimer) clearTimeout(game.forceEndTimer);
+      if (!manageTime(game, playerConnectionId)) {
+        handleTimeout(
+          game,
+          playerConnectionId,
+          enemyId,
+          io,
+          activeGames,
+          gameId
+        );
+        return console.log("lost");
+      }
       changesVector.push({
         action: "played",
         row,
@@ -326,7 +385,7 @@ io.on("connection", (socket) => {
       // IMPORTANT do funcs dealDamage and heal that will take care of consequences - like dying, healing up to +1 etc
       if (card !== "medicinal herbs") {
         // targetCard.hp -= cardProperties[card].dmg;
-        if (dealDamage(targetCard, cardProperties[card].dmg)) {
+        if (dealDamage(targetCard, cardProperties[card].dmg, changesVector)) {
           // account for multiple cards per tile
           if (mainTree) {
             game.players[enemyId].mainTree = targetCard.hp;
@@ -398,43 +457,63 @@ io.on("connection", (socket) => {
     // maybe even in the future it will only receive changesVector and not the whole game's state (not for now)
     // IMPORTANT: you need to adjust all changesVector's coords for a player "at the top"!! do it while emitting a socket
 
+    game.actionStartedAt = Date.now();
+    // game.whoseMove is already updated (and must be - in other places)
+    const maxWaitTime = (30 + game.players[game.whoseMove].globalTime) * 1000;
+    game.forceEndTimer = setTimeout(() => {
+      handleTimeout(
+        game,
+        game.whoseMove,
+        game.whoseMove === playerConnectionId ? enemyId : playerConnectionId,
+        io,
+        activeGames,
+        gameId
+      );
+    }, maxWaitTime);
+
+    const { forceEndTimer, ...publicGame } = game;
     io.to(enemyId).emit(
       "update",
       {
-        ...game,
+        ...publicGame,
         players: {
           [enemyId]: {
             hand: game.players[enemyId].hand,
             pts: game.players[enemyId].pts,
             passed: game.players[enemyId].passed,
             mainTree: game.players[enemyId].mainTree,
+            globalTime: game.players[enemyId].globalTime,
           },
           [playerConnectionId]: {
             pts: game.players[playerConnectionId].pts,
             passed: game.players[playerConnectionId].passed,
             mainTree: game.players[playerConnectionId].mainTree,
+            globalTime: game.players[playerConnectionId].globalTime,
           },
         },
         board: adjustBoard(game.board, !rotate),
       },
       adjustVector(changesVector, !rotate),
-      { winner }
+      // we are sending a fact to the enemy that the current player made a move only if the enemy didn't pass (to notify them it's their turn)
+      { winner, enemyPlayed: !game.players[enemyId].passed }
     );
     socket.emit(
       "update",
       {
-        ...game,
+        ...publicGame,
         players: {
           [playerConnectionId]: {
             hand: game.players[playerConnectionId].hand,
             pts: game.players[playerConnectionId].pts,
             passed: game.players[playerConnectionId].passed,
             mainTree: game.players[playerConnectionId].mainTree,
+            globalTime: game.players[playerConnectionId].globalTime,
           },
           [enemyId]: {
             pts: game.players[enemyId].pts,
             passed: game.players[enemyId].passed,
             mainTree: game.players[enemyId].mainTree,
+            globalTime: game.players[enemyId].globalTime,
           },
         },
         board: adjustBoard(game.board, rotate),
@@ -582,6 +661,13 @@ io.on("connection", (socket) => {
     const changesVector = [];
     let winner = null;
 
+    // all error aleady covered by this point
+    if (game.forceEndTimer) clearTimeout(game.forceEndTimer);
+    if (!manageTime(game, playerConnectionId)) {
+      handleTimeout(game, playerConnectionId, enemyId, io, activeGames, gameId);
+      return console.log("lost");
+    }
+
     // simple attack for now
     // targetCard.hp -= sourceCard.dmg; // will update, reference
     let dmgValue = sourceCard.dmg;
@@ -592,7 +678,7 @@ io.on("connection", (socket) => {
           ? sourceCard.dmg[0]
           : sourceCard.dmg[1];
     }
-    if (dealDamage(targetCard, dmgValue)) {
+    if (dealDamage(targetCard, dmgValue, changesVector)) {
       if (mainTree) {
         game.players[enemyId].mainTree = targetCard.hp;
         console.log("the game ended."); // RETURN STH HERE
@@ -630,43 +716,62 @@ io.on("connection", (socket) => {
       game.whoseMove = enemyId;
     }
 
+    game.actionStartedAt = Date.now();
+    // game.whoseMove already updated
+    const maxWaitTime = (30 + game.players[game.whoseMove].globalTime) * 1000;
+    game.forceEndTimer = setTimeout(() => {
+      handleTimeout(
+        game,
+        game.whoseMove,
+        game.whoseMove === playerConnectionId ? enemyId : playerConnectionId,
+        io,
+        activeGames,
+        gameId
+      );
+    }, maxWaitTime);
+
+    const { forceEndTimer, ...publicGame } = game;
     io.to(enemyId).emit(
       "update",
       {
-        ...game,
+        ...publicGame,
         players: {
           [enemyId]: {
             hand: game.players[enemyId].hand,
             pts: game.players[enemyId].pts,
             passed: game.players[enemyId].passed,
             mainTree: game.players[enemyId].mainTree,
+            globalTime: game.players[enemyId].globalTime,
           },
           [playerConnectionId]: {
             pts: game.players[playerConnectionId].pts,
             passed: game.players[playerConnectionId].passed,
             mainTree: game.players[playerConnectionId].mainTree,
+            globalTime: game.players[playerConnectionId].globalTime,
           },
         },
         board: adjustBoard(game.board, !rotate),
       },
       adjustVector(changesVector, !rotate),
-      { winner }
+      { winner, enemyPlayed: !game.players[enemyId].passed }
     );
     socket.emit(
       "update",
       {
-        ...game,
+        ...publicGame,
         players: {
           [playerConnectionId]: {
             hand: game.players[playerConnectionId].hand,
             pts: game.players[playerConnectionId].pts,
             passed: game.players[playerConnectionId].passed,
             mainTree: game.players[playerConnectionId].mainTree,
+            globalTime: game.players[playerConnectionId].globalTime,
           },
           [enemyId]: {
             pts: game.players[enemyId].pts,
             passed: game.players[enemyId].passed,
             mainTree: game.players[enemyId].mainTree,
+            globalTime: game.players[enemyId].globalTime,
           },
         },
         board: adjustBoard(game.board, rotate),
@@ -676,53 +781,53 @@ io.on("connection", (socket) => {
     );
   });
 
-  socket.on("attackMainTree", (sourceCardInfo) => {
-    const gameId = Array.from(activeGames.keys()).find((id) =>
-      id.includes(socket.id)
-    );
-    if (!gameId) {
-      socket.emit("error", "Game not found");
-      return;
-    }
-    const game = activeGames.get(gameId);
-    if (game.whoseMove !== playerConnectionId) {
-      socket.emit("error", "Not your turn");
-      return;
-    }
-    if (
-      sourceCardInfo?.row === undefined ||
-      sourceCardInfo?.col === undefined
-    ) {
-      socket.emit("error", "Coords must be defined");
-      return;
-    }
-    if (!Object.keys(cardProperties).includes(sourceCardInfo?.name)) {
-      socket.emit("error", "A given card does not exist");
-      return;
-    }
+  // socket.on("attackMainTree", (sourceCardInfo) => {
+  //   const gameId = Array.from(activeGames.keys()).find((id) =>
+  //     id.includes(socket.id)
+  //   );
+  //   if (!gameId) {
+  //     socket.emit("error", "Game not found");
+  //     return;
+  //   }
+  //   const game = activeGames.get(gameId);
+  //   if (game.whoseMove !== playerConnectionId) {
+  //     socket.emit("error", "Not your turn");
+  //     return;
+  //   }
+  //   if (
+  //     sourceCardInfo?.row === undefined ||
+  //     sourceCardInfo?.col === undefined
+  //   ) {
+  //     socket.emit("error", "Coords must be defined");
+  //     return;
+  //   }
+  //   if (!Object.keys(cardProperties).includes(sourceCardInfo?.name)) {
+  //     socket.emit("error", "A given card does not exist");
+  //     return;
+  //   }
 
-    const rotate = !gameId.startsWith(playerConnectionId);
-    const { row: sourceRow, col: sourceCol } = adjustCords(
-      sourceCardInfo.row,
-      sourceCardInfo.col,
-      rotate
-    );
+  //   const rotate = !gameId.startsWith(playerConnectionId);
+  //   const { row: sourceRow, col: sourceCol } = adjustCords(
+  //     sourceCardInfo.row,
+  //     sourceCardInfo.col,
+  //     rotate
+  //   );
 
-    const sourceColGeo = getColGeometrically(sourceRow, sourceCol);
-    if (
-      sourceRow < 0 ||
-      sourceRow > 3 ||
-      sourceColGeo < 1 ||
-      sourceColGeo > 3
-    ) {
-      socket.emit("error", "Invalid coordinates");
-      return;
-    }
+  //   const sourceColGeo = getColGeometrically(sourceRow, sourceCol);
+  //   if (
+  //     sourceRow < 0 ||
+  //     sourceRow > 3 ||
+  //     sourceColGeo < 1 ||
+  //     sourceColGeo > 3
+  //   ) {
+  //     socket.emit("error", "Invalid coordinates");
+  //     return;
+  //   }
 
-    const enemyId = Object.keys(game.players).find(
-      (id) => id !== playerConnectionId
-    );
-  });
+  //   const enemyId = Object.keys(game.players).find(
+  //     (id) => id !== playerConnectionId
+  //   );
+  // });
 
   socket.on("passTurn", () => {
     const gameId = Array.from(activeGames.keys()).find((id) =>
@@ -763,13 +868,23 @@ io.on("connection", (socket) => {
       return;
     }
 
+    const enemyId = Object.keys(game.players).find(
+      (id) => id !== playerConnectionId
+    );
+    // all errors already covered by this point
+    if (game.forceEndTimer) clearTimeout(game.forceEndTimer);
+    if (!manageTime(game, playerConnectionId)) {
+      handleTimeout(game, playerConnectionId, enemyId, io, activeGames, gameId);
+      return console.log("lost");
+    }
+
     game.players[playerConnectionId].passed = true;
 
     // decide whether return new data via "update" (sending the whole board), or in an other way
     // update existing turn-changing functionality
-    const enemyId = Object.keys(game.players).find(
-      (id) => id !== playerConnectionId
-    );
+    // const enemyId = Object.keys(game.players).find(
+    //   (id) => id !== playerConnectionId
+    // );
     if (game.players[enemyId].passed) {
       // new turn
       const changesVector = [{ action: "newTurn" }];
@@ -824,21 +939,39 @@ io.on("connection", (socket) => {
       }
       // all effects resets etc etc as new cards get added
       // const rotate = !gameId.startsWith(playerConnectionId);
+
+      game.actionStartedAt = Date.now();
+      // game.whoseMove already updated
+      const maxWaitTime = (30 + game.players[game.whoseMove].globalTime) * 1000;
+      game.forceEndTimer = setTimeout(() => {
+        handleTimeout(
+          game,
+          game.whoseMove,
+          game.whoseMove === playerConnectionId ? enemyId : playerConnectionId,
+          io,
+          activeGames,
+          gameId
+        );
+      }, maxWaitTime);
+
+      const { forceEndTimer, ...publicGame } = game;
       io.to(enemyId).emit(
         "update",
         {
-          ...game,
+          ...publicGame,
           players: {
             [enemyId]: {
               hand: game.players[enemyId].hand,
               pts: game.players[enemyId].pts,
               passed: game.players[enemyId].passed,
               mainTree: game.players[enemyId].mainTree,
+              globalTime: game.players[enemyId].globalTime,
             },
             [playerConnectionId]: {
               pts: game.players[playerConnectionId].pts,
               passed: game.players[playerConnectionId].passed,
               mainTree: game.players[playerConnectionId].mainTree,
+              globalTime: game.players[playerConnectionId].globalTime,
             },
           },
           board: adjustBoard(game.board, !rotate),
@@ -849,18 +982,20 @@ io.on("connection", (socket) => {
       socket.emit(
         "update",
         {
-          ...game,
+          ...publicGame,
           players: {
             [playerConnectionId]: {
               hand: game.players[playerConnectionId].hand,
               pts: game.players[playerConnectionId].pts,
               passed: game.players[playerConnectionId].passed,
               mainTree: game.players[playerConnectionId].mainTree,
+              globalTime: game.players[playerConnectionId].globalTime,
             },
             [enemyId]: {
               pts: game.players[enemyId].pts,
               passed: game.players[enemyId].passed,
               mainTree: game.players[enemyId].mainTree,
+              globalTime: game.players[enemyId].globalTime,
             },
           },
           board: adjustBoard(game.board, rotate),
@@ -872,13 +1007,35 @@ io.on("connection", (socket) => {
       game.whoseMove = enemyId;
       // continue this turn... (only passed changes)
       const changesVector = [{ action: "passed", by: playerConnectionId }];
+
+      game.actionStartedAt = Date.now();
+      // game.whoseMove updated
+      const maxWaitTime = (30 + game.players[game.whoseMove].globalTime) * 1000;
+      game.forceEndTimer = setTimeout(() => {
+        handleTimeout(
+          game,
+          game.whoseMove,
+          game.whoseMove === playerConnectionId ? enemyId : playerConnectionId,
+          io,
+          activeGames,
+          gameId
+        );
+      }, maxWaitTime);
+
       // if more complicated mechanics in the future, just emit a general "emit" with the whole board (except for hidden data like cycles, opponent's hand)
       io.to(enemyId).emit(
         "passedTurn",
         {
-          [playerConnectionId]: game.players[playerConnectionId].passed,
-          [enemyId]: game.players[enemyId].passed,
+          [playerConnectionId]: {
+            passed: game.players[playerConnectionId].passed,
+            globalTime: game.players[playerConnectionId].globalTime,
+          },
+          [enemyId]: {
+            passed: game.players[enemyId].passed,
+            globalTime: game.players[enemyId].globalTime,
+          },
           whoseMove: game.whoseMove,
+          actionStartedAt: game.actionStartedAt,
         },
         changesVector,
         // playerConnectionId // wystarczy dawac true do rywala
@@ -887,9 +1044,16 @@ io.on("connection", (socket) => {
       socket.emit(
         "passedTurn",
         {
-          [playerConnectionId]: game.players[playerConnectionId].passed,
-          [enemyId]: game.players[enemyId].passed,
+          [playerConnectionId]: {
+            passed: game.players[playerConnectionId].passed,
+            globalTime: game.players[playerConnectionId].globalTime,
+          },
+          [enemyId]: {
+            passed: game.players[enemyId].passed,
+            globalTime: game.players[enemyId].globalTime,
+          },
           whoseMove: game.whoseMove,
+          actionStartedAt: game.actionStartedAt,
         },
         changesVector
         // playerConnectionId
@@ -916,5 +1080,7 @@ io.on("connection", (socket) => {
       // player was waiting
       waitingPlayers.splice(index, 1);
     }
+
+    playersOnline.delete(socket.id);
   });
 });

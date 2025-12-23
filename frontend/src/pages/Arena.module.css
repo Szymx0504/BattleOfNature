@@ -14,49 +14,6 @@
     padding: 0 10px 10px 10px; 
 }
 
-.info {
-    display: flex;
-    justify-content: space-between; 
-    align-items: center;
-    /* FIX 1: Reduced vertical padding again for minimal height */
-    padding: 3px 20px; 
-    background-color: rgba(30, 40, 35, 0.9); 
-    border-radius: 0 0 8px 8px; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    margin-top: 0; 
-}
-
-.info p {
-    /* FIX 2: Reduced font size for less vertical space */
-    font-size: 0.9rem; 
-    font-weight: bold;
-    color: #92cddc; 
-}
-
-.passBtn {
-    background-color: #a33a3a; 
-    color: #eaece3;
-    /* FIX 3: Reduced button padding to make it smaller */
-    padding: 6px 12px; 
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.passBtn:hover { /* Updated the hover style based on your last provided code */
-    background-color: #C14A4A;
-}
-
-.passBtn:disabled {
-    background-color: #5a2e2e; /* Ciemniejszy, "zgaszony" czerwony */
-    color: #999;               /* Szary tekst */
-    cursor: not-allowed;       /* Ikona zakazu zamiast łapki */
-    opacity: 0.6;              /* Lekkie wyblaknięcie */
-    filter: grayscale(0.5);    /* Opcjonalnie: desaturacja koloru */
-}
-
 .table {
     display: flex;
     flex-direction: column; 
@@ -66,5 +23,4 @@
 
 .boardArea {
     display: flex;
-    
 }
