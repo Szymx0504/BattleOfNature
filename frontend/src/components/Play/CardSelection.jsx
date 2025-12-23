@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 
 import Card from "../elements/Card";
-import { cardProperties } from "../../assets/cardProperties";
+import { cardProperties } from "../../data/cardProperties";
 
 import classes from "./CardSelection.module.css";
 

@@ -1,5 +1,5 @@
 import classes from "./Hand.module.css";
-import { cardProperties } from "../../assets/cardProperties";
+import { cardProperties } from "../../data/cardProperties";
 import Card from "../elements/Card";
 
 // cardProperties will be requested from the db

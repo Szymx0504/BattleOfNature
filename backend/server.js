@@ -2,6 +2,7 @@ const express = require("express");
 const http = require("http");
 const socketIo = require("socket.io");
 const cors = require("cors");
+const path = require("path");
 
 const {
   cardProperties,
@@ -57,6 +58,12 @@ app.get("/api/players", (req, res) => {
     playersOnline: playersOnline.size,
     activeGames: activeGames.size,
   });
+});
+
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+app.get(/.*/, (req, res, next) => {
+  if (req.url.startsWith('/api')) return next();
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
 });
 
 server.listen(8080, () => {

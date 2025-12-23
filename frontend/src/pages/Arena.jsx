@@ -7,7 +7,7 @@ import { useSocket } from "../hooks/useSocket";
 import Board from "../components/Arena/Board";
 import Hand from "../components/Arena/Hand";
 
-import { cardProperties } from "../assets/cardProperties";
+import { cardProperties } from "../data/cardProperties";
 import classes from "./Arena.module.css";
 import PtsBar from "../components/Arena/PtsBar";
 import ActionsLog from "../components/Arena/ActionsLog";

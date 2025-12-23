@@ -1,6 +1,6 @@
 import Card from "../components/elements/Card";
 
-import { cardProperties } from "../assets/cardProperties";
+import { cardProperties } from "../data/cardProperties";
 import classes from "./Cards.module.css";
 
 const cardNamesArray = Object.keys(cardProperties);

@@ -9,7 +9,7 @@ const Card = ({i, classKeys, cardName, cardDetails, handleClick, menu}) => {
       className={[classes.card, ...classKeys.map(c => classes[c])].filter(Boolean).join(" ")}
     >
       <p>{cardName}</p>
-      <img src={"/src/assets/cards/" + cardName.replace(" ", "_") + ".png"} />
+      <img src={"/assets/cards/" + cardName.replace(" ", "_") + ".png"} />
       <div className={`${classes.stats} ${menu && classes.menuStats}`}>
         <span className={cardDetails.hp ? classes.hp : classes.dmg}>
           {/* {cardDetails.hp || cardDetails.dmg} */}

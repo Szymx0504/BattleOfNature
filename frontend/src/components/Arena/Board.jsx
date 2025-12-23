@@ -19,7 +19,7 @@ const Board = ({ board, onTileClick, selectedCard, socketId, mainTreeHp, enemyMa
                   <div className={classes.tileContent}>
                     {tile.mainTree ? (
                       <div className={classes.mainTree}>
-                        <img src="/src/assets/elements/main_tree.png" />
+                        <img src="/assets/elements/main_tree.png" />
                         <p>
                           {i <= 1 ? enemyMainTreeHp : mainTreeHp}
                           {/* {
