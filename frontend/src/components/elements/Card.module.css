@@ -21,7 +21,7 @@
     list-style: none;
     transform-origin: center center;
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 .card p {
@@ -62,13 +62,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 99%;
+  width: 97%;
 
   /* FIX 4: Prevent the stats bar from growing or taking up any extra space */
   flex-shrink: 0;
   flex-grow: 0;
 
-  margin-top: auto; /* Ensures it stays at the bottom */
+  margin-bottom: 1%;
+  margin-top: auto;
 }
 
 .stats span {
@@ -145,21 +146,21 @@
 .common {
   composes: baseBackground;
   background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-    url("src/assets/backgrounds/common_background.png");
+    url("/assets/backgrounds/common_background.png");
   border: 1px solid #92cddc;
 }
 
 .rare {
   composes: baseBackground;
   background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-    url("src/assets/backgrounds/rare_background.png");
+    url("/assets/backgrounds/rare_background.png");
   border: 1px solid #ffd700;
 }
 
 .legendary {
   composes: baseBackground;
   background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
-    url("src/assets/backgrounds/legendary_background.png");
+    url("/assets/backgrounds/legendary_background.png");
   border: 1px solid #8a2be2;
 }
 
