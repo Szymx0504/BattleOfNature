@@ -1,4 +1,13 @@
 export const cardProperties = {
+  oxytree: {
+    name: "oxytree",
+    hp: 9,
+    pts: 3,
+    dmg: 0,
+    type: "tree",
+    rarity: "legendary",
+    description: "Increases its own attack in every turn by 2dmg (up to 12)",
+  },
   timberman: {
     name: "timberman",
     pts: 5,
@@ -44,6 +53,16 @@ export const cardProperties = {
     type: "tree",
     rarity: "rare",
     description: "Doubles its current attack when it is attacked (up to 32)",
+  },
+  "magic force": {
+    name: "magic force",
+    pts: 3,
+    dmg: 0,
+    type: "spell",
+    intendedFor: "aimed",
+    rarity: "rare",
+    description:
+      "Choose an object which has already attacked, you instantly perform its attack again",
   },
   "medicinal herbs": {
     name: "medicinal herbs",

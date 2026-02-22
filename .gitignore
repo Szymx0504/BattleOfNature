@@ -9,5 +9,7 @@ dist/
 .idea/
 .DS_Store
 
+backend/info.txt
 frontend/important.txt
-frontend/legacy.txt
+
+antigravity

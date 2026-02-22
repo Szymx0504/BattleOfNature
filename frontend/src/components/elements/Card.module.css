@@ -3,59 +3,59 @@
    ========================================================================= */
 
 .card {
-    background-color: rgba(90, 146, 102, 0.2);
-    /* Dodajemy zewnętrzny, bardzo delikatny cień, który "odkleja" czarną ramkę od tła */
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.8), 0 2px 8px rgba(0, 0, 0, 0.6);
-    
-    color: #eaece3;
-    padding: 2px 10px 8px 10px;
-    margin: 0;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: auto;
-    width: 100%;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    list-style: none;
-    transform-origin: center center;
-    position: relative;
-    /* overflow: hidden; */
+  background-color: rgba(90, 146, 102, 0.2);
+  /* Dodajemy zewnętrzny, bardzo delikatny cień, który "odkleja" czarną ramkę od tła */
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8), 0 2px 8px rgba(0, 0, 0, 0.6);
+
+  color: #eaece3;
+  padding: 2px 10px 8px 10px;
+  margin: 0;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  width: 100%;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  list-style: none;
+  transform-origin: center center;
+  position: relative;
+  /* overflow: hidden; */
 }
 
 .card p {
-    font-size: 1.45em;
-    font-weight: bold;
-    text-align: center;
-    /* Zmniejszamy margines pod tytułem, żeby wszystko poszło w górę */
-    margin: 1.5px 0 2.5px 0; 
-    color: #eaece3;
-    background-color: rgba(30, 40, 35, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    /* Ciaśniejszy padding góra/dół dla tytułu */
-    padding: 0.3em 0.75em; 
-    border-radius: 8px;
-    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
-    width: fit-content;
-    min-width: 50%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: capitalize;
+  font-size: 1.45em;
+  font-weight: bold;
+  text-align: center;
+  /* Zmniejszamy margines pod tytułem, żeby wszystko poszło w górę */
+  margin: 1.5px 0 2.5px 0;
+  color: #eaece3;
+  background-color: rgba(30, 40, 35, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  /* Ciaśniejszy padding góra/dół dla tytułu */
+  padding: 0.3em 0.75em;
+  border-radius: 8px;
+  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
+  width: fit-content;
+  min-width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
 }
 
 .card img {
-    width: 99%;
-    max-height: 15em; 
-    object-fit: contain;
-    border-radius: 4px;
-    border-top: 1px #252525 solid;
-    border-bottom: 1px #252525 solid;
-    margin-bottom: 2px;
+  width: 99%;
+  max-height: 15em;
+  object-fit: contain;
+  border-radius: 4px;
+  border-top: 1px #252525 solid;
+  border-bottom: 1px #252525 solid;
+  margin-bottom: 2px;
 }
 
 .stats {
@@ -73,33 +73,33 @@
 }
 
 .stats span {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 32%;
-    /* Minimalny padding, by tekst nie dotykał krawędzi kafelka statystyk */
-    padding: 0.1em 0; 
-    font-size: 1.15em; 
-    font-weight: 900;
-    line-height: 1;
-    border-radius: 4px;
-    color: #eaece3;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32%;
+  /* Minimalny padding, by tekst nie dotykał krawędzi kafelka statystyk */
+  padding: 0.1em 0;
+  font-size: 1.15em;
+  font-weight: 900;
+  line-height: 1;
+  border-radius: 4px;
+  color: #eaece3;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* --- SPECIAL CLASS FOR MENU / SELECTION SCREEN --- */
 .menuStats span {
-    /* Zmniejszamy font z 1.15em na bardziej standardowy */
-    font-size: 0.9em !important; 
-    
-    /* Zmniejszamy grubość, żeby tekst nie był tak "ciężki" */
-    font-weight: 700 !important; 
-    
-    /* Dodajemy odrobinę więcej miejsca wewnątrz kafelka */
-    padding: 0.3em 0 !important;
-    
-    /* Delikatniejszy cień tekstu */
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4) !important;
+  /* Zmniejszamy font z 1.15em na bardziej standardowy */
+  font-size: 0.9em !important;
+
+  /* Zmniejszamy grubość, żeby tekst nie był tak "ciężki" */
+  font-weight: 700 !important;
+
+  /* Dodajemy odrobinę więcej miejsca wewnątrz kafelka */
+  padding: 0.3em 0 !important;
+
+  /* Delikatniejszy cień tekstu */
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* --- INDIVIDUAL STAT COLORS --- */
@@ -172,17 +172,17 @@
 
   /* --- STYL "NATURALNY" --- */
   /* Bardzo ciemny brąz/oliwka - świetnie siedzi na zielonym tle */
-  background: rgba(25, 30, 20, 0.8); 
-  
+  background: rgba(25, 30, 20, 0.8);
+
   /* Efekt rozmycia (robi robotę przy nakładaniu na inne płytki) */
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  
+
   /* Zamiast błękitu - bardzo subtelna złotawo-beżowa ramka */
   border: 1px solid rgba(200, 180, 150, 0.25);
-  
+
   /* Kremowy tekst - znacznie bardziej naturalny niż czysta biel */
-  color: #f0e6d2; 
+  color: #f0e6d2;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
   /* ------------------------ */
 
@@ -190,7 +190,7 @@
   padding: 10px;
   border-radius: 6px;
   z-index: 100;
-  
+
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease-out;
@@ -215,23 +215,23 @@
 }
 
 .card.board {
-    /* KLUCZ: Absolute sprawia, że karta 'pływa', ale nie psuje .tileContent */
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    /* Centrowanie karty absolutnej względem kafelka */
-    transform: translate(-50%, -50%) scale(0.85);
-    font-size: 70%;
-    
-    z-index: 10;
-    width: 100% !important;
-    height: 100% !important;
-    
-    /* Solidne tło przykrywa drzewo */
-    background-color: #1a2621 !important;
-    border-radius: 8px;
-    margin: 0;
-    padding: 0;
+  /* KLUCZ: Absolute sprawia, że karta 'pływa', ale nie psuje .tileContent */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  /* Centrowanie karty absolutnej względem kafelka */
+  transform: translate(-50%, -50%) scale(0.85);
+  font-size: 70%;
+
+  z-index: 10;
+  width: 100% !important;
+  height: 100% !important;
+
+  /* Solidne tło przykrywa drzewo */
+  background-color: #1a2621 !important;
+  border-radius: 8px;
+  margin: 0;
+  padding: 0;
 }
 
 /* --- HAND SCALING CONTEXT --- */
@@ -250,6 +250,10 @@
   margin: 0;
 }
 
+.card.cardSelection p {
+  font-size: 1.25em;
+}
+
 .card.opponent {
   box-shadow: 
         /* X-offset, Y-offset, Blur, Spread, Color */ 0 0 15px 3px
@@ -264,10 +268,10 @@
 @keyframes attack-ready-pulse {
   0% {
     border-color: #00d4ff; /* Bardzo intensywny, nasycony błękit */
-  } 
+  }
   50% {
     border-color: #ffffff; /* Czysty biały błysk - to drastycznie poprawia widoczność */
-  } 
+  }
   100% {
     border-color: #00d4ff;
   }

@@ -209,6 +209,13 @@ const Arena = () => {
         toast.warn("The tile doesn't belong to you");
         // console.log("the tile is not yours!");
       } else if (
+        tile.mainTree &&
+        tile.owner === socketId &&
+        selectedCard?.type !== "spell" &&
+        selectedCard?.name !== "creepers"
+      ) {
+        toast.warn("You cannot place a card on the Main Tree");
+      } else if (
         gameState?.players[socketId].pts < cardProperties[selectedCard.name].pts
       ) {
         toast.warn("You don't enough points to play this card");

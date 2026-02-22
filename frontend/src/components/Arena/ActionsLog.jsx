@@ -1,6 +1,6 @@
 import classes from "./ActionsLog.module.css";
 
-const goodIfYours = ["heal", "played", "linden"];
+const goodIfYours = ["heal", "played", "linden", "oxytree"];
 const badIfYours = ["death", "damageTaken"];
 const neutral = ["place", "passed", "newTurn"];
 
@@ -11,6 +11,7 @@ const actionLog = {
   damageTaken: "took damage",
   place: "placed",
   linden: "doubled its damage",
+  oxytree: "increased its damage",
 };
 
 const getActionImpact = (socketId, change, classes) => {

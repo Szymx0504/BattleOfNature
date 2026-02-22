@@ -69,6 +69,7 @@ const CardSelection = ({ deckInfo, setDeckInfo }) => {
               classKeys={[
                 deckInfo.cards.includes(cardName) && "cardSelected",
                 cardDetails.rarity,
+                "cardSelection"
               ]}
               cardName={cardName}
               cardDetails={cardDetails}
