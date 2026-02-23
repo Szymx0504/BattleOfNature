@@ -2,6 +2,7 @@
 import { createContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import socketService from "../services/socket";
+import { useLanguage } from "./LanguageContext";
 
 export const SocketContext = createContext();
 
@@ -11,6 +12,7 @@ const gameEndingOptions = {
 };
 
 export const SocketProvider = ({ children }) => {
+  const { t } = useLanguage();
   const [isConnected, setIsConnected] = useState(false);
   const [gameState, setGameState] = useState(null);
   const [gameId, setGameId] = useState(null);
@@ -27,21 +29,21 @@ export const SocketProvider = ({ children }) => {
     }
 
     const handleConnect = () => {
-      toast.info("Connected to the server");
+      toast.info(t("socket.connected"));
       // console.log("Connected to server");
       setIsConnected(true);
       setSocketId(socket.id);
     };
 
     const handleDisconnect = (reason) => {
-      toast.error(`Disconnected: ${reason}`);
+      toast.error(`${t("socket.disconnected")}: ${reason}`);
       // console.log("Disconnected:", reason);
       setIsConnected(false);
       setSocketId(null);
     };
 
     const handleError = (reason) => {
-      toast.error(`Error: ${reason}`);
+      toast.error(`${t("socket.error")}: ${reason}`);
       // console.log("Error:", reason);
       //     setError(errorMessage); // option for the future
       // // Auto-clear error after 5 seconds
@@ -50,14 +52,14 @@ export const SocketProvider = ({ children }) => {
 
     const handleOpponentLeft = () => {
       gameEnded
-        ? toast.info("Opponent left the game", gameEndingOptions)
-        : toast.success("You won! Opponent left", gameEndingOptions);
+        ? toast.info(t("socket.opponentLeft"), gameEndingOptions)
+        : toast.success(t("socket.youWonOpponentLeft"), gameEndingOptions);
       // console.log("You won!!! Opponent left");
       // setGameState(prev => ({...prev, status: "victory"}));
     };
 
     const handleOpponentFound = (gid, gameData) => {
-      toast.success("Opponent found! The game begins now");
+      toast.success(t("socket.opponentFound"));
       // console.log("Opponent found! Game ID:", gid);
       setGameState(gameData);
       setGameId(gid);
@@ -70,8 +72,8 @@ export const SocketProvider = ({ children }) => {
         // moved up here as winning is more important than new turn
         // think if there can be an else if or not, cause someone may win between the turns (with more complicated cards in the future)
         extraData.winner === socket.id
-          ? toast.success("Fantastic, you won!", gameEndingOptions)
-          : toast.error("Enemy has won...", gameEndingOptions);
+          ? toast.success(t("socket.youWon"), gameEndingOptions)
+          : toast.error(t("socket.enemyWon"), gameEndingOptions);
         setGameEnded(true);
       } else if (extraData.newTurn) {
         switch (Number(extraData.newTurn)) {
@@ -86,11 +88,11 @@ export const SocketProvider = ({ children }) => {
             );
             break;
           default:
-            toast.info(`Turn ${extraData.newTurn} has just began`);
+            toast.info(t("socket.turnStarted", { turn: extraData.newTurn }));
         }
       } else if (extraData.enemyPlayed) {
         // the same as with passing
-        toast.info("Enemy made a move. Your turn!");
+        toast.info(t("socket.enemyMadeMove"));
       }
     };
 
@@ -119,23 +121,23 @@ export const SocketProvider = ({ children }) => {
       });
       setChangesVector(changes);
       if (enemyPassed) {
-        toast.info("Enemy has just passed");
+        toast.info(t("socket.enemyPassed"));
       }
     };
 
     const handleDraw = () => {
-      toast.info("It's a draw! The game ended!", gameEndingOptions);
+      toast.info(t("socket.draw"), gameEndingOptions);
       setGameEnded(true);
     };
 
     const handleTimeOver = (res) => {
       res.won
         ? toast.success(
-            "You won! The enemy has run out of time",
+            t("socket.youWonByTime"),
             gameEndingOptions
           )
         : toast.error(
-            "Enemy won... you have run out of time",
+            t("socket.youLostByTime"),
             gameEndingOptions
           );
       setGameEnded(true);
@@ -173,14 +175,14 @@ export const SocketProvider = ({ children }) => {
     socket.emit("findOpponent", deck);
   };
 
-  const playCard = (card, tile) => {
+  const playCard = (card, tile, special) => {
     // tile = (row, col)
     const socket = socketService.connect();
     if (!socket) {
       console.error("Connection failure");
       return;
     }
-    socket.emit("playCard", card, tile);
+    socket.emit("playCard", card, tile, special);
   };
 
   const makeAttack = (sourceCardInfo, targetCardInfo) => {

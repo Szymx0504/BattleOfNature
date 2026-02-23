@@ -3,73 +3,120 @@
    ========================================================================= */
 
 .card {
-  background-color: rgba(90, 146, 102, 0.2);
-  /* Dodajemy zewnętrzny, bardzo delikatny cień, który "odkleja" czarną ramkę od tła */
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.8), 0 2px 8px rgba(0, 0, 0, 0.6);
-
-  color: #eaece3;
-  padding: 2px 10px 8px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  padding: 2px 8px 6px 8px;
   margin: 0;
-  border-radius: 8px;
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   align-items: center;
   height: auto;
   width: 100%;
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
   cursor: pointer;
   list-style: none;
-  transform-origin: center center;
+  transform-origin: center bottom;
   position: relative;
-  /* overflow: hidden; */
 }
 
-.card p {
-  font-size: 1.45em;
-  font-weight: bold;
-  text-align: center;
-  /* Zmniejszamy margines pod tytułem, żeby wszystko poszło w górę */
-  margin: 1.5px 0 2.5px 0;
-  color: #eaece3;
-  background-color: rgba(30, 40, 35, 0.5);
+.card:hover {
+  z-index: 10;
+}
+
+/* --- Category colored top border (via class on card) --- */
+.cat_fighter { border-top: 3px solid var(--category-fighter); }
+.cat_siege { border-top: 3px solid var(--category-siege); }
+.cat_defender { border-top: 3px solid var(--category-defender); }
+.cat_support { border-top: 3px solid var(--category-support); }
+.cat_spell { border-top: 3px solid var(--category-spell); }
+
+/* --- Category Stripe (small icon in the top-right) --- */
+.categoryStripe {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.85rem;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
-  /* Ciaśniejszy padding góra/dół dla tytułu */
-  padding: 0.3em 0.75em;
-  border-radius: 8px;
-  box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.2);
-  width: fit-content;
-  min-width: 50%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-transform: capitalize;
+  z-index: 6;
+  border: 1px solid var(--border-subtle);
 }
 
-.card img {
-  width: 99%;
-  max-height: 15em;
+/* --- Type Icon (top-left corner) --- */
+.typeIcon {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
-  border-radius: 4px;
-  border-top: 1px #252525 solid;
-  border-bottom: 1px #252525 solid;
-  margin-bottom: 2px;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 50%;
+  padding: 3px;
+  z-index: 6;
+  border: 1px solid var(--border-subtle);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
 }
 
+/* --- Card Title --- */
+.card p {
+  font-family: var(--font-display);
+  font-size: 1.15em;
+  font-weight: 700;
+  text-align: center;
+  margin: 2px 0 2px 0;
+  color: var(--text-primary);
+  display: block;
+  line-height: 1.2;
+  padding: 0.2em 1.5em;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-sm);
+  width: 100%;
+  box-sizing: border-box;
+  text-transform: capitalize;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Smaller font for long card names so they fit between icons */
+.longName {
+  font-size: 0.75rem !important;
+  white-space: nowrap;
+  min-height: 1.75rem;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Card Image --- */
+.cardImage {
+  width: 96%;
+  max-height: 14em;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 3px;
+}
+
+/* --- Stats Bar --- */
 .stats {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 97%;
-
-  /* FIX 4: Prevent the stats bar from growing or taking up any extra space */
+  width: 96%;
   flex-shrink: 0;
   flex-grow: 0;
-
-  margin-bottom: 1%;
+  padding: 2px 0 3px 0;
   margin-top: auto;
+  gap: 3px;
 }
 
 .stats span {
@@ -77,208 +124,324 @@
   justify-content: center;
   align-items: center;
   width: 32%;
-  /* Minimalny padding, by tekst nie dotykał krawędzi kafelka statystyk */
-  padding: 0.1em 0;
-  font-size: 1.15em;
-  font-weight: 900;
+  padding: 0.15em 0;
+  font-size: 0.95em;
+  font-weight: 800;
+  font-family: var(--font-body);
   line-height: 1;
-  border-radius: 4px;
-  color: #eaece3;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-/* --- SPECIAL CLASS FOR MENU / SELECTION SCREEN --- */
 .menuStats span {
-  /* Zmniejszamy font z 1.15em na bardziej standardowy */
-  font-size: 0.9em !important;
-
-  /* Zmniejszamy grubość, żeby tekst nie był tak "ciężki" */
+  font-size: 0.85em !important;
   font-weight: 700 !important;
-
-  /* Dodajemy odrobinę więcej miejsca wewnątrz kafelka */
-  padding: 0.3em 0 !important;
-
-  /* Delikatniejszy cień tekstu */
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4) !important;
+  padding: 0.25em 0 !important;
 }
 
-/* --- INDIVIDUAL STAT COLORS --- */
 .hp {
-  background-color: #5a9266;
+  background: linear-gradient(135deg, #22a06b 0%, #1a7a50 100%);
 }
 
 .dmg {
-  background-color: #a33a3a;
+  background: linear-gradient(135deg, #d63031 0%, #a91e1e 100%);
 }
 
 .cost {
-  background-color: #a86494;
+  background: linear-gradient(135deg, #9b59b6 0%, #7c3ea1 100%);
 }
 
 /* =========================================================================
-   CARD SELECTION STATE (CardSelected)
+   CARD SELECTION STATE
    ========================================================================= */
 
 .cardSelected {
-  background-color: #588765;
-  color: #eaece3;
-  border: 3px solid #99a1af;
+  border: 2px solid #00ff88 !important;
+  box-shadow:
+    0 0 15px rgba(0, 255, 136, 0.5),
+    0 0 30px rgba(0, 255, 136, 0.25),
+    inset 0 0 15px rgba(0, 255, 136, 0.1) !important;
+  transform: scale(1.04);
+  animation: selected-breathe 1s infinite alternate ease-in-out;
+}
 
-  box-shadow: 0 0 15px rgba(105, 169, 187, 0.8),
-    0 0 5px rgba(153, 161, 175, 0.5);
-
-  transform: scale(1.05);
-  transition: all 0.2s ease-in-out;
+@keyframes selected-breathe {
+  0% { box-shadow: 0 0 15px rgba(0, 255, 136, 0.5), 0 0 30px rgba(0, 255, 136, 0.2), inset 0 0 15px rgba(0, 255, 136, 0.1); }
+  100% { box-shadow: 0 0 25px rgba(0, 255, 136, 0.7), 0 0 50px rgba(0, 255, 136, 0.3), inset 0 0 20px rgba(0, 255, 136, 0.15); }
 }
 
 /* =========================================================================
-   RARITY BACKGROUNDS (CSS Modules: Composes Base)
+   RARITY BACKGROUNDS
    ========================================================================= */
 
 .baseBackground {
   background-size: auto 100%;
   background-position: center;
   background-repeat: no-repeat;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
   background-color: transparent;
 }
 
 .common {
   composes: baseBackground;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)),
     url("/assets/backgrounds/common_background.png");
-  border: 1px solid #92cddc;
+  border-color: var(--rarity-common);
+  box-shadow: var(--shadow-md), 0 0 10px var(--rarity-common-glow);
 }
 
 .rare {
   composes: baseBackground;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+  background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)),
     url("/assets/backgrounds/rare_background.png");
-  border: 1px solid #ffd700;
+  border-color: var(--rarity-rare);
+  box-shadow: var(--shadow-md), 0 0 12px var(--rarity-rare-glow);
 }
 
 .legendary {
   composes: baseBackground;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.4)),
     url("/assets/backgrounds/legendary_background.png");
-  border: 1px solid #8a2be2;
+  border-color: var(--rarity-legendary);
+  box-shadow: var(--shadow-md), 0 0 16px var(--rarity-legendary-glow);
+  animation: legendary-shimmer 3s infinite alternate ease-in-out;
 }
+
+@keyframes legendary-shimmer {
+  0% { box-shadow: var(--shadow-md), 0 0 14px var(--rarity-legendary-glow); }
+  100% { box-shadow: var(--shadow-md), 0 0 24px var(--rarity-legendary-glow), 0 0 40px rgba(167, 139, 250, 0.15); }
+}
+
+/* =========================================================================
+   DESCRIPTION TOOLTIP
+   ========================================================================= */
 
 .description {
   position: absolute;
   bottom: 105%;
   left: 50%;
-  transform: translateX(-50%) translateY(10px);
-
-  /* --- STYL "NATURALNY" --- */
-  /* Bardzo ciemny brąz/oliwka - świetnie siedzi na zielonym tle */
-  background: rgba(25, 30, 20, 0.8);
-
-  /* Efekt rozmycia (robi robotę przy nakładaniu na inne płytki) */
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-
-  /* Zamiast błękitu - bardzo subtelna złotawo-beżowa ramka */
-  border: 1px solid rgba(200, 180, 150, 0.25);
-
-  /* Kremowy tekst - znacznie bardziej naturalny niż czysta biel */
-  color: #f0e6d2;
-  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
-  /* ------------------------ */
-
-  width: 180px;
-  padding: 10px;
-  border-radius: 6px;
+  transform: translateX(-50%) translateY(8px);
+  background: rgba(15, 26, 20, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-strong);
+  color: var(--text-primary);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  width: 200px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
   z-index: 100;
-
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease-out;
   pointer-events: none;
-
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+  line-height: 1.4;
+  box-shadow: var(--shadow-lg);
 }
 
-.card:hover {
-  z-index: 10; /*to make description display over different tiles (in .description it was not enough)*/
+.description::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--border-strong);
 }
 
-/* Pokazywanie po najechaniu na kartę */
 .card:hover .description {
   opacity: 1;
   visibility: visible;
-  transform: translateX(-50%) translateY(0); /* Płynnie wraca na górę */
+  transform: translateX(-50%) translateY(0);
 }
 
-.card.board {
-  /* KLUCZ: Absolute sprawia, że karta 'pływa', ale nie psuje .tileContent */
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  /* Centrowanie karty absolutnej względem kafelka */
-  transform: translate(-50%, -50%) scale(0.85);
-  font-size: 70%;
+/* =========================================================================
+   CONTEXT VARIANTS: BOARD, HAND
+   ========================================================================= */
 
-  z-index: 10;
+/* --- Board Card: PORTRAIT MODE ---
+   Image fills the tile, name + stats are small overlays */
+.card.board {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100% !important;
   height: 100% !important;
-
-  /* Solidne tło przykrywa drzewo */
-  background-color: #1a2621 !important;
-  border-radius: 8px;
+  transform: none;
+  z-index: 10;
+  border-radius: var(--radius-md);
   margin: 0;
   padding: 0;
+  background: #111 !important;
+  flex-direction: column;
+  justify-content: stretch;
 }
 
-/* --- HAND SCALING CONTEXT --- */
+/* Image fills entire tile */
+.card.board .cardImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin: 0;
+  z-index: 1;
+}
 
-/* --- HAND SCALING CONTEXT --- */
+/* Name = small overlay at top */
+.card.board p {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  font-size: 0.65rem;
+  font-family: var(--font-display);
+  margin: 0;
+  padding: 3px 6px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, transparent 100%);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  text-align: center;
+  min-width: 0;
+  width: auto;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+/* Stats = compact overlay at bottom */
+.card.board .stats {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 3px 3px;
+  gap: 2px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  width: auto;
+}
+
+.card.board .stats span {
+  font-size: 0.65rem;
+  padding: 2px 0;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 3px;
+  font-weight: 900;
+}
+
+/* Colored stats on board */
+.card.board .hp {
+  color: #4ade80;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.card.board .cost {
+  color: #c084fc;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.card.board .dmg {
+  color: #f87171;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* Hide category stripe on board (too small) */
+.card.board .categoryStripe {
+  display: none;
+}
+
+/* Smaller type icon on board */
+.card.board .typeIcon {
+  width: 20px;
+  height: 20px;
+  top: 2px;
+  left: 2px;
+  padding: 2px;
+  z-index: 4;
+}
+
+/* --- Hand Card --- */
 .card.hand {
-  /* Set the base font size for inheritance */
-  font-size: 70%;
-
-  /* Apply visual transformation */
-  transform: scale(0.7);
-
-  /* FIX: REMOVE fixed layout dimensions and margins */
+  font-size: 75%;
+  transform: scale(0.75);
+  transform-origin: center center;
   height: auto;
   width: auto;
   margin: 0;
+  transition: all var(--transition-base);
 }
 
+.card.hand .stats {
+  gap: 4px;
+}
+
+.card.hand .stats span {
+  font-size: 1.05em;
+  padding: 0.2em 0;
+}
+
+.card.hand:hover {
+  transform: scale(0.75) translateY(-18px);
+  box-shadow: var(--shadow-lg), 0 0 25px rgba(232, 169, 70, 0.2);
+}
+
+/* --- Card Selection Screen --- */
 .card.cardSelection p {
-  font-size: 1.25em;
+  font-size: 1.1em;
 }
 
+/* --- Opponent Card --- */
 .card.opponent {
-  box-shadow: 
-        /* X-offset, Y-offset, Blur, Spread, Color */ 0 0 15px 3px
-    #c14a4a;
+  border: 2px solid rgba(239, 68, 68, 0.6) !important;
+  box-shadow:
+    0 0 10px rgba(239, 68, 68, 0.4),
+    0 0 20px rgba(239, 68, 68, 0.2),
+    inset 0 0 20px rgba(239, 68, 68, 0.15) !important;
 }
 
+/* Red tint overlay on enemy board cards */
+.card.board.opponent::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(180, 30, 30, 0.15);
+  border-radius: var(--radius-md);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* --- Attack Ready: Golden Pulse --- */
 .card.hasAttack {
-  border: 1.5px solid #92cddc;
-  animation: attack-ready-pulse 1.5s infinite alternate ease-in-out;
+  border: 2px solid #ffd700 !important;
+  animation: attack-ready-pulse 1.2s infinite alternate ease-in-out;
+  cursor: pointer;
 }
 
 @keyframes attack-ready-pulse {
   0% {
-    border-color: #00d4ff; /* Bardzo intensywny, nasycony błękit */
-  }
-  50% {
-    border-color: #ffffff; /* Czysty biały błysk - to drastycznie poprawia widoczność */
+    border-color: #ffd700;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.4), 0 0 16px rgba(255, 215, 0, 0.2);
   }
   100% {
-    border-color: #00d4ff;
+    border-color: #fff8dc;
+    box-shadow: 0 0 14px rgba(255, 215, 0, 0.6), 0 0 28px rgba(255, 215, 0, 0.3), 0 0 40px rgba(255, 215, 0, 0.15);
   }
 }
 
+/* --- On Main Tree --- */
 .card.onMainTree {
-  top: 37%;
-  transform: translate(-50%, -50%) scale(0.7);
-  font-size: 70%;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 65% !important;
+  transform: none;
 }

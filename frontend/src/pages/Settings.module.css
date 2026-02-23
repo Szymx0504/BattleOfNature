@@ -1,46 +1,94 @@
+/* =========================================================================
+   SETTINGS PAGE
+   ========================================================================= */
+
 .settingsContainer {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* justify-content center trzyma środek, ale padding na dole podbije panel wyżej */
-    justify-content: center; 
-    padding-bottom: 10vh; /* Subtelnie wypycha wszystko o 10% wysokości ekranu w górę */
-    background: radial-gradient(circle at center, #1a2a35 0%, #050a0f 100%);
-    color: #f0e6d2;
-    box-sizing: border-box;
+    justify-content: center;
+    padding-bottom: 10vh;
+    background: radial-gradient(circle at center, var(--bg-surface) 0%, var(--bg-deepest) 100%);
+    color: var(--text-primary);
+    font-family: var(--font-body);
 }
 
 .settingsTitle {
-    color: #64d2ff;
+    font-family: var(--font-display);
     font-size: 2.5rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 5px;
+    letter-spacing: 4px;
     margin-bottom: 40px;
-    text-shadow: 0 0 20px rgba(100, 210, 255, 0.4);
+    background: linear-gradient(180deg, var(--text-primary) 30%, var(--accent-cool) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 10px rgba(79, 209, 197, 0.2));
 }
 
 .settingsPanel {
-    background: rgba(25, 45, 55, 0.6);
+    background: var(--glass-bg);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(100, 210, 255, 0.2);
-    border-radius: 15px;
-    padding: 60px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-lg);
     max-width: 500px;
-    width: 90%; /* Lepiej wygląda na mniejszych ekranach */
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
-.comingSoonText {
-    font-style: italic;
-    color: #a0aab2;
+/* --- Option Row --- */
+.optionRow {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.optionLabel {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
     letter-spacing: 2px;
-    animation: pulse 2s infinite ease-in-out;
+    color: var(--text-secondary);
 }
 
-@keyframes pulse {
-    0% { opacity: 0.5; }
-    50% { opacity: 1; }
-    100% { opacity: 0.5; }
+/* --- Language Buttons --- */
+.buttonGroup {
+    display: flex;
+    gap: 10px;
+}
+
+.langButton {
+    flex: 1;
+    padding: 12px 20px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: rgba(10, 18, 14, 0.4);
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.langButton:hover {
+    background: rgba(79, 209, 197, 0.08);
+    border-color: rgba(79, 209, 197, 0.3);
+    color: var(--text-primary);
+}
+
+.langButton.active {
+    background: rgba(79, 209, 197, 0.15);
+    border-color: var(--accent-cool);
+    color: var(--text-primary);
+    box-shadow: 0 0 12px rgba(79, 209, 197, 0.2);
 }

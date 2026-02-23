@@ -3,6 +3,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { SocketProvider } from "./contexts/SocketContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 
 import MainLayout from "./pages/MainLayout";
 import ErrorPage from "./pages/Error";
@@ -56,15 +57,17 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <SocketProvider>
-      <RouterProvider router={router} />
-      <ToastContainer 
-        position="bottom-right"
-        theme="dark"
-        pauseOnFocusLoss={false}
-        autoClose={3500}
-      />
-    </SocketProvider>
+    <LanguageProvider>
+      <SocketProvider>
+        <RouterProvider router={router} />
+        <ToastContainer 
+          position="bottom-right"
+          theme="dark"
+          pauseOnFocusLoss={false}
+          autoClose={3500}
+        />
+      </SocketProvider>
+    </LanguageProvider>
   );
 }
 

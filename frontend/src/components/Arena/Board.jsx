@@ -1,11 +1,11 @@
 import Card from "../elements/Card";
+import VFX from "./VFX";
 
 import classes from "./Board.module.css";
 
-const Board = ({ board, onTileClick, selectedCard, socketId, mainTreeHp, enemyMainTreeHp }) => {
+const Board = ({ board, onTileClick, selectedCard, socketId, mainTreeHp, enemyMainTreeHp, changesVector }) => {
   return (
     <div className={classes.board}>
-      {/* look if those key= are useful */}
       {board.map((row, i) => (
         <div key={i} className={classes.row}>
           {row.map(
@@ -19,25 +19,16 @@ const Board = ({ board, onTileClick, selectedCard, socketId, mainTreeHp, enemyMa
                   <div className={classes.tileContent}>
                     {tile.mainTree ? (
                       <div className={classes.mainTree}>
-                        <img src="/assets/elements/main_tree.png" />
-                        <p>
-                          {i <= 1 ? enemyMainTreeHp : mainTreeHp}
-                          {/* {
-                            params[
-                              i <= 1
-                                ? socketId + "MainTreeHp"
-                                : Object.keys(params).find(
-                                    (param) =>
-                                      param.endsWith("MainTreeHp") &&
-                                      !param.startsWith(socketId)
-                                  )
-                            ]
-                          } */}
-                          hp
-                        </p>
+                        <img src="/assets/elements/main_tree.png" alt="Main Tree" />
+                        <div className={classes.mainTreeHp}>
+                          <span className={classes.mainTreeHpIcon}>♥</span>
+                          <span className={classes.mainTreeHpValue}>
+                            {i <= 1 ? enemyMainTreeHp : mainTreeHp}
+                          </span>
+                          <span className={classes.mainTreeHpLabel}>hp</span>
+                        </div>
                       </div>
                     ) : null}
-                    {/* INCLUDE POSSIBILITY OF MANY CARDS */}
                     {tile.cards.length ? (
                       <Card
                         i="0"
@@ -57,6 +48,8 @@ const Board = ({ board, onTileClick, selectedCard, socketId, mainTreeHp, enemyMa
                     ) : (
                       ""
                     )}
+                    {/* Render VFX over this specific tile */}
+                    <VFX changesVector={changesVector} row={i} col={j} />
                   </div>
                 </div>
               )

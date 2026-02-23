@@ -7,7 +7,32 @@ const Updates = () => {
       <h1 className={classes.title}>Development Log</h1>
       
       <ul className={classes.updateList}>
-        {/* LATEST UPDATE: ALPHA PREMIERE */}
+        {/* LATEST UPDATE: FEBRUARY */}
+        <li className={classes.updateItem}>
+          <div className={classes.versionHeader}>
+            <strong className={classes.versionNumber}>v0.2.0 — The Forest Awakens</strong>
+            <span className={classes.date}>February 2026</span>
+          </div>
+          <ul className={classes.changeDetails}>
+            <li>
+              🌿 <strong>5 New Cards:</strong> Banana Tree, Meteorite, Hail, Medicinal Herbs, and Magic Force — try them out!
+            </li>
+            <li>
+              ✨ <strong>Battle Effects:</strong> Watch damage flashes, healing pulses, death skulls, and spell explosions play out on the board as you fight.
+            </li>
+            <li>
+              🎨 <strong>Fresh New Look:</strong> The entire game has been redesigned with a lush forest theme — from the menus to the battlefield.
+            </li>
+            <li>
+              🔮 <strong>Delayed Spells:</strong> Some spells now activate after a number of turns. Time your plays to outsmart your opponent!
+            </li>
+            <li>
+              🌍 <strong>Polish Language:</strong> The game is now available in Polish — switch in Settings!
+            </li>
+          </ul>
+        </li>
+
+        {/* ALPHA PREMIERE */}
         <li className={classes.updateItem}>
           <div className={classes.versionHeader}>
             <strong className={classes.versionNumber}>v0.1.0 — Early Alpha Premiere</strong>
@@ -25,12 +50,9 @@ const Updates = () => {
             </li>
           </ul>
         </li>
-
-        {/* You can add future entries here */}
       </ul>
       
-      {/* Optional: Add a subtle hint that more is coming */}
-      <p className={classes.footerHint}>The tides are shifting... more updates soon.</p>
+      <p className={classes.footerHint}>The forest grows deeper... more updates soon.</p>
     </div>
   );
 };

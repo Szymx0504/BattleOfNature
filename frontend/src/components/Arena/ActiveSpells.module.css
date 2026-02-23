@@ -1,0 +1,163 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px 12px;
+    min-width: 160px;
+    max-width: 200px;
+
+    /* Glassmorphism panel */
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+
+    /* Slide-in animation from left */
+    animation: slideInFromLeft 0.4s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+
+@keyframes slideInFromLeft {
+    0% {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.title {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    color: var(--accent-warm);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    text-align: center;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.spellList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.spellCard {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 10px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    background: rgba(10, 18, 14, 0.5);
+    transition: all var(--transition-base);
+    box-shadow: var(--shadow-sm);
+
+    /* Each card also slides in staggered */
+    animation: spellCardAppear 0.3s ease-out forwards;
+}
+
+@keyframes spellCardAppear {
+    0% {
+        opacity: 0;
+        transform: translateX(-15px) scale(0.95);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.spellCard.yours {
+    border-color: rgba(79, 209, 197, 0.35);
+    background: rgba(79, 209, 197, 0.08);
+    box-shadow: var(--shadow-sm), 0 0 10px var(--accent-cool-glow);
+}
+
+.spellCard.enemy {
+    border-color: rgba(239, 68, 68, 0.35);
+    background: rgba(239, 68, 68, 0.08);
+    box-shadow: var(--shadow-sm), 0 0 10px var(--color-negative-glow);
+}
+
+.spellHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spellHeader img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.2));
+    border-radius: 4px;
+}
+
+.spellInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.spellName {
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    font-weight: 700;
+    text-transform: capitalize;
+    font-family: var(--font-display);
+}
+
+.spellDmg {
+    font-size: 0.65rem;
+    color: var(--color-negative);
+    font-weight: 800;
+}
+
+.spellTurns {
+    font-size: 0.6rem;
+    color: var(--accent-warm);
+    font-weight: 600;
+    animation: countdown-pulse 1s infinite alternate ease-in-out;
+}
+
+@keyframes countdown-pulse {
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+/* === Targets === */
+.targets {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(245, 240, 232, 0.1);
+}
+
+.targetsLabel {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.targetName {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: capitalize;
+    padding-left: 6px;
+}
+
+.targetName::before {
+    content: "→ ";
+    color: var(--accent-warm);
+}

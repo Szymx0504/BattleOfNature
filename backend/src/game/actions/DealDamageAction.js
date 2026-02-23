@@ -21,8 +21,8 @@ class DealDamageAction extends Action {
       game.players[this.targetCard.owner].mainTree = this.targetCard.hp;
     }
     
-    // The target gets an opportunity to react
-    if (typeof this.targetCard.onDamaged === 'function') {
+    // The target gets an opportunity to react (only if actual damage dealt)
+    if (this.amount > 0 && typeof this.targetCard.onDamaged === 'function') {
       this.targetCard.onDamaged(this.amount, { owner: this.sourceOwner, name: this.sourceName });
     }
 

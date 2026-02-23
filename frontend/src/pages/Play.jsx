@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useSocket } from "../hooks/useSocket";
+import { useLanguage } from "../contexts/LanguageContext";
 
 import CardSelection from "../components/Play/CardSelection";
 
@@ -8,12 +9,12 @@ import classes from "./Play.module.css";
 
 const Play = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { isConnected, gameState, gameId, socketId, findOpponent } =
     useSocket();
-  // const [deckInfo, setDeckInfo] = useState({cards: [], legendary: 0, rare: 0, common: 0});
   const [deckInfo, setDeckInfo] = useState({
     cards: [
-      "timberman", // hard coded for now to speed up testing
+      "timberman",
       "acacia",
       "chopper",
       "creepers",
@@ -33,8 +34,7 @@ const Play = () => {
     rare: 5,
     common: 9,
   });
-  // const [validDeck, setValidDeck] = useState(false);
-  const [validDeck, setValidDeck] = useState(true); // temporarily
+  const [validDeck, setValidDeck] = useState(true);
   const [findingOpponent, setFindingOpponent] = useState(false);
 
   const handleFindOpponent = () => {
@@ -58,16 +58,16 @@ const Play = () => {
 
   return (
     <div className={classes.playContainer}>
-      <h1 className={classes.title}>Prepare Your Deck</h1>
+      <h1 className={classes.title}>{t("play.title")}</h1>
       <CardSelection deckInfo={deckInfo} setDeckInfo={setDeckInfo} />
       <div className={classes.opponentSection}>
-        {findingOpponent && <p className={classes.loadingText}>Looking for opponent...</p>}
+        {findingOpponent && <p className={classes.loadingText}>{t("play.searching")}</p>}
         <button
           onClick={handleFindOpponent}
           disabled={!isConnected || !validDeck || findingOpponent}
           className={classes.findOpponentButton}
         >
-          Find Opponent
+          {t("play.findOpponent")}
         </button>
       </div>
     </div>

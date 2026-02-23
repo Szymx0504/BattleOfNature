@@ -1,79 +1,112 @@
-/* --- BASE COLORS (Forest/Water Theme) --- */
-/* Background: #212E27 to #1D594B */
-/* Accent: Water Blue (#69A9BB), Moss Green (#5A9266) */
-/* Text: Off-White/Stone (#EAECE3) */
+/* =========================================================================
+   PLAY PAGE — Deck Builder
+   ========================================================================= */
 
 .playContainer {
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    padding: 40px 20px;
-    
-    /* Background gradient for the nature feel */
-    background: linear-gradient(135deg, #212E27 0%, #1D594B 100%);
-    
-    color: #EAECE3;
-    font-family: 'Arial', sans-serif;
+    padding: 30px 20px;
+    background: radial-gradient(ellipse at top, var(--bg-surface) 0%, var(--bg-deepest) 70%);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    gap: 24px;
 }
 
+/* --- Page Title --- */
 .title {
-    font-size: 2.5rem;
-    color: #69A9BB; /* Water blue title */
-    margin-bottom: 30px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    font-weight: bold;
+    font-family: var(--font-display);
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0;
+    background: linear-gradient(180deg, var(--text-primary) 30%, var(--accent-cool) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 3px 10px rgba(79, 209, 197, 0.2));
+    text-transform: uppercase;
+    letter-spacing: 2px;
 }
 
-/* --- OPPONENT SEARCH SECTION --- */
-
+/* --- Find Opponent Section --- */
 .opponentSection {
-    margin-top: 20px;
-    text-align: center;
-    /* Adding a subtle background to frame the search area */
-    background-color: rgba(40, 50, 45, 0.6); 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
     padding: 20px 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
 }
 
+/* --- Loading Text --- */
 .loadingText {
-    font-size: 1.2rem;
-    color: #69A9BB; /* Water blue loading text */
-    margin-bottom: 15px;
-    /* Simple animation for visual interest while loading */
-    animation: pulse 1.5s infinite ease-in-out;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--accent-cool);
+    margin: 0;
+    letter-spacing: 1px;
+    animation: searchPulse 1.5s infinite ease-in-out;
 }
 
+@keyframes searchPulse {
+    0%, 100% { opacity: 1; text-shadow: 0 0 8px rgba(79, 209, 197, 0.3); }
+    50% { opacity: 0.6; text-shadow: 0 0 16px rgba(79, 209, 197, 0.6); }
+}
+
+/* --- Find Opponent Button --- */
 .findOpponentButton {
-    background-color: #5A9266; /* Moss Green button */
-    color: #EAECE3;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: bold;
+    background: linear-gradient(135deg, rgba(79, 209, 197, 0.2) 0%, rgba(52, 211, 153, 0.15) 100%);
+    color: var(--text-primary);
+    padding: 14px 40px;
+    border: 2px solid rgba(79, 209, 197, 0.4);
+    border-radius: var(--radius-md);
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 2px;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(79, 209, 197, 0.15);
+    position: relative;
+    overflow: hidden;
+}
+
+.findOpponentButton::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(79, 209, 197, 0.3) 0%, rgba(52, 211, 153, 0.2) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .findOpponentButton:hover:not(:disabled) {
-    background-color: #327357; /* Deeper shade on hover */
+    border-color: var(--accent-cool);
+    box-shadow: 0 6px 25px rgba(79, 209, 197, 0.3), 0 0 15px rgba(79, 209, 197, 0.15);
     transform: translateY(-2px);
 }
 
-.findOpponentButton:disabled {
-    background-color: #444; /* Dark gray when disabled */
-    cursor: not-allowed;
-    opacity: 0.6;
-    box-shadow: none;
-    transform: none;
+.findOpponentButton:hover:not(:disabled)::before {
+    opacity: 1;
 }
 
-/* Keyframes for the loading animation */
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
+.findOpponentButton:active:not(:disabled) {
+    transform: translateY(0px);
+}
+
+.findOpponentButton:disabled {
+    background: rgba(50, 50, 50, 0.4);
+    border-color: rgba(100, 100, 100, 0.3);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+    box-shadow: none;
+    transform: none;
 }

@@ -68,9 +68,16 @@ io.on("connection", (socket) => {
     }
 
     if (deck.length === 15 && counters.legendary <= 1 && counters.rare <= 5 && !repeat) {
-      if (waitingPlayers.length) {
-        const { enemyId, enemyDeck } = waitingPlayers[0];
-        waitingPlayers.shift();
+      // Find a valid opponent (someone who is not this player)
+      const opponentIndex = waitingPlayers.findIndex(p => p.enemyId !== playerConnectionId);
+      
+      if (opponentIndex !== -1) {
+        const { enemyId, enemyDeck } = waitingPlayers[opponentIndex];
+        waitingPlayers.splice(opponentIndex, 1);
+
+        // Remove the current player from the waiting queue if they were in it previously
+        const selfIndex = waitingPlayers.findIndex(p => p.enemyId === playerConnectionId);
+        if (selfIndex !== -1) waitingPlayers.splice(selfIndex, 1);
 
         const gameId = `${playerConnectionId}-${enemyId}`;
         const starts = Math.round(Math.random());
@@ -93,8 +100,8 @@ io.on("connection", (socket) => {
            const p1 = game.players[targetPlayerId];
            const p2 = game.players[game.getOpponentId(targetPlayerId)];
            return {
-              [p1.id]: { hand: p1.hand, pts: p1.pts, passed: p1.passed, mainTree: p1.mainTree, globalTime: p1.globalTime },
-              [p2.id]: { pts: p2.pts, passed: p2.passed, mainTree: p2.mainTree, globalTime: p2.globalTime }
+              [p1.id]: { hand: p1.hand, pts: p1.pts, passed: p1.passed, mainTree: p1.mainTree, globalTime: p1.globalTime, activeSpells: [] },
+              [p2.id]: { pts: p2.pts, passed: p2.passed, mainTree: p2.mainTree, globalTime: p2.globalTime, activeSpells: [] }
            };
         };
 
@@ -104,7 +111,13 @@ io.on("connection", (socket) => {
         socket.emit("opponentFound", gameId, publicGameP1);
         io.to(enemyId).emit("opponentFound", gameId, publicGameP2);
       } else {
-        waitingPlayers.push({ enemyId: playerConnectionId, enemyDeck: deck });
+        // Use a unique push: remove old entry if user double-clicks search
+        const existingIndex = waitingPlayers.findIndex(p => p.enemyId === playerConnectionId);
+        if (existingIndex !== -1) {
+          waitingPlayers[existingIndex] = { enemyId: playerConnectionId, enemyDeck: deck };
+        } else {
+          waitingPlayers.push({ enemyId: playerConnectionId, enemyDeck: deck });
+        }
       }
     } else {
       socket.emit("error", "Invalid deck - cannot find opponent");
@@ -215,9 +228,21 @@ function emitGameStateUpdate(io, socket, game, gameId, playerConnectionId, histo
   const getPlayersPayload = (targetPlayerId) => {
      const p1 = game.players[targetPlayerId];
      const p2 = game.players[game.getOpponentId(targetPlayerId)];
+     const serializeActiveSpells = (spells) => spells.map(s => ({
+       name: s.name,
+       owner: s.owner,
+       dmg: s.dmg,
+       turnsLeft: s.turnsLeft,
+       targets: s.targets.map(t => ({
+         name: t.name,
+         owner: t.owner,
+         row: t.tile ? t.tile.row : (t.isMainTree ? 0 : 0),
+         col: t.tile ? t.tile.col : 1,
+       })),
+     }));
      return {
-        [p1.id]: { hand: p1.hand, pts: p1.pts, passed: p1.passed, mainTree: p1.mainTree, globalTime: p1.globalTime },
-        [p2.id]: { pts: p2.pts, passed: p2.passed, mainTree: p2.mainTree, globalTime: p2.globalTime }
+        [p1.id]: { hand: p1.hand, pts: p1.pts, passed: p1.passed, mainTree: p1.mainTree, globalTime: p1.globalTime, activeSpells: serializeActiveSpells(p1.activeSpells) },
+        [p2.id]: { pts: p2.pts, passed: p2.passed, mainTree: p2.mainTree, globalTime: p2.globalTime, activeSpells: serializeActiveSpells(p2.activeSpells) }
      };
   };
 

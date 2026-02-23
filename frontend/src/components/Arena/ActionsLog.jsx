@@ -1,17 +1,36 @@
+import { useLanguage } from "../../contexts/LanguageContext";
 import classes from "./ActionsLog.module.css";
 
-const goodIfYours = ["heal", "played", "linden", "oxytree"];
+const goodIfYours = ["heal", "played", "linden", "oxytree", "reactivate", "spellTriggered"];
 const badIfYours = ["death", "damageTaken"];
-const neutral = ["place", "passed", "newTurn"];
+const neutral = ["place", "passed", "newTurn", "spellDeactivated"];
 
-const actionLog = {
-  heal: "healed",
-  played: "played",
-  death: "died",
-  damageTaken: "took damage",
-  place: "placed",
-  linden: "doubled its damage",
-  oxytree: "increased its damage",
+const actionIcons = {
+  heal: "💚",
+  played: "✨",
+  death: "💀",
+  damageTaken: "⚔",
+  place: "📍",
+  linden: "🌳",
+  oxytree: "🌿",
+  reactivate: "⚡",
+  spellTriggered: "🔮",
+  spellDeactivated: "💨",
+  passed: "⏭",
+  newTurn: "🔄",
+};
+
+const actionLogKeys = {
+  heal: "log.healed",
+  played: "log.played",
+  death: "log.died",
+  damageTaken: "log.tookDamage",
+  place: "log.placed",
+  linden: "log.doubledDamage",
+  oxytree: "log.increasedDamage",
+  reactivate: "log.reactivated",
+  spellTriggered: "log.spellTriggered",
+  spellDeactivated: "log.spellFizzled",
 };
 
 const getActionImpact = (socketId, change, classes) => {
@@ -30,30 +49,35 @@ const getActionImpact = (socketId, change, classes) => {
 };
 
 const ActionsLog = ({ changesVector, socketId }) => {
+  const { t } = useLanguage();
+
   return (
     <div className={classes.logContainer}>
-      <p className={classes.logTitle}>Actions Log</p>
+      <p className={classes.logTitle}>{t("log.title")}</p>
       <div className={classes.logListWrapper}>
         <ul>
           {changesVector?.map((change, i) => (
-            <li key={i}>
+            <li key={i} className={classes.logEntry}>
+              <span className={classes.actionIcon}>
+                {actionIcons[change.action] || "•"}
+              </span>
               <p className={classes.logEntryText}>
                 <span className={getActionImpact(socketId, change, classes)}>
                   {change.action === "passed"
-                    ? (change.by === socketId ? "You" : "Enemy") +
+                    ? (change.by === socketId ? t("log.you") : t("log.enemy")) +
                       " " +
                       change.action
                     : change.action === "newTurn"
-                    ? "New turn"
-                    : (change.owner === socketId ? "Your" : "Enemy's") +
+                    ? t("log.newTurn")
+                    : (change.owner === socketId ? t("log.your") : t("log.enemys")) +
                       " " +
                       change.name +
                       " " +
-                      actionLog[change.action] +
+                      t(actionLogKeys[change.action]) +
                       (change.value ? " (" + change.value + ")" : "") +
-                      (change.by ? " by " + change.by : "") +
+                      (change.by ? " " + t("log.by") + " " + change.by : "") +
                       (change.row && change.col
-                        ? " at row " + change.row + ", column " + change.col
+                        ? " " + t("log.atRow") + " " + change.row + ", " + t("log.column") + " " + change.col
                         : "")}
                 </span>
               </p>

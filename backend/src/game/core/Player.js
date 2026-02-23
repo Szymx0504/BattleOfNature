@@ -8,6 +8,7 @@ class Player {
     this.passed = false;
     this.mainTree = 25;
     this.globalTime = 180;
+    this.activeSpells = []; // Delayed spells waiting to trigger
   }
 }
 

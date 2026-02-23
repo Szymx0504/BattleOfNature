@@ -53,17 +53,30 @@ class PlayCardAction extends Action {
           by: this.cardName,
         });
         
-        // Attack immediately
         if (this.special) {
           let enemyCardInfo = null;
-          for (const boardTile of game.board.getAllTiles()) {
-             const found = boardTile.cards.find(c => c.name === this.special.name && c.owner === enemyId);
-             if (found) { enemyCardInfo = found; break; }
+          if (this.special.name === "main tree") {
+             const enemyId = game.getOpponentId(this.playerId);
+             enemyCardInfo = { 
+                name: "main tree",
+                hp: game.players[enemyId].mainTree,
+                owner: enemyId,
+                type: "tree",
+                isMainTree: true
+             };
+          } else {
+             const enemyId = game.getOpponentId(this.playerId);
+             for (const boardTile of game.board.getAllTiles()) {
+                const found = boardTile.cards.find(c => c.name === this.special.name && c.owner === enemyId);
+                if (found) { enemyCardInfo = found; break; }
+             }
           }
+
           if (enemyCardInfo) {
+             const enemyId = game.getOpponentId(this.playerId);
+             const { getColGeometrically } = require('../../../utilities');
              const targetRow = enemyCardInfo.tile ? enemyCardInfo.tile.row : (enemyCardInfo.isMainTree ? (enemyCardInfo.owner === enemyId ? 0 : 3) : 0);
              const targetCol = enemyCardInfo.tile ? enemyCardInfo.tile.col : 1;
-             const { getColGeometrically } = require('../../../utilities');
              const targetColGeo = getColGeometrically(targetRow, targetCol);
              
              let dmgValue = targetCard.getDamage(targetRow, targetColGeo);
@@ -73,22 +86,41 @@ class PlayCardAction extends Action {
              game.actionQueue.enqueue(new DealDamageAction(this.playerId, targetCard.name, enemyCardInfo, dmgValue, false));
           }
         }
-      } else {
-        game.actionQueue.addChange({
-          action: "played",
-          row: this.targetRow,
-          col: this.targetCol,
-          owner: this.playerId,
+      } else if (card.delayed) {
+        // Delayed spells (meteorite, hail, etc.)
+        // Deal instant damage component if > 0
+        if (targetCard && card.instantDmg > 0) {
+          const DealDamageAction = require('./DealDamageAction');
+          game.actionQueue.enqueue(new DealDamageAction(this.playerId, this.cardName, targetCard, card.instantDmg, true));
+        }
+        // Store the delayed portion in activeSpells
+        game.players[this.playerId].activeSpells.push({
           name: this.cardName,
+          owner: this.playerId,
+          targets: [targetCard], // Array for future multi-target spells like acid rain
+          dmg: card.delayedDmg,
+          turnsLeft: 1,
         });
-
+      } else {
+        // Generic instant damage spells (timberman, etc.)
         if (targetCard && card.dmg > 0) {
           const DealDamageAction = require('./DealDamageAction');
           game.actionQueue.enqueue(new DealDamageAction(this.playerId, this.cardName, targetCard, card.dmg, true));
         }
       }
 
-      game.players[this.playerId].cycle.push(this.cardName);
+      game.actionQueue.addChange({
+        action: "played",
+        row: this.targetRow,
+        col: this.targetCol,
+        owner: this.playerId,
+        name: this.cardName,
+      });
+
+      // Delayed spells don't go to cycle yet — they go when they trigger or deactivate
+      if (!card.delayed) {
+        game.players[this.playerId].cycle.push(this.cardName);
+      }
     } else {
       // It's a placeable entity
       tile.addCard(card);

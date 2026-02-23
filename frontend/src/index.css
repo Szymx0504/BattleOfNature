@@ -1,4 +1,127 @@
+/* ===================================================================
+   BATTLE OF NATURE — Design System
+   =================================================================== */
+
+:root {
+  /* --- Primary Backgrounds --- */
+  --bg-deepest: #0a1210;
+  --bg-deep: #0f1a14;
+  --bg-base: #152420;
+  --bg-surface: #1a2d22;
+  --bg-elevated: #213d2e;
+  --bg-card: rgba(18, 32, 24, 0.92);
+
+  /* --- Accent: Warm Amber/Gold --- */
+  --accent-warm: #e8a946;
+  --accent-warm-dim: #b8852e;
+  --accent-warm-glow: rgba(232, 169, 70, 0.4);
+  --accent-warm-subtle: rgba(232, 169, 70, 0.12);
+
+  /* --- Accent: Cool Teal --- */
+  --accent-cool: #4fd1c5;
+  --accent-cool-dim: #2a9d94;
+  --accent-cool-glow: rgba(79, 209, 197, 0.35);
+  --accent-cool-subtle: rgba(79, 209, 197, 0.1);
+
+  /* --- Semantic Colors --- */
+  --color-positive: #34d399;
+  --color-positive-glow: rgba(52, 211, 153, 0.4);
+  --color-negative: #ef4444;
+  --color-negative-glow: rgba(239, 68, 68, 0.4);
+  --color-neutral: #94a3b8;
+
+  /* --- Text --- */
+  --text-primary: #f5f0e8;
+  --text-secondary: #c4bfb3;
+  --text-muted: #8a8577;
+  --text-accent: var(--accent-warm);
+
+  /* --- Rarity Colors --- */
+  --rarity-common: #7ec8c8;
+  --rarity-common-glow: rgba(126, 200, 200, 0.35);
+  --rarity-rare: #fbbf24;
+  --rarity-rare-glow: rgba(251, 191, 36, 0.4);
+  --rarity-legendary: #a78bfa;
+  --rarity-legendary-glow: rgba(167, 139, 250, 0.45);
+
+  /* --- Category Colors --- */
+  --category-fighter: #e8a946;
+  --category-siege: #ef4444;
+  --category-defender: #4fd1c5;
+  --category-support: #34d399;
+  --category-spell: #a78bfa;
+
+  /* --- Stat Colors --- */
+  --stat-hp: #34d399;
+  --stat-dmg: #ef4444;
+  --stat-pts: #c084fc;
+
+  /* --- Surfaces & Borders --- */
+  --border-subtle: rgba(245, 240, 232, 0.08);
+  --border-medium: rgba(245, 240, 232, 0.15);
+  --border-strong: rgba(232, 169, 70, 0.3);
+  --glass-bg: rgba(15, 26, 20, 0.75);
+  --glass-border: rgba(245, 240, 232, 0.1);
+
+  /* --- Shadows --- */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-glow-warm: 0 0 20px var(--accent-warm-glow);
+  --shadow-glow-cool: 0 0 20px var(--accent-cool-glow);
+
+  /* --- Typography --- */
+  --font-display: 'Cinzel', 'Georgia', serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+
+  /* --- Spacing --- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* --- Transitions --- */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+  --transition-slow: 0.4s ease;
+}
+
+/* === Global Reset === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background-color: var(--bg-deepest);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+}
+
+/* === Scrollbar Styling (global) === */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent-warm-dim);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+/* === Selection === */
+::selection {
+  background: var(--accent-warm-subtle);
+  color: var(--text-primary);
 }

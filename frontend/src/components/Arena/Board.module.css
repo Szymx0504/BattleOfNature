@@ -1,44 +1,57 @@
 .board {
     display: flex;
     flex-direction: column;
-    /* Zmniejszony gap między wierszami */
-    gap: 4px; 
+    gap: 4px;
     align-items: center;
     justify-content: center;
-    /* Kluczowa zmiana: padding 0 zamiast 20px oszczędza 40px wysokości */
-    padding: 0;
-    /* Minimalny margines góra/dół */
-    margin: 5px 0; 
-    background: radial-gradient(circle, rgba(90, 146, 102, 0.1) 0%, transparent 80%);
+    padding: 8px;
+    margin: 0;
+    position: relative;
+
+    /* Dark backdrop + Forest bg just for the board tiles grid */
+    background-image: 
+        linear-gradient(rgba(10, 18, 14, 0.7), rgba(10, 18, 14, 0.7)),
+        url('/assets/elements/new_board.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: var(--radius-lg);
+    box-shadow:
+        0 0 20px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(0, 0, 0, 0.4),
+        inset 0 0 30px rgba(0, 0, 0, 0.3),
+        0 0 8px rgba(232, 169, 70, 0.15);
+    border: 2px solid rgba(232, 169, 70, 0.35);
 }
 
 .row {
     display: flex;
-    /* Zmniejszony odstęp między kafelkami w poziomie */
-    gap: 6px;
+    gap: 5px;
     justify-content: center;
     width: 100%;
 }
 
 .tile {
-    /* Twoje bazowe wymiary kafelka muszą być sztywne */
-    width: 120px; 
-    height: 160px; 
-    background: rgba(255, 255, 255, 0.05); 
-    border: 1px solid rgba(90, 146, 102, 0.4); 
-    border-radius: 8px;
+    width: 115px;
+    height: 145px;
+    background: rgba(30, 50, 38, 0.6);
+    border: 1px solid rgba(245, 240, 232, 0.06);
+    border-radius: var(--radius-md);
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    transition: all var(--transition-base);
     position: relative;
-    /* KLUCZ: Zapobiega zapadaniu się kafelków w rzędzie */
-    flex-shrink: 0; 
+    flex-shrink: 0;
+
+    /* Inner land-plot effect */
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.25);
 }
 
 .tile:hover {
-    background: rgba(100, 210, 255, 0.1);
-    border-color: #64d2ff;
-    transform: translateY(-2px);
-    box-shadow: 0 0 15px rgba(100, 210, 255, 0.3);
+    background: rgba(232, 169, 70, 0.1);
+    border-color: rgba(232, 169, 70, 0.4);
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.15),
+        0 0 14px var(--accent-warm-glow);
 }
 
 .tileContent {
@@ -51,32 +64,56 @@
 }
 
 .mainTree {
-    /* Używamy flex, aby drzewo wypełniło kafelek i trzymało strukturę */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-around; 
+    justify-content: center;
     height: 100%;
     width: 100%;
-    padding: 10px 0;
-    /* Gdy pojawi się karta, drzewo pozostaje pod nią */
+    padding: 6px 0;
     z-index: 1;
+    gap: 4px;
 }
 
 .mainTree img {
-    width: 100px; 
+    width: 90px;
     height: auto;
-    filter: drop-shadow(0 0 12px rgba(90, 146, 102, 0.7));
+    filter: drop-shadow(0 0 16px rgba(52, 211, 153, 0.5));
+    transition: filter var(--transition-base);
 }
 
-.mainTree p {
-    color: #eaece3;
+.mainTree:hover img {
+    filter: drop-shadow(0 0 22px rgba(52, 211, 153, 0.7));
+}
+
+.mainTreeHp {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(10, 18, 16, 0.85);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.mainTreeHpIcon {
+    color: var(--color-positive);
+    font-size: 0.75rem;
     font-weight: 900;
-    font-size: 1.1rem; 
-    background: rgba(25, 40, 30, 0.8); 
-    padding: 4px 14px;
-    border-radius: 20px; 
-    border: 1px solid #5A9266;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    margin: 0;
+}
+
+.mainTreeHpValue {
+    color: var(--text-primary);
+    font-weight: 900;
+    font-size: 1rem;
+    font-family: var(--font-body);
+}
+
+.mainTreeHpLabel {
+    color: var(--text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }

@@ -224,6 +224,7 @@ const cardProperties = {
     type: "tree",
     rarity: "legendary",
     description: "Increases its own attack in every turn by 2dmg (up to 12)",
+    category: "fighter",
   },
   timberman: {
     name: "timberman",
@@ -242,6 +243,17 @@ const cardProperties = {
     type: "tree",
     rarity: "rare",
     description: "A delicate tree",
+    category: "fighter",
+  },
+  "banana tree": {
+    name: "banana tree",
+    hp: 12,
+    pts: 7,
+    dmg: [1, 2],
+    type: "tree",
+    rarity: "rare",
+    description: "Hits objects in one line at 2dmg, after 1dmg. If coming back hits nothing, gives you 1pts",
+    category: "siege",
   },
   chopper: {
     name: "chopper",
@@ -251,6 +263,7 @@ const cardProperties = {
     type: "bush",
     rarity: "rare",
     description: "Range of 1 tile",
+    category: "fighter",
   },
   creepers: {
     name: "creepers",
@@ -261,6 +274,7 @@ const cardProperties = {
     rarity: "rare",
     description:
       "Attack and grow on the main tree. Resistant to opponent's spells",
+    category: "siege",
   },
   linden: {
     name: "linden",
@@ -270,6 +284,7 @@ const cardProperties = {
     type: "tree",
     rarity: "rare",
     description: "Doubles its current attack when it is attacked (up to 32)",
+    category: "fighter",
   },
   "magic force": {
     name: "magic force",
@@ -298,6 +313,7 @@ const cardProperties = {
     type: "tree",
     rarity: "common",
     description: "A rain od apples",
+    category: "fighter",
   },
   "bark beetles": {
     name: "bark beetles",
@@ -316,6 +332,7 @@ const cardProperties = {
     type: "tree",
     rarity: "common",
     description: "A solid tree",
+    category: "fighter",
   },
   bush: {
     name: "bush",
@@ -325,6 +342,7 @@ const cardProperties = {
     type: "bush",
     rarity: "common",
     description: "A small bush",
+    category: "fighter",
   },
   chestnut: {
     name: "chestnut",
@@ -334,6 +352,23 @@ const cardProperties = {
     type: "tree",
     rarity: "common",
     description: "Attacks with chestnuts",
+    category: "fighter",
+  },
+  hail: {
+    name: "hail",
+    pts: 1,
+    dmg: [0, 1],
+    type: "spell",
+    rarity: "common",
+    description: "Little destruction. Deals 1dmg before next turn",
+  },
+  meteorite: {
+    name: "meteorite",
+    pts: 4,
+    dmg: [4, 5],
+    type: "spell",
+    rarity: "common",
+    description: "Deals additional 5dmg before next turn",
   },
   pine: {
     name: "pine",
@@ -343,6 +378,7 @@ const cardProperties = {
     type: "tree",
     rarity: "common",
     description: "A medium-sized tree",
+    category: "fighter",
   },
   poplar: {
     name: "poplar",
@@ -352,6 +388,7 @@ const cardProperties = {
     type: "tree",
     rarity: "common",
     description: "4dmg against objects which are located on an adjacent tile",
+    category: "fighter",
   },
   spruce: {
     name: "spruce",
@@ -361,6 +398,7 @@ const cardProperties = {
     type: "tree",
     rarity: "common",
     description: "Not a too big tree",
+    category: "fighter",
   },
   willow: {
     name: "willow",
@@ -370,6 +408,7 @@ const cardProperties = {
     type: "tree",
     rarity: "common",
     description: "A voluminous tree",
+    category: "fighter",
   },
 };
 
@@ -384,6 +423,7 @@ module.exports = {
   adjustBoard,
   adjustCords,
   getColGeometrically,
+  getColIndexWise,
   adjustVector,
   dealDamage,
   healObject,

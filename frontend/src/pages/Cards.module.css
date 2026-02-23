@@ -1,45 +1,31 @@
-/* Główny kontener */
+/* Cards Gallery Page */
 .cardsContainer {
     min-height: 100vh;
-    width: 100%; /* Upewnij się, że zajmuje całą szerokość */
+    width: 100%;
     padding: 40px;
-    background: radial-gradient(circle at center, #1a2a35 0%, #0d141a 100%);
+    background: radial-gradient(circle at center, var(--bg-surface) 0%, var(--bg-deepest) 100%);
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Centruje nagłówek <p> */
+    align-items: center;
 }
 
-
-/* .title {
-    color: #64d2ff;
-    font-size: 1.2rem;
-    font-weight: 300;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 30px;
-    text-shadow: 0 0 10px rgba(100, 210, 255, 0.5);
-    border-bottom: 1px solid rgba(100, 210, 255, 0.2);
-    padding-bottom: 10px;
-} */
-
 .title {
-    color: #64d2ff;
+    font-family: var(--font-display);
+    color: var(--accent-warm);
     font-size: 1.5rem;
     text-transform: uppercase;
     letter-spacing: 3px;
     margin-bottom: 40px;
-    text-shadow: 0 0 15px rgba(100, 210, 255, 0.4);
+    text-shadow: 0 0 15px var(--accent-warm-glow);
 }
 
-/* TWOJA KLASA (z lekką poprawką na szerokość) */
 .cardList {
     display: grid;
-    /* Zwiększyłem minmax do 180px, żeby karty nie były zbyt ściśnięte */
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 30px;
     list-style: none;
     padding: 0;
-    width: 100%; /* To jest kluczowe! */
-    max-width: 1200px; /* Opcjonalnie: żeby grid nie był zbyt szeroki na monitorach 4K */
+    width: 100%;
+    max-width: 1200px;
 }

@@ -3,31 +3,28 @@ import classes from "./PtsBar.module.css";
 const PtsBar = ({ curPts, turnNumber }) => {
   const barLimit = Math.max(
     curPts,
-    turnNumber === 0 ? 5 : turnNumber <= 12 ? 10 : 15 // basePts
+    turnNumber === 0 ? 5 : turnNumber <= 12 ? 10 : 15
   );
   return (
     <div className={classes.ptsBarWrapper}>
       <div className={classes.ptsBarContent}>
-        {" "}
-        {/* <-- Uses .points-bar-content */}
-        {/* The visual indicator for points (e.g., 3 points) */}
-        {Array(barLimit)
-          .fill()
-          .map((_, i) => (
-            // This is the individual point square/indicator
-            // We use conditional styling to show if the point is active (i < curPts)
-            <div
-              key={i}
-              className={classes.SquareRepresentingAPoint}
-              style={{ opacity: i < curPts ? 1 : 0.3 }} // Example conditional styling
-            >
-              {/* Optional: You can put a number or icon here */}
-            </div>
-          ))}
-        {/* The accompanying text */}
-        <p>
-          {curPts}/{barLimit} elixir
-        </p>
+        <div className={classes.ptsLabel}>
+          <span className={classes.ptsIcon}>✦</span>
+          <span className={classes.ptsText}>
+            {curPts}/{barLimit}
+          </span>
+          <span className={classes.ptsName}>elixir</span>
+        </div>
+        <div className={classes.gemsRow}>
+          {Array(barLimit)
+            .fill()
+            .map((_, i) => (
+              <div
+                key={i}
+                className={`${classes.gem} ${i < curPts ? classes.gemActive : classes.gemSpent}`}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );

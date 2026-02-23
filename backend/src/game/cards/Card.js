@@ -54,6 +54,10 @@ class Card {
   canAttackTarget(targetCard, sourceRow, sourceColGeo, targetRow, targetColGeo) {
     return true; // Default: Can attack anything if standard rules allow
   }
+
+  canBypassMainTreeProtection() {
+    return false; // Default: Cannot attack Main Tree if other enemies exist
+  }
 }
 
 module.exports = Card;

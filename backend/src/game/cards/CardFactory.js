@@ -116,7 +116,16 @@ class MedicinalHerbs extends Spell {
 }
 
 class MagicForce extends Spell {
-  // reactivates a card
+  isValidTarget(targetCard, isMainTree, playerId) {
+    const baseValidation = super.isValidTarget(targetCard, isMainTree, playerId);
+    if (baseValidation.error) return baseValidation;
+
+    if (isMainTree) return { error: "Cannot use Magic Force on the Main Tree" };
+    if (targetCard.placedThisTurn) return { error: "Cannot reactivate a card placed this turn" };
+    if (targetCard.hasAttack) return { error: "Card already has an attack available" };
+
+    return { success: true };
+  }
 }
 
 class BarkBeetles extends Spell {
@@ -131,6 +140,85 @@ class BarkBeetles extends Spell {
   }
 }
 
+class DelayedSpell extends Spell {
+  constructor(name, owner, game) {
+    super(name, owner, game);
+    this.delayed = true;
+    // dmg array: [instant, delayed]
+    this.instantDmg = Array.isArray(this.dmg) ? this.dmg[0] : 0;
+    this.delayedDmg = Array.isArray(this.dmg) ? this.dmg[1] : this.dmg;
+  }
+}
+
+class Meteorite extends DelayedSpell {}
+class Hail extends DelayedSpell {}
+
+class Bananowiec extends Tree {
+  canBypassMainTreeProtection() {
+    return true; // Banana Tree can always attack the Main Tree
+  }
+
+  canAttackTarget(targetCard, sourceRow, sourceColGeo, targetRow, targetColGeo) {
+    const dy = targetRow - sourceRow;
+    const dx = targetColGeo - sourceColGeo;
+    if (dy === 0 && dx === 0) return false;
+    // Must be a straight line (pure vertical, pure horizontal, or pure diagonal)
+    if (dy !== 0 && dx !== 0 && Math.abs(dy) !== Math.abs(dx)) return false;
+    return true;
+  }
+
+  customAttack(targetCard, sourceRow, sourceColGeo, targetRow, targetColGeo) {
+    const dy = Math.sign(targetRow - sourceRow);
+    const dx = Math.sign(targetColGeo - sourceColGeo);
+    const { getColIndexWise } = require('../../../utilities');
+    const enemyId = this.game.getOpponentId(this.owner);
+    
+    let path = [];
+    let currRow = sourceRow + dy;
+    let currColGeo = sourceColGeo + dx;
+
+    // Trace the piercing ray until out of bounds
+    while (true) {
+      if (currRow < 0 || currRow > 3 || currColGeo < 1 || currColGeo > 4) break;
+      const colIndex = getColIndexWise(currRow, currColGeo);
+      if (colIndex < 0 || colIndex >= this.game.board.grid[currRow].length) break;
+      
+      path.push({ row: currRow, colGeo: currColGeo, colIndex });
+      currRow += dy;
+      currColGeo += dx;
+    }
+
+    const DealDamageAction = require('../actions/DealDamageAction');
+    
+    // Forward Damage execution
+    for (const step of path) {
+      const tile = this.game.board.grid[step.row][step.colIndex];
+      
+      if (tile.isMainTree && tile.owner === enemyId) {
+        const mtInfo = { 
+          owner: enemyId, 
+          name: "main tree", 
+          hp: this.game.players[enemyId].mainTree, 
+          type: "tree", 
+          isMainTree: true 
+        };
+        // Banana shoots index 1 * 2 out of 6 on forward trip
+        this.game.actionQueue.enqueue(new DealDamageAction(this.owner, this.name, mtInfo, this.dmg[1] * 2, false));
+      } else {
+        const enemyCards = tile.cards.filter(c => c.owner === enemyId);
+        for (const ec of enemyCards) {
+          // Normal object hit for 2 dmg on forward trip (index 1 of [1, 2] array)
+          this.game.actionQueue.enqueue(new DealDamageAction(this.owner, this.name, ec, this.dmg[1], false));
+        }
+      }
+    }
+    
+    // Queue the boomerang return damage trip
+    const BoomerangReturnAction = require('../actions/BoomerangReturnAction');
+    this.game.actionQueue.enqueue(new BoomerangReturnAction(this.owner, this.name, path, enemyId));
+  }
+}
+
 class CardFactory {
   static createCard(name, owner, game) {
     if (!cardProperties[name]) return null;
@@ -141,9 +229,12 @@ class CardFactory {
       case 'creepers': return new Creepers(name, owner, game);
       case 'chopper': return new Chopper(name, owner, game);
       case 'poplar': return new Poplar(name, owner, game);
+      case 'banana tree': return new Bananowiec(name, owner, game);
       case 'medicinal herbs': return new MedicinalHerbs(name, owner, game);
       case 'magic force': return new MagicForce(name, owner, game);
       case 'bark beetles': return new BarkBeetles(name, owner, game);
+      case 'meteorite': return new Meteorite(name, owner, game);
+      case 'hail': return new Hail(name, owner, game);
       default:
         // Generic cards
         const type = cardProperties[name].type;

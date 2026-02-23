@@ -64,7 +64,7 @@ class GameAPI {
         for (const boardTile of game.board.getAllTiles()) {
            if (boardTile.cards.find(c => c.name === special.name && c.owner === enemyId)) { enemyCard = true; break; }
         }
-        if (!enemyCard) return { error: "No target card found" };
+        if (!enemyCard && special.name !== "main tree") return { error: "No target card found" };
       }
     }
 
@@ -109,9 +109,8 @@ class GameAPI {
       return { error: "A given card does not exist" };
     }
 
-    if (mainTree && !["creepers"].includes(sourceCardInfo?.name) && checkAnyEnemies(game.board.grid, enemyId)) {
-      return { error: "Cannot attack main tree. Enemies on board" };
-    }
+    // Skip the string-based check because we need the instantiated OOP object first to ask it!
+    // We will do the Main Tree protection check AFTER we get `sourceCard`.
 
     const { row: sourceRow, col: sourceCol } = adjustCords(sourceCardInfo.row, sourceCardInfo.col, isRotate);
     const { row: targetRow, col: targetCol } = adjustCords(targetCardInfo.row, targetCardInfo.col, isRotate);
@@ -136,6 +135,12 @@ class GameAPI {
       return { error: "Invalid target for this card" };
     }
 
+    if (mainTree && checkAnyEnemies(game.board.grid, enemyId)) {
+      if (!sourceCard.canBypassMainTreeProtection() && sourceCard.name !== "creepers") {
+        return { error: "Cannot attack main tree. Enemies on board" };
+      }
+    }
+
     // Time Check
     const { manageTime } = require('../../../utilities');
     if (!manageTime(game, playerId)) return { timeout: true };
@@ -144,10 +149,13 @@ class GameAPI {
     game.actionQueue.clearHistory();
     
     // Evaluate dmg
-    let dmgValue = sourceCard.getDamage(targetRow, targetColGeo);
-
-    const DealDamageAction = require('../actions/DealDamageAction');
-    game.actionQueue.enqueue(new DealDamageAction(playerId, sourceCard.name, targetCard, dmgValue, false));
+    if (typeof sourceCard.customAttack === 'function') {
+      sourceCard.customAttack(targetCard, sourceRow, sourceColGeo, targetRow, targetColGeo);
+    } else {
+      let dmgValue = sourceCard.getDamage(targetRow, targetColGeo);
+      const DealDamageAction = require('../actions/DealDamageAction');
+      game.actionQueue.enqueue(new DealDamageAction(playerId, sourceCard.name, targetCard, dmgValue, false));
+    }
     
     sourceCard.hasAttack = false;
     
@@ -196,6 +204,36 @@ class GameAPI {
        }
        game.players[playerId].passed = false;
        game.players[enemyId].passed = false;
+       
+       // Process active spells (FIFO order, before card resets)
+       const DealDamageAction = require('../actions/DealDamageAction');
+       for (const pid of [playerId, enemyId]) {
+         const player = game.players[pid];
+         const remaining = [];
+         for (const spell of player.activeSpells) {
+           spell.turnsLeft--;
+           if (spell.turnsLeft <= 0) {
+             // Time to trigger! Deal delayed damage to each surviving target
+             for (const target of spell.targets) {
+               if (target.hp > 0 || target.isMainTree) {
+                 game.actionQueue.enqueue(new DealDamageAction(spell.owner, spell.name, target, spell.dmg, true));
+               }
+             }
+             // Return spell to cycle
+             player.cycle.push(spell.name);
+             game.actionQueue.addChange({
+               action: "spellTriggered",
+               owner: spell.owner,
+               name: spell.name,
+             });
+           } else {
+             remaining.push(spell);
+           }
+         }
+         player.activeSpells = remaining;
+       }
+       // Process queued delayed damage actions (may trigger deaths)
+       game.actionQueue.process();
        
        // Reset cards
        for (const tile of game.board.getAllTiles()) {

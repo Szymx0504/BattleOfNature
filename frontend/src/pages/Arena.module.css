@@ -2,38 +2,46 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
-    /* Znacznie jaśniejszy, nasycony gradient natury */
-    background: radial-gradient(circle at center, #3d5a4d 0%, #2a3d35 60%, #1b2621 100%);
-    overflow: scroll;
-    color: #eaece3;
+    max-height: 100vh;
+    background: var(--bg-deepest);
+    overflow: hidden;
+    color: var(--text-primary);
+    position: relative;
 }
-
 
 .boardArea {
     flex: 1;
     display: flex;
-    flex-direction: row;      /* Board i Logi obok siebie */
-    justify-content: center;  /* KLUCZ: Centruje oba komponenty jako grupę */
-    align-items: center;      /* Centrowanie w pionie */
-    padding: 5px 20px;
-    gap: 120px;                /* Odstęp między planszą a logami */
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    padding: 0 15px;
+    gap: 30px;
     width: 100%;
     position: relative;
-    background: linear-gradient(180deg, rgba(100, 210, 255, 0.08) 0%, transparent 40%);
+    min-height: 0;
+
+    /* Forest board background */
+    background-image: 
+        radial-gradient(ellipse at center, rgba(10, 18, 16, 0.4) 0%, rgba(10, 18, 16, 0.8) 70%, rgba(10, 18, 16, 0.95) 100%),
+        url('/assets/elements/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .table {
     display: flex;
-    flex-direction: row; 
+    flex-direction: row;
     justify-content: center;
-    /* Zmieniamy na center, żeby PtsBar nie leżał na samej ziemi */
-    align-items: center; 
+    align-items: center;
     width: 100%;
-    gap: 100px;
-    /* KLUCZ: Ten padding podnosi całą zawartość nad dolną krawędź ekranu */
-    padding: 0 0 30px 0; 
+    gap: 50px;
+    padding: 0 0 8px 0;
     margin: 0;
     height: auto;
+    flex-shrink: 0;
     position: relative;
     z-index: 20;
+    background: var(--bg-deep);
 }

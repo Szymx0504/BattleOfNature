@@ -1,109 +1,119 @@
-/* --- BASE CONTAINER --- */
+/* === Log Container === */
 .logContainer {
-    /* Ustawienia szerokości i stabilności */
-    width: 300px;
-    min-width: 300px;
+    width: 240px;
+    min-width: 240px;
     flex-shrink: 0;
-
-    /* DOPASOWANIE DO BOARD: */
-    /* Identyczny margines jak w .board sprawia, że kontenery się zrównują */
-    margin: 20px 0; 
-    /* Pozwala flexboxowi (boardArea) dopasować wysokość do sąsiada */
-    height: auto; 
+    margin: 5px 0;
+    height: auto;
     align-self: stretch;
 
-    /* Wygląd i kolory */
-    background-color: rgba(30, 40, 35, 0.95); /* Twoje ulubione ciemne tło */
-    border: 1px solid #5A9266; /* Zieleń mchu #5A9266 */
-    border-radius: 8px;
-    padding: 15px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-lg);
+    padding: 14px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-lg);
 }
 
-/* --- LOG TITLE --- */
+/* === Log Title === */
 .logTitle {
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: #EAECE3; /* Jasny tekst */
-    margin-bottom: 12px;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-warm);
+    margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 2px solid rgba(90, 146, 102, 0.5); /* Subtle separator */
+    border-bottom: 1px solid var(--border-strong);
     text-align: center;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 }
 
-/* --- SCROLLABLE LIST WRAPPER --- */
+/* === Scrollable Log List === */
 .logListWrapper {
-    flex-grow: 1; /* Pozwala liście zająć resztę wysokości */
-    overflow-y: auto; /* Przewijanie pionowe */
-    padding-right: 8px; 
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 6px;
 }
 
-/* --- INDIVIDUAL LOG ENTRY (UL/LI) --- */
 .logListWrapper ul {
     list-style: none;
     padding: 0;
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
 }
 
-.logListWrapper li {
-    padding: 6px 8px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 4px;
-    transition: background 0.2s;
+/* === Log Entry === */
+.logEntry {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid transparent;
+    transition: all var(--transition-fast);
+    animation: log-slide-in 0.3s ease-out;
 }
 
-.logListWrapper li:hover {
-    background: rgba(90, 146, 102, 0.1);
+.logEntry:hover {
+    background: rgba(232, 169, 70, 0.05);
+    border-left-color: var(--accent-warm);
 }
 
-/* --- LOG ENTRY TEXT (P) --- */
+@keyframes log-slide-in {
+    0% { opacity: 0; transform: translateX(-10px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+/* === Action Icon === */
+.actionIcon {
+    font-size: 0.85rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* === Log Entry Text === */
 .logEntryText {
     margin: 0;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     line-height: 1.4;
-    /* Twoje ustawienie monospace dla technicznego looku */
-    font-family: 'Consolas', 'Courier New', monospace; 
-    word-break: break-word; /* Zapobiega wychodzeniu tekstu poza kontener */
+    font-family: var(--font-body);
+    word-break: break-word;
 }
 
-/* --- PLAYER SPECIFIC COLORS (getActionImpact) --- */
-
-/* Enemy action: Red #C14A4A */
+/* === Action Impact Colors === */
 .negativeAction {
-    color: #C14A4A; 
-    font-weight: bold;
+    color: var(--color-negative);
+    font-weight: 600;
 }
 
-/* Your action: Twój preferowany błękit #92CDDC */
 .positiveAction {
-    color: #92CDDC; 
-    font-weight: bold;
+    color: var(--accent-cool);
+    font-weight: 600;
 }
 
-/* Default / System: White/Light */
 .neutralAction {
-    color: #EAECE3; 
-    font-weight: bold;
+    color: var(--text-secondary);
+    font-weight: 500;
 }
 
-/* --- SCROLLBAR STYLING --- */
+/* === Scrollbar === */
 .logListWrapper::-webkit-scrollbar {
-    width: 6px;
+    width: 4px;
 }
 
 .logListWrapper::-webkit-scrollbar-thumb {
-    background-color: #5A9266; /* Zieleń mchu */
-    border-radius: 3px;
+    background-color: var(--accent-warm-dim);
+    border-radius: 2px;
 }
 
 .logListWrapper::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.2);
-    border-radius: 3px;
+    border-radius: 2px;
 }
