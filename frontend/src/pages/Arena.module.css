@@ -45,3 +45,21 @@
     z-index: 20;
     background: var(--bg-deep);
 }
+
+/* =========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 768px) {
+    .boardArea {
+        flex-direction: column;
+        gap: 4px;
+        padding: 0 4px;
+    }
+
+    .table {
+        flex-direction: column;
+        gap: 8px;
+        padding: 4px 8px 12px;
+    }
+}

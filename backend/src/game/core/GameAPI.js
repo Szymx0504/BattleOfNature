@@ -91,7 +91,7 @@ class GameAPI {
     }
 
     game.actionQueue.process();
-    return { success: true, history: game.actionQueue.getHistory() };
+    return { success: true, history: game.actionQueue.getHistory(), winner: game.winner };
   }
 
   static validateAndAttack(game, playerId, sourceCardInfo, targetCardInfo, isRotate) {
@@ -253,11 +253,11 @@ class GameAPI {
          game.players[enemyId].hand.push(game.players[enemyId].cycle[0]);
          game.players[enemyId].cycle.shift();
        }
-       return { success: true, newTurn: true, history: game.actionQueue.getHistory() };
+       return { success: true, newTurn: true, history: game.actionQueue.getHistory(), winner: game.winner };
     } else {
       game.whoseMove = enemyId;
       game.actionQueue.addChange({ action: "passed", by: playerId });
-      return { success: true, newTurn: false, history: game.actionQueue.getHistory() };
+      return { success: true, newTurn: false, history: game.actionQueue.getHistory(), winner: game.winner };
     }
   }
 }

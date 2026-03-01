@@ -110,3 +110,31 @@
     box-shadow: none;
     transform: none;
 }
+
+/* =========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 768px) {
+    .playContainer {
+        padding: 50px 0 16px 0;
+        gap: 16px;
+        overflow-x: hidden;
+    }
+
+    .title {
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+    }
+
+    .opponentSection {
+        padding: 14px 20px;
+        width: 90%;
+    }
+
+    .findOpponentButton {
+        padding: 12px 28px;
+        font-size: 0.95rem;
+        width: 100%;
+    }
+}

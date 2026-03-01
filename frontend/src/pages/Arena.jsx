@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
@@ -103,6 +103,7 @@ function checkAttacksLeft(board, playerId) {
 
 const Arena = () => {
   const gid = useParams().gid;
+  const navigate = useNavigate();
   const { t } = useLanguage();
   const {
     isConnected,
@@ -110,6 +111,7 @@ const Arena = () => {
     socketId,
     findOpponent,
     gameEnded,
+    gameWinner,
     playCard,
     makeAttack,
     passTurn,
@@ -332,11 +334,11 @@ const Arena = () => {
       selectedCard?.hand && selectedCard?.name === card
         ? null
         : {
-            name: card,
-            hand: true,
-            owner: socketId,
-            type: cardProperties[card].type,
-          }
+          name: card,
+          hand: true,
+          owner: socketId,
+          type: cardProperties[card].type,
+        }
     );
   };
 
@@ -394,16 +396,27 @@ const Arena = () => {
       </div>
       <div className={classes.table}>
         <Hand
-          hand={gameState?.players[socketId].hand}
+          hand={gameState?.players[socketId]?.hand || []}
           selectedCard={selectedCard}
           onCardClick={handleHandClick}
           socketId={socketId}
         />
         <PtsBar
-          curPts={gameState?.players[socketId].pts}
+          curPts={gameState?.players[socketId]?.pts}
           turnNumber={gameState?.turnNumber}
         />
       </div>
+
+      {gameWinner && (
+        <div className={classes.gameOverOverlay}>
+          <div className={classes.gameOverContent}>
+            <h2>{gameWinner === socketId ? t("socket.youWon") : t("socket.enemyWon")}</h2>
+            <button className={classes.returnMenuBtn} onClick={() => navigate("/")}>
+              ← {t("ui.goBack")}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,20 +1,52 @@
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import classes from "./ActiveSpells.module.css";
 
 const ActiveSpells = ({ yourSpells, enemySpells, socketId }) => {
   const { t } = useLanguage();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const containerRef = useRef(null);
 
   const allSpells = [
     ...(yourSpells || []).map(s => ({ ...s, isEnemy: false })),
     ...(enemySpells || []).map(s => ({ ...s, isEnemy: true })),
   ];
 
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (isExpanded && containerRef.current && !containerRef.current.contains(e.target)) {
+        setIsExpanded(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+    };
+  }, [isExpanded]);
+
+  const toggleExpand = () => {
+    if (window.innerWidth <= 768) {
+      setIsExpanded(!isExpanded);
+    }
+  };
+
   if (allSpells.length === 0) return null;
 
   return (
-    <div className={classes.container}>
-      <p className={classes.title}>{t("spells.title")}</p>
-      <div className={classes.spellList}>
+    <div
+      ref={containerRef}
+      className={`${classes.container} ${isExpanded ? classes.expanded : ""}`}
+    >
+      <p className={classes.title} onClick={toggleExpand}>
+        {t("spells.title")} {window.innerWidth <= 768 && `(${allSpells.length})`}
+      </p>
+
+      {/* On desktop, this is always visible. On mobile, it's only visible if isExpanded is true */}
+      <div className={`${classes.spellList} ${!isExpanded ? classes.mobileHidden : ""}`}>
         {allSpells.map((spell, i) => (
           <div
             key={i}
@@ -23,7 +55,7 @@ const ActiveSpells = ({ yourSpells, enemySpells, socketId }) => {
             <div className={classes.spellHeader}>
               <img src={"/assets/cards/" + spell.name.replace(" ", "_") + ".png"} />
               <div className={classes.spellInfo}>
-                <span className={classes.spellName}>{spell.name}</span>
+                <span className={classes.spellName}>{t(`cards.${spell.name}.name`)}</span>
                 <span className={classes.spellDmg}>⚔ {spell.dmg}dmg</span>
                 <span className={classes.spellTurns}>
                   {spell.turnsLeft === 1 ? "⏳ " + t("spells.nextTurn") : `⏳ ${spell.turnsLeft}t`}

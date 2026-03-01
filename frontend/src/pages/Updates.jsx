@@ -1,9 +1,17 @@
 import React from 'react';
+import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../contexts/LanguageContext";
 import classes from "./Updates.module.css";
 
 const Updates = () => {
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+
   return (
     <div className={classes.updatesContainer}>
+      <button onClick={() => navigate("/")} className="goBackBtn">
+        ← {t("ui.goBack")}
+      </button>
       <h1 className={classes.title}>Development Log</h1>
       
       <ul className={classes.updateList}>

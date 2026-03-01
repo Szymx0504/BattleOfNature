@@ -161,3 +161,59 @@
     content: "→ ";
     color: var(--accent-warm);
 }
+
+/* =========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 768px) {
+    .container {
+        position: absolute;
+        top: -4px;
+        left: 50%;
+        transform: translateX(-50%) !important;
+        animation: none !important; /* Fixes animation overriding the transform */
+        padding: 6px 12px;
+        min-width: auto;
+        max-width: max-content;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 500;
+        margin: 0;
+    }
+
+    .title {
+        font-size: 0.65rem;
+        padding-bottom: 0;
+        border-bottom: none;
+        letter-spacing: 1px;
+    }
+
+    .mobileHidden {
+        display: none !important;
+    }
+
+    .container.expanded {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) !important;
+        width: 250px;
+        max-width: 90vw;
+        z-index: 99999;
+        padding: 14px;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.95), 0 0 0 100vw rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.05);
+        background: rgba(15, 25, 20, 0.98);
+        border: 1px solid var(--accent-warm);
+        align-items: stretch;
+        margin: 0;
+    }
+
+    .container.expanded .title {
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-subtle);
+        margin-bottom: 8px;
+        font-size: 0.75rem;
+    }
+}

@@ -125,3 +125,41 @@ body {
   background: var(--accent-warm-subtle);
   color: var(--text-primary);
 }
+
+/* === UI Components === */
+.goBackBtn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(21, 36, 32, 0.8);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  z-index: 50;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.goBackBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+@media (max-width: 768px) {
+  .goBackBtn {
+    top: 10px;
+    left: 10px;
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+}

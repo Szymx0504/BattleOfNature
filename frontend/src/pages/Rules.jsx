@@ -1,9 +1,17 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { useLanguage } from "../contexts/LanguageContext";
 import classes from "./Rules.module.css";
 
 const Rules = () => {
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+
   return (
     <div className={classes.rulesContainer}>
+      <button onClick={() => navigate("/")} className="goBackBtn">
+        ← {t("ui.goBack")}
+      </button>
       <h1 className={classes.mainTitle}>Wajn Psired</h1>
 
       {/* OBJECTIVE */}

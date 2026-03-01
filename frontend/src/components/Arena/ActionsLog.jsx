@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect } from "react";
 import { useLanguage } from "../../contexts/LanguageContext";
 import classes from "./ActionsLog.module.css";
 
@@ -50,10 +51,38 @@ const getActionImpact = (socketId, change, classes) => {
 
 const ActionsLog = ({ changesVector, socketId }) => {
   const { t } = useLanguage();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const logRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (isExpanded && logRef.current && !logRef.current.contains(e.target)) {
+        setIsExpanded(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    document.addEventListener("touchstart", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      document.removeEventListener("touchstart", handleOutsideClick);
+    };
+  }, [isExpanded]);
+
+  const toggleExpand = () => {
+    if (window.innerWidth <= 768) {
+      setIsExpanded(!isExpanded);
+    }
+  };
 
   return (
-    <div className={classes.logContainer}>
-      <p className={classes.logTitle}>{t("log.title")}</p>
+    <div
+      ref={logRef}
+      className={`${classes.logContainer} ${isExpanded ? classes.expanded : ""}`}
+      onClick={toggleExpand}
+    >
+      <p className={classes.logTitle}>{t("log.title")} {window.innerWidth <= 768 && (isExpanded ? "▲" : "▼")}</p>
       <div className={classes.logListWrapper}>
         <ul>
           {changesVector?.map((change, i) => (
@@ -65,11 +94,11 @@ const ActionsLog = ({ changesVector, socketId }) => {
                 <span className={getActionImpact(socketId, change, classes)}>
                   {change.action === "passed"
                     ? (change.by === socketId ? t("log.you") : t("log.enemy")) +
-                      " " +
-                      change.action
+                    " " +
+                    change.action
                     : change.action === "newTurn"
-                    ? t("log.newTurn")
-                    : (change.owner === socketId ? t("log.your") : t("log.enemys")) +
+                      ? t("log.newTurn")
+                      : (change.owner === socketId ? t("log.your") : t("log.enemys")) +
                       " " +
                       change.name +
                       " " +

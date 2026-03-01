@@ -180,3 +180,50 @@
     color: var(--text-muted);
     margin: 0;
 }
+
+/* =========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 768px) {
+    .info {
+        padding: 4px 10px;
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .turnIndicator {
+        font-size: 0.7rem;
+        padding: 2px 8px;
+    }
+
+    .turnLabel {
+        font-size: 0.65rem;
+    }
+
+    .progressBarContainer {
+        width: 100px;
+        height: 6px;
+    }
+
+    .timerText {
+        font-size: 0.7rem;
+    }
+
+    .bankSection {
+        gap: 12px;
+    }
+
+    .bankValue {
+        font-size: 0.85rem;
+    }
+
+    .bankLabel {
+        font-size: 0.55rem;
+    }
+
+    .passBtn {
+        padding: 6px 14px;
+        font-size: 0.75rem;
+    }
+}

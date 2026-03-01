@@ -18,6 +18,9 @@ const translations = {
     // Settings
     "settings.title": "Settings",
     "settings.language": "🌍 Language",
+    
+    // UI General
+    "ui.goBack": "Go Back",
 
     // Arena — toasts
     "arena.gameEnded": "The game has already ended!",
@@ -78,14 +81,59 @@ const translations = {
     "spells.enemys": "Enemy's",
     "spells.nextTurn": "next turn",
 
-    // CardSelection
+    // CardSelection & Card Buttons
     "cards.notValidChoice": "Not a valid choice!",
     "cards.currentDeck": "Current Deck",
     "cards.availableCards": "Available Cards",
+    "cards.remove": "Remove",
+    "cards.addToDeck": "Add to Deck",
+    "cards.selectCard": "Select Card",
 
     // Updates
     "updates.title": "Development Log",
     "updates.footer": "The forest grows deeper... more updates soon.",
+
+    // Cards
+    "cards.oxytree.name": "Oxytree",
+    "cards.oxytree.description": "Each round increases its attack by 2dmg (max 12dmg)",
+    "cards.timberman.name": "Timberman",
+    "cards.timberman.description": "Spell that summons a timberman",
+    "cards.acacia.name": "Acacia",
+    "cards.acacia.description": "Delicate tree",
+    "cards.banana tree.name": "Banana Tree",
+    "cards.banana tree.description": "Hits objects in a straight line",
+    "cards.chopper.name": "Chopper",
+    "cards.chopper.description": "1 tile range",
+    "cards.creepers.name": "Creepers",
+    "cards.creepers.description": "Attacks and grows on the main tree. Resistant to opponent's spells",
+    "cards.linden.name": "Linden",
+    "cards.linden.description": "Doubles its current attack when attacked (max 32)",
+    "cards.magic force.name": "Magic Force",
+    "cards.magic force.description": "Select an object that already attacked — immediately perform its attack again",
+    "cards.medicinal herbs.name": "Medicinal Herbs",
+    "cards.medicinal herbs.description": "Heals a selected object",
+    "cards.apple tree.name": "Apple Tree",
+    "cards.apple tree.description": "Rain of apples",
+    "cards.bark beetles.name": "Bark Beetles",
+    "cards.bark beetles.description": "Works only on trees",
+    "cards.birch.name": "Birch",
+    "cards.birch.description": "Solid tree",
+    "cards.bush.name": "Bush",
+    "cards.bush.description": "Small bush",
+    "cards.chestnut.name": "Chestnut",
+    "cards.chestnut.description": "Attacks with chestnuts",
+    "cards.hail.name": "Hail",
+    "cards.hail.description": "Minor destruction. Deals 1dmg before the next turn",
+    "cards.meteorite.name": "Meteorite",
+    "cards.meteorite.description": "Deals additional 5dmg before the next turn",
+    "cards.pine.name": "Pine",
+    "cards.pine.description": "Medium sized tree",
+    "cards.poplar.name": "Poplar",
+    "cards.poplar.description": "4dmg against objects on an adjacent tile",
+    "cards.spruce.name": "Spruce",
+    "cards.spruce.description": "Not very large tree",
+    "cards.willow.name": "Willow",
+    "cards.willow.description": "Magnificent tree",
   },
 
   pl: {
@@ -107,6 +155,9 @@ const translations = {
     // Settings
     "settings.title": "Ustawienia",
     "settings.language": "🌍 Język",
+    
+    // UI General
+    "ui.goBack": "Wróć",
 
     // Arena — toasts
     "arena.gameEnded": "Gra się już zakończyła!",
@@ -167,14 +218,59 @@ const translations = {
     "spells.enemys": "Wrogi/a",
     "spells.nextTurn": "następna tura",
 
-    // CardSelection
+    // CardSelection & Card Buttons
     "cards.notValidChoice": "Nieprawidłowy wybór!",
     "cards.currentDeck": "Aktualna talia",
     "cards.availableCards": "Dostępne karty",
+    "cards.remove": "Usuń",
+    "cards.addToDeck": "Dodaj do talii",
+    "cards.selectCard": "Wybierz kartę",
 
     // Updates
     "updates.title": "Dziennik zmian",
     "updates.footer": "Las rośnie... więcej aktualizacji wkrótce.",
+
+    // Cards
+    "cards.oxytree.name": "Oxytree",
+    "cards.oxytree.description": "Co rundę zwiększa swój atak o 2dmg (max 12dmg)",
+    "cards.timberman.name": "Drwal",
+    "cards.timberman.description": "Zaklęcie, które przywołuje drwala",
+    "cards.acacia.name": "Akacja",
+    "cards.acacia.description": "Delikatne drzewo",
+    "cards.banana tree.name": "Bananowiec",
+    "cards.banana tree.description": "Uderza obiekty w jednej linii",
+    "cards.chopper.name": "Zjadaczka",
+    "cards.chopper.description": "Zasięg 1 pola",
+    "cards.creepers.name": "Pnącza",
+    "cards.creepers.description": "Atakują i rosną na głównym drzewie. Odporne na zaklęcia przeciwnika",
+    "cards.linden.name": "Lipa",
+    "cards.linden.description": "Podwaja swój aktualny atak gdy zostanie zaatakowana (max 32)",
+    "cards.magic force.name": "Magiczna siła",
+    "cards.magic force.description": "Wybierz obiekt, który już zaatakował — natychmiast wykonujesz jego atak ponownie",
+    "cards.medicinal herbs.name": "Zioła lecznicze",
+    "cards.medicinal herbs.description": "Leczy wybrany obiekt",
+    "cards.apple tree.name": "Jabłoń",
+    "cards.apple tree.description": "Deszcz jabłek",
+    "cards.bark beetles.name": "Korniki",
+    "cards.bark beetles.description": "Działają tylko na drzewa",
+    "cards.birch.name": "Brzoza",
+    "cards.birch.description": "Solidne drzewo",
+    "cards.bush.name": "Krzak",
+    "cards.bush.description": "Mały krzczek",
+    "cards.chestnut.name": "Kasztanowiec",
+    "cards.chestnut.description": "Atakuje kasztanami",
+    "cards.hail.name": "Grad",
+    "cards.hail.description": "Niewielkie zniszczenie. Zadaje 1dmg przed następną turą",
+    "cards.meteorite.name": "Meteoryt",
+    "cards.meteorite.description": "Zadaje dodatkowe 5dmg przed następną turą",
+    "cards.pine.name": "Sosna",
+    "cards.pine.description": "Średniej wielkości drzewo",
+    "cards.poplar.name": "Topola",
+    "cards.poplar.description": "4dmg przeciwko obiektom na sąsiednim polu",
+    "cards.spruce.name": "Świerk",
+    "cards.spruce.description": "Niezbyt duże drzewo",
+    "cards.willow.name": "Wierzba",
+    "cards.willow.description": "Okazałe drzewo",
   },
 };
 

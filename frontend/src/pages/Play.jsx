@@ -13,10 +13,10 @@ const Play = () => {
   const { isConnected, gameState, gameId, socketId, findOpponent } =
     useSocket();
   const [deckInfo, setDeckInfo] = useState({
-    cards: [],
-    legendary: 0,
-    rare: 0,
-    common: 0,
+    cards: ['timberman', 'acacia', 'chopper', 'creepers', 'linden', 'medicinal herbs', 'bark beetles', 'bush', 'birch', 'hail', 'meteorite', 'spruce', 'pine', 'willow', 'apple tree'],
+    legendary: 1,
+    rare: 5,
+    common: 9,
   });
   const [validDeck, setValidDeck] = useState(true);
   const [findingOpponent, setFindingOpponent] = useState(false);
@@ -42,6 +42,9 @@ const Play = () => {
 
   return (
     <div className={classes.playContainer}>
+      <button onClick={() => navigate("/")} className="goBackBtn">
+        ← {t("ui.goBack")}
+      </button>
       <h1 className={classes.title}>{t("play.title")}</h1>
       <CardSelection deckInfo={deckInfo} setDeckInfo={setDeckInfo} />
       <div className={classes.opponentSection}>

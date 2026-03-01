@@ -117,3 +117,103 @@
     background: rgba(0, 0, 0, 0.2);
     border-radius: 2px;
 }
+
+/* =========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 768px) {
+    .logContainer {
+        width: 100%;
+        min-width: unset;
+        height: 38px;
+        max-height: 38px;
+        min-height: 38px;
+        padding: 4px 10px;
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .logContainer.expanded {
+        height: auto;
+        max-height: 250px;
+        min-height: auto;
+        flex-direction: column;
+        align-items: stretch;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        max-width: 90vw;
+        z-index: 99999;
+        box-shadow: 0 10px 50px rgba(0, 0, 0, 0.95), 0 0 0 100vw rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.05);
+        background: rgba(15, 25, 20, 0.98);
+        border: 1px solid var(--accent-warm);
+        padding: 14px;
+        margin: 0;
+    }
+
+    .logTitle {
+        font-size: 0.7rem;
+        margin: 0;
+        padding: 0;
+        border-bottom: none;
+        border-right: 1px solid var(--border-strong);
+        padding-right: 8px;
+        white-space: nowrap;
+        letter-spacing: 1px;
+    }
+
+    .logContainer.expanded .logTitle {
+        font-size: 0.85rem;
+        border-right: none;
+        border-bottom: 1px solid var(--border-strong);
+        padding-bottom: 8px;
+        margin-bottom: 8px;
+        text-align: center;
+    }
+
+    .logListWrapper {
+        overflow: hidden; /* Disable scrolling completely on mobile */
+        display: flex;
+        align-items: center;
+    }
+
+    .logContainer.expanded .logListWrapper {
+        display: block;
+        max-height: 180px;
+        overflow-y: auto;
+    }
+
+    .logListWrapper ul {
+        gap: 0;
+        margin: auto 0;
+    }
+
+    .logContainer.expanded .logListWrapper ul {
+        gap: 6px;
+    }
+
+    .logEntry {
+        background: transparent;
+        border: none;
+        padding: 0;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .logContainer.expanded .logEntry {
+        white-space: normal;
+        padding: 5px 8px;
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .logEntryText {
+        font-size: 0.65rem;
+    }
+}

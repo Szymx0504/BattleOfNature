@@ -117,3 +117,40 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
+
+/* =========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 768px) {
+    .board {
+        gap: 2px;
+        margin: 2px 0;
+    }
+
+    .row {
+        gap: 3px;
+    }
+
+    .tile {
+        width: calc((100vw - 40px) / 5);
+        height: calc((100vw - 40px) / 5 * 1.33);
+    }
+
+    .mainTree img {
+        width: 70%;
+    }
+
+    .mainTreeHp {
+        padding: 2px 8px;
+        gap: 4px;
+    }
+
+    .mainTreeHpValue {
+        font-size: 0.8rem;
+    }
+
+    .mainTreeHpLabel {
+        font-size: 0.55rem;
+    }
+}

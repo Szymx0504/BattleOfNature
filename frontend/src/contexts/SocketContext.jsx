@@ -19,6 +19,7 @@ export const SocketProvider = ({ children }) => {
   const [socketId, setSocketId] = useState(null);
   const [changesVector, setChangesVector] = useState(null);
   const [gameEnded, setGameEnded] = useState(false);
+  const [gameWinner, setGameWinner] = useState(null);
 
   useEffect(() => {
     const socket = socketService.connect();
@@ -74,6 +75,7 @@ export const SocketProvider = ({ children }) => {
         extraData.winner === socket.id
           ? toast.success(t("socket.youWon"), gameEndingOptions)
           : toast.error(t("socket.enemyWon"), gameEndingOptions);
+        setGameWinner(extraData.winner);
         setGameEnded(true);
       } else if (extraData.newTurn) {
         switch (Number(extraData.newTurn)) {
@@ -131,15 +133,15 @@ export const SocketProvider = ({ children }) => {
     };
 
     const handleTimeOver = (res) => {
-      res.won
-        ? toast.success(
-            t("socket.youWonByTime"),
-            gameEndingOptions
-          )
-        : toast.error(
-            t("socket.youLostByTime"),
-            gameEndingOptions
-          );
+      if (res.won) {
+        toast.success(t("socket.youWonByTime"), gameEndingOptions);
+        setGameWinner(socket.id);
+      } else {
+        toast.error(t("socket.youLostByTime"), gameEndingOptions);
+        // Find opponent ID to set them as winner
+        const enemyId = Object.keys(gameState?.players || {}).find(id => id !== socket.id);
+        setGameWinner(enemyId); // Alternatively, res.winner could be provided by backend
+      }
       setGameEnded(true);
     };
 
@@ -210,6 +212,7 @@ export const SocketProvider = ({ children }) => {
     socketId,
     changesVector,
     gameEnded,
+    gameWinner,
     findOpponent,
     playCard,
     makeAttack,

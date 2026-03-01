@@ -252,8 +252,16 @@ function emitGameStateUpdate(io, socket, game, gameId, playerConnectionId, histo
   const historyP1 = adjustVector(history, isRotate);
   const historyP2 = adjustVector(history, !isRotate);
 
-  const extraP1 = isNewTurn ? { newTurn: game.turnNumber } : { winner: game.winner };
-  const extraP2 = isNewTurn ? { newTurn: game.turnNumber } : { winner: game.winner, enemyPlayed: !game.players[enemyId].passed };
+  const extraP1 = {};
+  const extraP2 = { enemyPlayed: !game.players[enemyId].passed };
+
+  if (game.winner) {
+    extraP1.winner = game.winner;
+    extraP2.winner = game.winner;
+  } else if (isNewTurn) {
+    extraP1.newTurn = game.turnNumber;
+    extraP2.newTurn = game.turnNumber;
+  }
 
   socket.emit("update", publicGameP1, historyP1, extraP1);
   io.to(enemyId).emit("update", publicGameP2, historyP2, extraP2);

@@ -29,3 +29,26 @@
     width: 100%;
     max-width: 1200px;
 }
+
+/* =========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================= */
+
+@media (max-width: 768px) {
+    .cardsContainer {
+        padding: 60px 10px 20px 10px; /* Room for 'Go Back' button */
+    }
+
+    .title {
+        font-size: 1rem;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .cardList {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+}

@@ -1,11 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
 import classes from "./Settings.module.css";
 
 const Settings = () => {
+  const navigate = useNavigate();
   const { language, changeLanguage, t } = useLanguage();
 
   return (
     <div className={classes.settingsContainer}>
+      <button onClick={() => navigate("/")} className="goBackBtn">
+        ← {t("ui.goBack")}
+      </button>
       <h1 className={classes.settingsTitle}>{t("settings.title")}</h1>
       
       <div className={classes.settingsPanel}>
