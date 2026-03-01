@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { SocketContext } from "../../contexts/SocketContext";
 
 import classes from "./Info.module.css";
 
@@ -6,9 +7,10 @@ const Info = ({ gameState, socketId, handlePass }) => {
   const [timeLeft, setTimeLeft] = useState(30);
   const [yourGlobalTimeLeft, setYourGlobalTimeLeft] = useState(180);
   const [enemyGlobalTimeLeft, setEnemyGlobalTimeLeft] = useState(180);
+  const { gameWinner } = useContext(SocketContext);
 
   useEffect(() => {
-    if (!gameState?.actionStartedAt) return;
+    if (!gameState?.actionStartedAt || gameWinner) return;
     const enemyId = Object.keys(gameState.players).find(
       (id) => id !== socketId
     );
@@ -38,7 +40,7 @@ const Info = ({ gameState, socketId, handlePass }) => {
       }
     }, 50);
     return () => clearInterval(interval);
-  }, [gameState?.actionStartedAt, socketId]);
+  }, [gameState?.actionStartedAt, socketId, gameWinner]);
 
   const isYourTurn = gameState?.whoseMove === socketId;
 

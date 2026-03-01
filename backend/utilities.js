@@ -203,8 +203,11 @@ function manageTime(game, playerId) {
 }
 
 function handleTimeout(game, playerId, enemyId, io, activeGames, gameId) {
-  io.to(playerId).emit("timeOver", { won: false });
-  io.to(enemyId).emit("timeOver", { won: true });
+  game.winner = enemyId;
+
+  // Emit standard update event with the winner flag so the frontend game over overlay triggers
+  io.to(playerId).emit("update", {}, [], { winner: enemyId });
+  io.to(enemyId).emit("update", {}, [], { winner: enemyId });
 
   if (game.forceEndTimer) {
     clearTimeout(game.forceEndTimer);

@@ -13,10 +13,14 @@ const Play = () => {
   const { isConnected, gameState, gameId, socketId, findOpponent } =
     useSocket();
   const [deckInfo, setDeckInfo] = useState({
-    cards: ['timberman', 'acacia', 'chopper', 'creepers', 'linden', 'medicinal herbs', 'bark beetles', 'bush', 'birch', 'hail', 'meteorite', 'spruce', 'pine', 'willow', 'apple tree'],
-    legendary: 1,
-    rare: 5,
-    common: 9,
+    // cards: ['timberman', 'acacia', 'chopper', 'creepers', 'linden', 'medicinal herbs', 'bark beetles', 'bush', 'birch', 'hail', 'meteorite', 'spruce', 'pine', 'willow', 'apple tree'],
+    // legendary: 1,
+    // rare: 5,
+    // common: 9,
+    cards: [],
+    legendary: 0,
+    rare: 0,
+    common: 0,
   });
   const [validDeck, setValidDeck] = useState(true);
   const [findingOpponent, setFindingOpponent] = useState(false);
