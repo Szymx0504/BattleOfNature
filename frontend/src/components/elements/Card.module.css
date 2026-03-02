@@ -29,8 +29,10 @@
   user-select: none;
 }
 
-.card:hover {
-  z-index: 10;
+@media (hover: hover) {
+  .card:hover {
+    z-index: 10;
+  }
 }
 
 /* --- Category colored top border (via class on card) --- */
@@ -263,10 +265,12 @@
   border-top-color: var(--border-strong);
 }
 
-.card:hover .description {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
+@media (hover: hover) {
+  .card:hover .description {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* =========================================================================
@@ -568,12 +572,7 @@
     font-size: 0.9em;
   }
 
-  /* Disable hover tooltips on mobile entirely to avoid double popups */
-  .card:hover .description:not(.forceShow) {
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-50%) translateY(8px);
-  }
+  /* Hover tooltips are now disabled on touch via @media (hover: hover) — no override needed */
 
   /* Prevent horizontal overflow on mobile when a card is selected */
   .cardSelected {
