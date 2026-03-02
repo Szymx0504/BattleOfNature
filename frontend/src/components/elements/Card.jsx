@@ -107,6 +107,24 @@ const Card = ({ i, classKeys, cardName, cardDetails, handleClick, menu }) => {
     }
   };
 
+  // Handle touchend — on real mobile, we need to handle selection here
+  // because the synthetic 'click' event can get swallowed by the browser
+  const touchEndRef = useRef(false);
+
+  const onTouchEnd = (e) => {
+    cancelLongPress();
+
+    // If long press just fired (tooltip just opened), don't select
+    if (longPressFired) return;
+
+    // If tooltip is open, close it AND select the card in one tap
+    if (showMobileTooltip && window.innerWidth <= 768) {
+      setShowMobileTooltip(false);
+      touchEndRef.current = true; // Flag so onClick doesn't fire again
+      if (handleClick) handleClick(e);
+    }
+  };
+
   // Regular tap selects the card
   const onCardTap = (e) => {
     // If we just fired a long press, ignore this click to prevent unwanted UI changes
@@ -114,6 +132,12 @@ const Card = ({ i, classKeys, cardName, cardDetails, handleClick, menu }) => {
       setLongPressFired(false);
       e.stopPropagation();
       e.preventDefault();
+      return;
+    }
+
+    // If touchEnd already handled the selection (mobile with tooltip open), skip
+    if (touchEndRef.current) {
+      touchEndRef.current = false;
       return;
     }
 
@@ -133,7 +157,7 @@ const Card = ({ i, classKeys, cardName, cardDetails, handleClick, menu }) => {
       onClick={onCardTap}
       onContextMenu={(e) => e.preventDefault()}
       onTouchStart={startLongPress}
-      onTouchEnd={cancelLongPress}
+      onTouchEnd={onTouchEnd}
       onTouchMove={cancelLongPress}
       onMouseDown={startLongPress}
       onMouseUp={cancelLongPress}
