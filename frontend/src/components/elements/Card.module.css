@@ -20,6 +20,13 @@
   list-style: none;
   transform-origin: center bottom;
   position: relative;
+  -webkit-touch-callout: none; /* Prevents iOS "Save Image" popup on long press */
+  user-select: none;
+}
+
+.card * {
+  -webkit-touch-callout: none;
+  user-select: none;
 }
 
 .card:hover {

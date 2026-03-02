@@ -132,6 +132,7 @@ const Card = ({ i, classKeys, cardName, cardDetails, handleClick, menu }) => {
       ref={cardRef}
       key={i}
       onClick={onCardTap}
+      onContextMenu={(e) => e.preventDefault()}
       onTouchStart={startLongPress}
       onTouchEnd={cancelLongPress}
       onTouchMove={cancelLongPress}
