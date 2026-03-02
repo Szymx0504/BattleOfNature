@@ -13,11 +13,19 @@ const Card = ({ i, classKeys, cardName, cardDetails, handleClick, menu }) => {
   const { t } = useLanguage();
   const [showMobileTooltip, setShowMobileTooltip] = useState(false);
   const [tooltipStyles, setTooltipStyles] = useState({});
-  const [longPressTimer, setLongPressTimer] = useState(null);
-
-  // Track if a long press just occurred so the immediate touchend/click doesn't select the card
-  const [longPressFired, setLongPressFired] = useState(false);
   const cardRef = useRef(null);
+
+  // Use REFS for critical flags so touch handlers always read the latest value
+  // (React state in closures can be stale on real phones due to render timing)
+  const longPressFiredRef = useRef(false);
+  const longPressTimerRef = useRef(null);
+  const showMobileTooltipRef = useRef(false);
+  const touchHandledRef = useRef(false);
+
+  // Keep the ref in sync with state
+  useEffect(() => {
+    showMobileTooltipRef.current = showMobileTooltip;
+  }, [showMobileTooltip]);
 
   const displayName = t(`cards.${cardName}.name`);
   const displayDescription = t(`cards.${cardName}.description`);
@@ -60,14 +68,13 @@ const Card = ({ i, classKeys, cardName, cardDetails, handleClick, menu }) => {
     };
   }, [cardName, showMobileTooltip]);
 
-  // NEW HOLD/LONG PRESS LOGIC FOR MOBILE TOOLTIP
+  // HOLD/LONG PRESS LOGIC FOR MOBILE TOOLTIP
   const startLongPress = (e) => {
     if (window.innerWidth <= 768) {
-      // Capture the event state we need for the timer
       const target = e.currentTarget;
 
       const timer = setTimeout(() => {
-        if (!showMobileTooltip) {
+        if (!showMobileTooltipRef.current) {
           if (classKeys.includes("hand")) {
             const rect = target.getBoundingClientRect();
             let centerLeft = rect.left + rect.width / 2;
@@ -93,56 +100,55 @@ const Card = ({ i, classKeys, cardName, cardDetails, handleClick, menu }) => {
           }
           window.dispatchEvent(new CustomEvent("mobile-tooltip-opened", { detail: cardName }));
           setShowMobileTooltip(true);
-          setLongPressFired(true); // Flag to prevent the click
+          longPressFiredRef.current = true;
         }
-      }, 500); // 500ms hold to show description
-      setLongPressTimer(timer);
+      }, 500);
+      longPressTimerRef.current = timer;
     }
   };
 
   const cancelLongPress = () => {
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      setLongPressTimer(null);
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
     }
   };
-
-  // Handle touchend — on real mobile, we need to handle selection here
-  // because the synthetic 'click' event can get swallowed by the browser
-  const touchEndRef = useRef(false);
 
   const onTouchEnd = (e) => {
     cancelLongPress();
 
-    // If long press just fired (tooltip just opened), don't select
-    if (longPressFired) return;
+    // If long press just fired (tooltip just opened from THIS gesture), don't select
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
+      return;
+    }
 
     // If tooltip is open, close it AND select the card in one tap
-    if (showMobileTooltip && window.innerWidth <= 768) {
+    if (showMobileTooltipRef.current && window.innerWidth <= 768) {
       setShowMobileTooltip(false);
-      touchEndRef.current = true; // Flag so onClick doesn't fire again
+      touchHandledRef.current = true;
       if (handleClick) handleClick(e);
     }
   };
 
-  // Regular tap selects the card
+  // Regular click handler (desktop, or fallback on mobile)
   const onCardTap = (e) => {
-    // If we just fired a long press, ignore this click to prevent unwanted UI changes
-    if (longPressFired) {
-      setLongPressFired(false);
+    // If touchEnd already handled this interaction, skip
+    if (touchHandledRef.current) {
+      touchHandledRef.current = false;
+      return;
+    }
+
+    // If long press just fired, consume the click without selecting
+    if (longPressFiredRef.current) {
+      longPressFiredRef.current = false;
       e.stopPropagation();
       e.preventDefault();
       return;
     }
 
-    // If touchEnd already handled the selection (mobile with tooltip open), skip
-    if (touchEndRef.current) {
-      touchEndRef.current = false;
-      return;
-    }
-
     // Close the tooltip if it's open, but still proceed with card selection
-    if (showMobileTooltip && window.innerWidth <= 768) {
+    if (showMobileTooltipRef.current && window.innerWidth <= 768) {
       setShowMobileTooltip(false);
     }
 
