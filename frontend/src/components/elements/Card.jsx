@@ -117,10 +117,9 @@ const Card = ({ i, classKeys, cardName, cardDetails, handleClick, menu }) => {
       return;
     }
 
-    // We optionally close the tooltip if they click the card while it's open
+    // Close the tooltip if it's open, but still proceed with card selection
     if (showMobileTooltip && window.innerWidth <= 768) {
       setShowMobileTooltip(false);
-      return; // Ignore selection if they're just tapping to close the tooltip
     }
 
     cancelLongPress();
