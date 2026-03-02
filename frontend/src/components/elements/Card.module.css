@@ -503,7 +503,7 @@
     width: max-content !important;
     max-width: 85vw;
     box-sizing: border-box;
-    pointer-events: auto !important;
+    pointer-events: none !important;
     z-index: 9999 !important;
   }
 
